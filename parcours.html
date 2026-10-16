@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/leaflet/leaflet.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="fond" id="fond"></div>
+  <div class="contenu">
+    <div class="etiquettes-lieu" id="lieu"></div>
+    <h1 id="titre"></h1>
+    <p class="chapeau" id="chapeau"></p>
+  </div>
+</section>
+
+<section class="stats"><div class="contenu" id="stats"></div></section>
+
+<main class="contenu">
+  <h2 class="section">Photos</h2>
+  <div class="galerie" id="galerie"></div>
+
+
+  <h2 class="section" id="carte-titre">Carte, profil et points d'intérêt</h2>
+  <div class="bloc-carte">
+    <div class="filtres" id="filtres"></div>
+    <div id="carte"></div>
+    <div class="profil">
+      <div class="infobulle" id="info"></div>
+      <svg id="profil" viewBox="0 0 1000 160" preserveAspectRatio="none"></svg>
+      <div class="reperes" id="reperes"></div>
+    </div>
+    <div class="telecharger">
+      <a class="btn" id="gpx" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"/></svg>Trace GPX</a>
+      <button class="btn clair" id="gpx-poi"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"/></svg>GPX avec points d'intérêt</button>
+    </div>
+  </div>
+
+  <h2 class="section">L'essentiel</h2>
+  <div class="encarts" id="encarts"></div>
+
+  <h2 class="section">Feuille de route</h2>
+  <div class="feuille"><table><thead><tr><th>Km</th><th>Type</th><th>Lieu</th><th>Détail</th></tr></thead><tbody id="feuille"></tbody></table></div>
+
+  <h2 class="section">Étapes</h2>
+  <div class="defile"><table class="etapes"><thead><tr><th>Jour</th><th>Trajet</th><th>Km</th><th>D+</th><th>Notes</th></tr></thead><tbody id="etapes"></tbody></table></div>
+
+
+  <h2 class="section">Difficulté</h2>
+  <div class="jauges" id="jauges"></div>
+
+  <p class="credits" id="credits"></p>
+</main>
+
+<footer class="pied">
+  <div class="contenu">
+    <div><a href="#">À propos</a><a href="#">Contact</a><a href="#">Instagram</a></div>
+    <span>Fonds de carte © Esri, contributeurs OpenStreetMap, OpenTopoMap</span>
+  </div>
+</footer>
+<div class="loupe" id="loupe"><img alt=""></div>
+
+<script src="assets/leaflet/leaflet.js"></script>
+<script src="assets/entete.js"></script>
+<script src="assets/parcours.js"></script>
+</body>
+</html>

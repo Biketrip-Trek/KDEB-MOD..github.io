@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kévin à vélo - carnet de traces</title>
+<meta name="description" content="Parcours à vélo et randonnées, à la journée ou sur plusieurs jours : carte, profil, points d'intérêt et GPX à télécharger.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/leaflet/leaflet.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="accueil">
+
+<section class="hero hero-accueil">
+  <div class="fond" id="fond"></div>
+  <div class="contenu">
+    <div class="etiquettes-lieu"><span class="cat">Carnet de traces</span></div>
+    <h1>Des parcours à vélo et à pied, <em>prêts à partir.</em></h1>
+    <p class="chapeau">Chaque itinéraire est testé sur le terrain : carte, profil, points d'eau, ravitaillements et trace GPX à télécharger.</p>
+    <div class="compteurs" id="compteurs"></div>
+  </div>
+</section>
+
+<section class="bloc-carte-accueil">
+  <div class="contenu filtres-accueil" id="filtres"></div>
+  <div id="carte-globale"></div>
+</section>
+
+<main class="contenu" id="rubriques"></main>
+
+<footer class="pied">
+  <div class="contenu">
+    <div><a href="#">À propos</a><a href="#">Contact</a><a href="#">Instagram</a></div>
+    <span>Fonds de carte © Esri, contributeurs OpenStreetMap, OpenTopoMap</span>
+  </div>
+</footer>
+
+<script src="assets/leaflet/leaflet.js"></script>
+<script src="assets/entete.js"></script>
+<script src="data/liste.js"></script>
+<script src="assets/accueil.js"></script>
+</body>
+</html>
