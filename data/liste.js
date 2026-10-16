@@ -2,6 +2,7 @@
 window.LISTE_PARCOURS = [
   "flandrien-challenge",
   "dolce-via",
+  "tmv-vosges-2026",
   "ardennes-arbalete",
   "alps-divide-nice-briancon",
   "briancon-cannes"
