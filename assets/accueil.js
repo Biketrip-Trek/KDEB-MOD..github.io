@@ -7,16 +7,25 @@ const fmtN = n => Number(n).toLocaleString("fr-FR");
 
 document.getElementById("fond").innerHTML = courbesDeNiveau();
 
-// Charge chaque fichier data/<slug>.js, puis construit la page
-const slugs = window.LISTE_PARCOURS || [];
-let restants = slugs.length;
-if (!restants) construireAccueil([]);
-for (const slug of slugs) {
-  const s = document.createElement("script");
-  s.src = "data/" + slug + ".js";
-  s.onload = s.onerror = () => { if (--restants === 0) construireAccueil(slugs.map(x => (window.PARCOURS || {})[x]).filter(Boolean)); };
-  document.head.appendChild(s);
-}
+// "?v=..." force le navigateur à relire les données à chaque visite :
+// une mise à jour envoyée sur GitHub apparaît tout de suite (pas d'ancienne copie en cache)
+const VERSION = "?v=" + Date.now();
+
+// 1) Charge la liste des parcours (data/liste.js), 2) charge chaque data/<slug>.js, 3) construit la page
+const liste = document.createElement("script");
+liste.src = "data/liste.js" + VERSION;
+liste.onload = liste.onerror = () => {
+  const slugs = window.LISTE_PARCOURS || [];
+  let restants = slugs.length;
+  if (!restants) construireAccueil([]);
+  for (const slug of slugs) {
+    const s = document.createElement("script");
+    s.src = "data/" + slug + ".js" + VERSION;
+    s.onload = s.onerror = () => { if (--restants === 0) construireAccueil(slugs.map(x => (window.PARCOURS || {})[x]).filter(Boolean)); };
+    document.head.appendChild(s);
+  }
+};
+document.head.appendChild(liste);
 
 function construireAccueil(parcours) {
   // Compteurs du bandeau

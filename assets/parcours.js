@@ -44,7 +44,7 @@ const fmt = n => n == null ? "-" : Number(n).toLocaleString("fr-FR");
 // --- Chargement des données du parcours ---
 const slug = new URLSearchParams(location.search).get("p") || "flandrien-challenge";
 const script = document.createElement("script");
-script.src = "data/" + slug + ".js";
+script.src = "data/" + slug + ".js?v=" + Date.now(); // ?v= : toujours la dernière version des données
 script.onload = () => construire(window.PARCOURS[slug]);
 script.onerror = () => { $("titre").textContent = "Parcours introuvable"; };
 document.head.appendChild(script);
