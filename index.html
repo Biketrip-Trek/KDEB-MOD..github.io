@@ -1,34 +1,65 @@
 <!doctype html>
+<!--
+=======================================================================
+ FICHIER : index.html  =  PAGE D'ACCUEIL du site
+ Elle contient seulement la STRUCTURE de la page (des "boîtes" vides).
+ Le contenu (compteurs, carte, vignettes) est ajouté par assets/accueil.js.
+
+ À SAVOIR :
+ - Un texte entre <!- - et - -> (comme celui-ci) est un commentaire :
+   il n'apparaît pas sur le site.
+ - Les textes que tu peux changer directement ici : le titre de l'onglet
+   (<title>), la description pour Google, le grand titre et la phrase
+   d'accroche, les liens du pied de page.
+=======================================================================
+-->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Titre affiché dans l'onglet du navigateur et dans Google -->
 <title>Kévin à vélo - carnet de traces</title>
+<!-- Description affichée sous le titre dans les résultats Google -->
 <meta name="description" content="Parcours à vélo et randonnées, à la journée ou sur plusieurs jours : carte, profil, points d'intérêt et GPX à télécharger.">
+
+<!-- Polices de caractères (IBM Plex), chargées depuis Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Styles de la carte (Leaflet), puis les styles du site (couleurs, tailles...) -->
 <link rel="stylesheet" href="assets/leaflet/leaflet.css">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="accueil">
 
+<!-- L'en-tête (logo + menus) est ajouté ici automatiquement par assets/entete.js -->
+
+<!-- ===== BANDEAU D'OUVERTURE ===== -->
 <section class="hero hero-accueil">
-  <div class="fond" id="fond"></div>
+  <div class="fond" id="fond"></div>  <!-- fond en courbes de niveau, dessiné par accueil.js -->
   <div class="contenu">
     <div class="etiquettes-lieu"><span class="cat">Carnet de traces</span></div>
+    <!-- Grand titre : la partie entre <em> et </em> s'affiche en orange -->
     <h1>Des parcours à vélo et à pied, <em>prêts à partir.</em></h1>
+    <!-- Phrase d'accroche sous le titre -->
     <p class="chapeau">Chaque itinéraire est testé sur le terrain : carte, profil, points d'eau, ravitaillements et trace GPX à télécharger.</p>
-    <div class="compteurs" id="compteurs"></div>
+    <div class="compteurs" id="compteurs"></div>  <!-- compteurs remplis par accueil.js -->
   </div>
 </section>
 
+<!-- ===== GRANDE CARTE DE TOUS LES PARCOURS ===== -->
 <section class="bloc-carte-accueil">
-  <div class="contenu filtres-accueil" id="filtres"></div>
-  <div id="carte-globale"></div>
+  <div class="contenu filtres-accueil" id="filtres"></div>  <!-- boutons Tous / Vélo / Randonnée -->
+  <div id="carte-globale"></div>                            <!-- la carte -->
 </section>
 
+<!-- ===== RUBRIQUES ET VIGNETTES (remplies par accueil.js) ===== -->
 <main class="contenu" id="rubriques"></main>
 
+<!-- ===== PIED DE PAGE =====
+     Remplace les "#" par tes vrais liens, par exemple :
+     <a href="https://www.instagram.com/ton-compte">Instagram</a>
+     <a href="mailto:ton.adresse@mail.fr">Contact</a>             -->
 <footer class="pied">
   <div class="contenu">
     <div><a href="#">À propos</a><a href="#">Contact</a><a href="#">Instagram</a></div>
@@ -36,6 +67,7 @@
   </div>
 </footer>
 
+<!-- Programmes de la page, dans cet ordre : carte (Leaflet), en-tête commun, accueil -->
 <script src="assets/leaflet/leaflet.js"></script>
 <script src="assets/entete.js"></script>
 <script src="assets/accueil.js"></script>

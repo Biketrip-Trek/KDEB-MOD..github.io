@@ -1,20 +1,62 @@
 // =====================================================================
-// En-tête commun à toutes les pages : logo + menus déroulants
-// Pour ajouter une catégorie ou une sous-catégorie : modifier MENU ci-dessous
+// FICHIER : assets/entete.js
+// RÔLE    : tout ce qui est COMMUN aux deux pages du site
+//           (accueil index.html et fiche parcours.html) :
+//             1. le nom du site et le menu (catégories)
+//             2. la création de l'en-tête (logo + menus déroulants)
+//             3. des petites "boîtes à outils" (fonctions) utilisées
+//                par accueil.js et parcours.js : fond de carte, dessin
+//                de la trace, motif de courbes de niveau...
+//
+// À SAVOIR : une ligne qui commence par // est un commentaire.
+//            Le navigateur l'ignore : c'est juste une note pour toi.
 // =====================================================================
+
+
+// ---------------------------------------------------------------------
+// 1. RÉGLAGES FACILES À MODIFIER
+// ---------------------------------------------------------------------
+
+// Nom du site : affiché dans le logo en haut à gauche
+// et dans le titre de l'onglet du navigateur.
+const NOM_DU_SITE = "Kévin à vélo";
+
+// Le menu en haut à droite.
+// - "id"  : code interne, SANS accent ni espace. C'est ce code qu'on écrit
+//           dans les fiches (champs "activite" et "format").
+// - "nom" : texte affiché sur le site, libre.
+// Pour ajouter une catégorie (ex. "Ski de rando"), copie un bloc { ... }
+// complet, colle-le après le dernier, et sépare les blocs par une virgule.
 const MENU = [
-  { id: "velo", nom: "Vélo", sous: [
-    { id: "journee", nom: "À la journée" },
-    { id: "plusieurs-jours", nom: "Plusieurs jours" }
-  ]},
-  { id: "rando", nom: "Randonnée", sous: [
-    { id: "journee", nom: "À la journée" },
-    { id: "plusieurs-jours", nom: "Plusieurs jours" }
-  ]}
+  {
+    id: "velo", nom: "Vélo",
+    sous: [
+      { id: "journee",         nom: "À la journée" },
+      { id: "plusieurs-jours", nom: "Plusieurs jours" }
+    ]
+  },
+  {
+    id: "rando", nom: "Randonnée",
+    sous: [
+      { id: "journee",         nom: "À la journée" },
+      { id: "plusieurs-jours", nom: "Plusieurs jours" }
+    ]
+  }
 ];
 
+
+// ---------------------------------------------------------------------
+// 2. CRÉATION DE L'EN-TÊTE (logo + menus)
+//    Ce bloc s'exécute tout seul au chargement de la page.
+//    Il fabrique le code HTML de l'en-tête et le place en haut de la page.
+// ---------------------------------------------------------------------
 (function () {
+  // Petite flèche "v" à côté de chaque menu (dessin SVG = dessin en code)
   const fleche = '<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4l4 4 4-4"/></svg>';
+
+  // Pour chaque catégorie du MENU, on fabrique un bouton + un panneau déroulant.
+  // Les liens pointent vers la page d'accueil, à la bonne rubrique
+  // (ex. index.html#velo-journee).
   const menus = MENU.map(m => `
     <div class="deroulant">
       <button class="onglet" aria-expanded="false">${m.nom} ${fleche}</button>
@@ -24,48 +66,63 @@ const MENU = [
       </div>
     </div>`).join("");
 
+  // L'en-tête complet : logo (montagne dessinée + nom du site) puis menus
   const entete = document.createElement("header");
   entete.className = "entete";
   entete.innerHTML = `
     <div class="contenu">
       <a class="logo" href="index.html">
         <svg viewBox="0 0 32 32" fill="none" stroke="#e4572e" stroke-width="2"><path d="M2 26 L11 12 L16 19 L21 9 L30 26 Z"/><path d="M8 26c3-4 6-2 8-5s5-4 8 0" stroke="#fff" stroke-width="1.4"/></svg>
-        Kévin à vélo
+        ${NOM_DU_SITE}
       </a>
       <nav class="menu">${menus}</nav>
     </div>`;
-  document.body.prepend(entete);
+  document.body.prepend(entete); // "prepend" = placer tout en haut de la page
 
-  // Ouverture au clic (indispensable sur téléphone) ; un seul menu ouvert à la fois
+  // Ouverture des menus au clic (indispensable sur téléphone, où il n'y a
+  // pas de survol à la souris). Un seul menu ouvert à la fois.
   const onglets = entete.querySelectorAll(".onglet");
-  onglets.forEach(b => b.addEventListener("click", e => {
+  onglets.forEach(bouton => bouton.addEventListener("click", e => {
     e.stopPropagation();
-    const ouvert = b.getAttribute("aria-expanded") === "true";
-    onglets.forEach(o => o.setAttribute("aria-expanded", "false"));
-    b.setAttribute("aria-expanded", String(!ouvert));
+    const ouvert = bouton.getAttribute("aria-expanded") === "true";
+    onglets.forEach(o => o.setAttribute("aria-expanded", "false")); // ferme tous les menus
+    bouton.setAttribute("aria-expanded", String(!ouvert));          // ouvre/ferme celui cliqué
   }));
+  // Un clic ailleurs sur la page ferme les menus
   document.addEventListener("click", () => onglets.forEach(o => o.setAttribute("aria-expanded", "false")));
 })();
 
-// Libellé lisible d'un parcours, ex. "Vélo · À la journée"
+
+// ---------------------------------------------------------------------
+// 3. BOÎTES À OUTILS (fonctions utilisées par accueil.js et parcours.js)
+// ---------------------------------------------------------------------
+
+// libelleCategorie("velo", "journee") renvoie le texte "Vélo · À la journée".
+// Sert pour les étiquettes orange sur les fiches et en haut des pages.
 function libelleCategorie(activite, format) {
   const m = MENU.find(x => x.id === activite);
   const s = m && m.sous.find(x => x.id === format);
   return [m && m.nom, s && s.nom].filter(Boolean).join(" · ");
 }
 
-// --- Fond graphique quand il n'y a pas encore de photo : courbes de niveau ---
+// courbesDeNiveau() dessine un fond sombre avec des courbes de niveau.
+// Il s'affiche quand un parcours n'a pas encore de photo principale,
+// et en fond de la page d'accueil.
 function courbesDeNiveau() {
   let s = '<svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice"><rect width="1200" height="700" fill="#18201c"/>';
+  // Trois "sommets" : position horizontale, position verticale, taille
   const centres = [[880, 260, 1], [300, 520, .8], [620, 120, .6]];
-  for (const [cx, cy, f] of centres) {
-    for (let r = 30; r < 520 * f; r += 22) {
+  for (const [cx, cy, taille] of centres) {
+    // Une courbe tous les 22 pixels, de plus en plus grande
+    for (let r = 30; r < 520 * taille; r += 22) {
       let d = "";
       for (let a = 0; a <= 360; a += 8) {
         const t = a * Math.PI / 180;
+        // Petites ondulations pour que les courbes aient l'air naturelles
         const k = r * (1 + 0.08 * Math.sin(3 * t + r / 40) + 0.05 * Math.cos(5 * t - r / 60));
         d += (a ? "L" : "M") + (cx + k * Math.cos(t) * 1.35).toFixed(1) + " " + (cy + k * Math.sin(t)).toFixed(1);
       }
+      // Une courbe sur 5 est une "courbe maîtresse", tracée en orange
       const maitresse = (r / 22) % 5 === 0;
       s += `<path d="${d}Z" fill="none" stroke="${maitresse ? "#e4572e" : "#3b4a42"}" stroke-opacity="${maitresse ? .45 : .7}" stroke-width="${maitresse ? 1.4 : 1}"/>`;
     }
@@ -73,28 +130,61 @@ function courbesDeNiveau() {
   return s + "</svg>";
 }
 
-// --- Fonds de carte communs (Esri Topo par défaut, secours OpenTopoMap) ---
+// fondsDeCarte(carte) ajoute les fonds de plan à une carte Leaflet.
+// - Esri Topo est affiché par défaut.
+// - Le bouton "calques" (en haut à droite de la carte) permet de choisir.
+// - Si Esri ne répond pas (6 erreurs sans aucune image reçue),
+//   le site bascule tout seul sur OpenTopoMap.
+// Pour changer le fond par défaut : remplace "esri.addTo(carte)" par
+// "relief.addTo(carte)" ou "plan.addTo(carte)".
 function fondsDeCarte(carte) {
   const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
-    maxZoom: 19, attribution: "Tiles © Esri - Esri, HERE, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors, and the GIS User Community" });
-  const relief = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", { maxZoom: 17, attribution: "© OpenStreetMap, © OpenTopoMap" });
-  const plan = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" });
-  esri.addTo(carte);
-  L.control.layers({ "Topo (Esri)": esri, "Relief (OpenTopoMap)": relief, "Plan (OSM)": plan }).addTo(carte);
-  let ok = 0, ko = 0;
-  esri.on("tileload", () => ok++);
-  esri.on("tileerror", () => { if (++ko >= 6 && ok === 0 && carte.hasLayer(esri)) { carte.removeLayer(esri); relief.addTo(carte); } });
+    maxZoom: 19,
+    attribution: "Tiles © Esri - Esri, HERE, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors, and the GIS User Community"
+  });
+  const relief = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+    maxZoom: 17, attribution: "© OpenStreetMap, © OpenTopoMap"
+  });
+  const plan = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19, attribution: "© OpenStreetMap"
+  });
+
+  esri.addTo(carte); // fond affiché par défaut
+
+  // Le bouton de choix du fond : "texte affiché": fond correspondant
+  L.control.layers({
+    "Topo (Esri)": esri,
+    "Relief (OpenTopoMap)": relief,
+    "Plan (OSM)": plan
+  }).addTo(carte);
+
+  // Secours automatique si Esri est en panne
+  let imagesRecues = 0, erreurs = 0;
+  esri.on("tileload", () => imagesRecues++);
+  esri.on("tileerror", () => {
+    if (++erreurs >= 6 && imagesRecues === 0 && carte.hasLayer(esri)) {
+      carte.removeLayer(esri);
+      relief.addTo(carte);
+    }
+  });
 }
 
-// --- Petite silhouette SVG d'une trace (fiches de la page d'accueil) ---
-function silhouette(trace, w = 400, h = 260, pad = 26) {
+// silhouette(trace) dessine la forme de la trace en orange, en petit.
+// Sert de vignette sur l'accueil quand un parcours n'a pas de photo.
+// "trace" est la liste des points [latitude, longitude, altitude, km].
+function silhouette(trace, largeur = 400, hauteur = 260, marge = 26) {
+  // Correction pour que la forme ne soit pas écrasée (la Terre est ronde)
   const k = Math.cos(trace[0][0] * Math.PI / 180);
   const xs = trace.map(p => p[1] * k), ys = trace.map(p => p[0]);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const s = Math.min((w - 2 * pad) / (x1 - x0 || 1), (h - 2 * pad) / (y1 - y0 || 1));
-  const ox = (w - (x1 - x0) * s) / 2, oy = (h - (y1 - y0) * s) / 2;
+  // Mise à l'échelle pour remplir le cadre, en gardant les proportions
+  const echelle = Math.min((largeur - 2 * marge) / (x1 - x0 || 1), (hauteur - 2 * marge) / (y1 - y0 || 1));
+  const ox = (largeur - (x1 - x0) * echelle) / 2, oy = (hauteur - (y1 - y0) * echelle) / 2;
+  // On garde au plus ~500 points : c'est largement assez pour une vignette
   const pas = Math.max(1, Math.floor(trace.length / 500));
   let d = "";
-  for (let i = 0; i < trace.length; i += pas) d += (d ? "L" : "M") + (ox + (xs[i] - x0) * s).toFixed(1) + " " + (h - oy - (ys[i] - y0) * s).toFixed(1);
-  return `<svg viewBox="0 0 ${w} ${h}" class="silhouette"><path d="${d}"/></svg>`;
+  for (let i = 0; i < trace.length; i += pas) {
+    d += (d ? "L" : "M") + (ox + (xs[i] - x0) * echelle).toFixed(1) + " " + (hauteur - oy - (ys[i] - y0) * echelle).toFixed(1);
+  }
+  return `<svg viewBox="0 0 ${largeur} ${hauteur}" class="silhouette"><path d="${d}"/></svg>`;
 }

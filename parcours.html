@@ -1,9 +1,22 @@
 <!doctype html>
+<!--
+=======================================================================
+ FICHIER : parcours.html  =  MODÈLE DE PAGE commun à TOUS les parcours
+ Il n'y a qu'un seul fichier pour tous les parcours : l'adresse indique
+ lequel afficher. Exemple : parcours.html?p=dolce-via
+ assets/parcours.js lit alors data/dolce-via.js et remplit les "boîtes"
+ vides ci-dessous (repérées par leur id="...").
+
+ Pour changer l'ORDRE des sections de la page : déplace un bloc entier,
+ depuis sa ligne <h2 class="section"> jusqu'à la ligne avant le <h2>
+ suivant. Exemple : la section Difficulté est volontairement en dernier.
+=======================================================================
+-->
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Parcours</title>
+<title>Parcours</title>  <!-- remplacé automatiquement par le nom du parcours -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/leaflet/leaflet.css">
@@ -11,7 +24,9 @@
 </head>
 <body>
 
+<!-- L'en-tête (logo + menus) est ajouté ici automatiquement par assets/entete.js -->
 
+<!-- ===== BANDEAU : photo principale, étiquettes, titre, résumé ===== -->
 <section class="hero">
   <div class="fond" id="fond"></div>
   <div class="contenu">
@@ -21,52 +36,63 @@
   </div>
 </section>
 
+<!-- ===== BARRE DE CHIFFRES (distance, D+, durée...) ===== -->
 <section class="stats"><div class="contenu" id="stats"></div></section>
 
 <main class="contenu">
+
+  <!-- ===== PHOTOS ===== -->
   <h2 class="section">Photos</h2>
   <div class="galerie" id="galerie"></div>
 
-
+  <!-- ===== CARTE, PROFIL, TÉLÉCHARGEMENTS ===== -->
   <h2 class="section" id="carte-titre">Carte, profil et points d'intérêt</h2>
   <div class="bloc-carte">
-    <div class="filtres" id="filtres"></div>
-    <div id="carte"></div>
-    <div class="profil">
+    <div class="filtres" id="filtres"></div>         <!-- boutons de filtre des points d'intérêt -->
+    <div id="carte"></div>                           <!-- la carte -->
+    <div class="profil">                             <!-- le profil altimétrique -->
       <div class="infobulle" id="info"></div>
       <svg id="profil" viewBox="0 0 1000 160" preserveAspectRatio="none"></svg>
       <div class="reperes" id="reperes"></div>
     </div>
-    <div class="telecharger">
+    <div class="telecharger">                        <!-- boutons de téléchargement -->
       <a class="btn" id="gpx" download><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"/></svg>Trace GPX</a>
       <button class="btn clair" id="gpx-poi"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16"/></svg>GPX avec points d'intérêt</button>
     </div>
   </div>
 
+  <!-- ===== L'ESSENTIEL (encarts pratiques) ===== -->
   <h2 class="section">L'essentiel</h2>
   <div class="encarts" id="encarts"></div>
 
+  <!-- ===== FEUILLE DE ROUTE (points d'intérêt par km) ===== -->
   <h2 class="section">Feuille de route</h2>
   <div class="feuille"><table><thead><tr><th>Km</th><th>Type</th><th>Lieu</th><th>Détail</th></tr></thead><tbody id="feuille"></tbody></table></div>
 
+  <!-- ===== ÉTAPES (une ligne par jour) ===== -->
   <h2 class="section">Étapes</h2>
   <div class="defile"><table class="etapes"><thead><tr><th>Jour</th><th>Trajet</th><th>Km</th><th>D+</th><th>Notes</th></tr></thead><tbody id="etapes"></tbody></table></div>
 
-
+  <!-- ===== DIFFICULTÉ (volontairement en fin de page) ===== -->
   <h2 class="section">Difficulté</h2>
   <div class="jauges" id="jauges"></div>
 
+  <!-- ===== CRÉDITS ===== -->
   <p class="credits" id="credits"></p>
 </main>
 
+<!-- ===== PIED DE PAGE (même contenu que sur l'accueil) ===== -->
 <footer class="pied">
   <div class="contenu">
     <div><a href="#">À propos</a><a href="#">Contact</a><a href="#">Instagram</a></div>
     <span>Fonds de carte © Esri, contributeurs OpenStreetMap, OpenTopoMap</span>
   </div>
 </footer>
+
+<!-- Fenêtre d'affichage d'une photo en grand (cachée tant qu'on ne clique pas) -->
 <div class="loupe" id="loupe"><img alt=""></div>
 
+<!-- Programmes de la page : carte (Leaflet), en-tête commun, construction de la page -->
 <script src="assets/leaflet/leaflet.js"></script>
 <script src="assets/entete.js"></script>
 <script src="assets/parcours.js"></script>
