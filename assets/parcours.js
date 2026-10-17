@@ -5,7 +5,8 @@
 // COMMENT ÇA MARCHE :
 //   L'adresse de la page contient le nom du parcours après "?p=".
 //   Exemple : parcours.html?p=dolce-via
-//   Le script charge alors data/dolce-via.js (la fiche) et remplit,
+//   Le script charge alors data/dolce-via.js (les textes) et
+//   data/traces/dolce-via.js (la trace), puis remplit,
 //   dans l'ordre de la page :
 //     bandeau (photo + titre) > chiffres > photos > carte + profil
 //     > l'essentiel > feuille de route > étapes > difficulté > crédits
@@ -85,11 +86,13 @@ const fmt = n => n == null ? "-" : Number(n).toLocaleString("fr-FR");
 
 // Nom du parcours lu dans l'adresse (?p=...). Sans "?p=", on affiche le Flandrien.
 const slug = new URLSearchParams(location.search).get("p") || "flandrien-challenge";
-const script = document.createElement("script");
-script.src = "data/" + slug + ".js?v=" + Date.now(); // ?v= : toujours la dernière version (pas de cache)
-script.onload = () => construire(window.PARCOURS[slug]);
-script.onerror = () => { $("titre").textContent = "Parcours introuvable"; };
-document.head.appendChild(script);
+// Charge textes + trace (fonction définie dans entete.js), puis construit la page.
+// En cas de problème, un message rouge explique quoi corriger.
+chargerParcours(slug).then(P => {
+  if (P) construire(P);
+  else $("titre").textContent = "Parcours introuvable";
+  afficherErreurs();
+});
 
 
 // ---------------------------------------------------------------------

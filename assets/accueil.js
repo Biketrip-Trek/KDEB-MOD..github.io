@@ -2,7 +2,8 @@
 // FICHIER : assets/accueil.js
 // RÔLE    : construit la PAGE D'ACCUEIL (index.html) :
 //             1. charge la liste des parcours (data/liste.js)
-//             2. charge la fiche de chaque parcours (data/<nom>.js)
+//             2. charge chaque parcours : textes (data/<nom>.js)
+//                et trace (data/traces/<nom>.js)
 //             3. remplit les compteurs, la grande carte et les vignettes
 //
 // Ce fichier n'a normalement PAS besoin d'être modifié pour ajouter un
@@ -33,36 +34,19 @@ const fmtN = n => Number(n).toLocaleString("fr-FR");
 // Fond de courbes de niveau derrière le grand titre
 document.getElementById("fond").innerHTML = courbesDeNiveau();
 
-// "?v=..." oblige le navigateur à relire les données à chaque visite :
-// une mise à jour envoyée sur GitHub apparaît tout de suite,
-// sans ancienne copie gardée en mémoire (le "cache").
-const VERSION = "?v=" + Date.now();
-
-
 // ---------------------------------------------------------------------
 // CHARGEMENT DES DONNÉES
-// 1) data/liste.js  2) chaque data/<nom>.js  3) construction de la page
+// 1) data/liste.js  2) textes + trace de chaque parcours  3) construction
+// (chargerParcours et afficherErreurs sont définies dans entete.js)
 // ---------------------------------------------------------------------
-const liste = document.createElement("script");
-liste.src = "data/liste.js" + VERSION;
-liste.onload = liste.onerror = () => {
-  const slugs = window.LISTE_PARCOURS || [];   // les noms de fichiers des parcours
-  let restants = slugs.length;                  // combien il en reste à charger
-  if (!restants) construireAccueil([]);
-  for (const slug of slugs) {
-    const s = document.createElement("script");
-    s.src = "data/" + slug + ".js" + VERSION;
-    // Quand le dernier fichier est chargé, on construit la page
-    s.onload = s.onerror = () => {
-      if (--restants === 0) {
-        const parcours = slugs.map(x => (window.PARCOURS || {})[x]).filter(Boolean);
-        construireAccueil(parcours);
-      }
-    };
-    document.head.appendChild(s);
-  }
-};
-document.head.appendChild(liste);
+(async function () {
+  const listeTrouvee = await chargerScript("data/liste.js");
+  if (!listeTrouvee) ERREURS.push("Fichier introuvable : <b>data/liste.js</b>.");
+  const noms = window.LISTE_PARCOURS || [];
+  const parcours = (await Promise.all(noms.map(chargerParcours))).filter(Boolean);
+  construireAccueil(parcours);
+  afficherErreurs();
+})();
 
 
 // ---------------------------------------------------------------------

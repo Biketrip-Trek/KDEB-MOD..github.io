@@ -20,15 +20,19 @@ assets/               "Moteur" et apparence du site
   parcours.js         Construit la page d'un parcours
   leaflet/            Bibliothèque de cartes (ne pas modifier)
 
-data/                 Contenu des parcours (les textes)
+data/                 Contenu des parcours
   liste.js            Liste des parcours affichés
-  <nom>.js            Fiche d'un parcours : textes, étapes, photos, trace
+  _modele.js          Modèle commenté pour créer une nouvelle fiche
+  <nom>.js            TEXTES d'un parcours (c'est toi qui les modifies)
+  traces/<nom>.js     TRACE d'un parcours (générée par gpx2trace.py, ne pas modifier)
 
 gpx/<nom>.gpx         Trace téléchargeable de chaque parcours
 photos/<nom>/         Photos de chaque parcours (format .jpg)
 ```
 
-Un parcours est toujours désigné par **un nom court, sans accent ni espace**, par exemple `dolce-via`. On retrouve ce même nom à 4 endroits : dans `data/liste.js`, dans le fichier `data/dolce-via.js`, dans `gpx/dolce-via.gpx` et dans le dossier `photos/dolce-via/`.
+Un parcours est toujours désigné par **un nom court, sans accent ni espace**, par exemple `dolce-via`. On retrouve ce même nom à 5 endroits : dans `data/liste.js`, `data/dolce-via.js` (textes), `data/traces/dolce-via.js` (trace), `gpx/dolce-via.gpx` et le dossier `photos/dolce-via/`.
+
+**Principe : chaque information n'existe qu'à un seul endroit.** Les textes ne sont que dans `data/<nom>.js`, et c'est toi qui les modifies. La trace n'est que dans `data/traces/<nom>.js`, générée par Python. Regénérer une trace ne touche jamais à tes textes.
 
 La page d'un parcours a pour adresse `parcours.html?p=dolce-via`.
 
@@ -47,7 +51,7 @@ Pour **annuler** une modification, ouvre le fichier, clique sur **History**, cho
 
 ## 3. Modifier les textes d'un parcours
 
-Ouvre `data/<nom>.js`. Chaque information est sur sa propre ligne, sous la forme `"champ": "texte",`.
+Ouvre `data/<nom>.js`. Chaque information est sur sa propre ligne, sous la forme `"champ": "texte",`. Le fichier `data/_modele.js` explique chaque champ en commentaire.
 
 | Champ | Ce que c'est | Où ça s'affiche |
 |---|---|---|
@@ -67,16 +71,16 @@ Ouvre `data/<nom>.js`. Chaque information est sur sa propre ligne, sous la forme
 | `etapes` | Une ligne par jour | Tableau des étapes |
 | `pois` | Points d'intérêt (eau, gare, vue...) | Carte, feuille de route |
 | `auteur`, `date_trace`, `date_maj`, `origine_trace` | Crédits | Bas de page |
-| `distance_km`, `denivele_m`, `trace` | Calculés depuis le GPX | **Ne pas modifier à la main** |
+| Distance, D+, trace | Calculés depuis le GPX | Dans `data/traces/<nom>.js`, ne pas modifier |
 
 ### Les 4 règles pour ne rien casser
 
 1. Ne modifie **que le texte entre les guillemets** `"..."`.
 2. Garde les guillemets `"`, les virgules `,` en fin de ligne, les crochets `[ ]` et les accolades `{ }`.
 3. Dans un texte, n'utilise pas de guillemets droits `"`. Prends les guillemets français `« »`. Les apostrophes `'` et les accents ne posent aucun problème.
-4. Ne touche pas à la ligne `"trace"` (tout en bas) : c'est la trace GPS.
+4. Ne modifie pas les fichiers de `data/traces/` : ils sont générés par Python.
 
-**Si la page d'un parcours s'affiche vide après une modification**, une virgule ou un guillemet a sauté. Compare la ligne modifiée avec ses voisines, ou annule via **History**.
+**En cas d'erreur**, le site affiche un bandeau rouge en bas de l'écran qui dit quel fichier pose problème. En ligne, il donne aussi le numéro de ligne : regarde cette ligne et celle juste au-dessus. Il manque presque toujours une virgule ou un guillemet. Tu peux aussi annuler la modification via **History**.
 
 ### Exemples
 
@@ -128,13 +132,14 @@ La **première** photo de la liste s'affiche en grand dans la galerie. La photo 
 
 ## 5. Ajouter un nouveau parcours
 
-Le plus simple : envoie à Claude le GPX (ou KML/KMZ), les photos et quelques lignes de texte. Il te renverra les fichiers prêts à déposer.
+Choisis d'abord le nom court du parcours, par exemple `vosges-2027`.
 
-À la main, il faut :
-1. Le fichier `data/<nom>.js`, créé avec l'outil `gpx2js.py` (voir le dossier « outils », à garder sur ton PC). Cet outil calcule la distance, le D+ et allège la trace.
-2. La trace `gpx/<nom>.gpx`.
-3. Les photos dans `photos/<nom>/`.
-4. Une ligne `"<nom>",` dans `data/liste.js`.
+1. **La trace.** Sur ton PC, dans le dossier des outils, lance `python gpx2trace.py ma-trace.gpx vosges-2027`. Si ta trace est un KML ou un KMZ, convertis-la d'abord avec `kml2gpx.py`. Le script crée `traces\vosges-2027.js` : dépose-le dans `data/traces/`. Dépose aussi le GPX dans `gpx/`, renommé `vosges-2027.gpx`.
+2. **Les textes.** Dans `data/`, copie `_modele.js` sous le nom `vosges-2027.js` et remplis-le. Sur GitHub : ouvre `_modele.js`, copie tout son contenu, puis **Add file > Create new file**.
+3. **Les photos.** Dépose-les dans `photos/vosges-2027/`.
+4. **La liste.** Ajoute la ligne `"vosges-2027",` dans `data/liste.js`.
+
+Tu peux aussi envoyer à Claude le GPX, les photos et quelques lignes de texte : il te renverra les fichiers prêts à déposer.
 
 Pour **masquer** un parcours sans le supprimer, retire simplement sa ligne de `data/liste.js`.
 
@@ -148,7 +153,7 @@ Pour **masquer** un parcours sans le supprimer, retire simplement sa ligne de `d
 | Le titre de l'onglet de l'accueil | `index.html` | Ligne `<title>` |
 | Le grand titre et l'accroche de l'accueil | `index.html` | Lignes `<h1>` et `<p class="chapeau">` |
 | Les catégories du menu | `assets/entete.js` | Bloc `const MENU = [...]` |
-| Les liens du pied de page (Instagram, contact) | `index.html` **et** `parcours.html` | Bloc `<footer>` : remplace les `#` |
+| Les liens du pied de page (Instagram, contact) | `assets/entete.js` | `PIED_DE_PAGE` : remplace les `#` |
 | Les couleurs du site | `assets/style.css` | Bloc `:root` tout en haut |
 | La couleur des traces vélo / rando sur l'accueil | `assets/accueil.js` | `COULEUR_ACTIVITE` |
 | Le fond de carte par défaut | `assets/entete.js` | Fonction `fondsDeCarte` |

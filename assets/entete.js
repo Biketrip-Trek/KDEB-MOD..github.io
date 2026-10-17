@@ -2,9 +2,10 @@
 // FICHIER : assets/entete.js
 // RÔLE    : tout ce qui est COMMUN aux deux pages du site
 //           (accueil index.html et fiche parcours.html) :
-//             1. le nom du site et le menu (catégories)
-//             2. la création de l'en-tête (logo + menus déroulants)
-//             3. des petites "boîtes à outils" (fonctions) utilisées
+//             1. le nom du site, le menu (catégories), le pied de page
+//             2. la création de l'en-tête et du pied de page
+//             3. le chargement des parcours et les messages d'erreur
+//             4. des petites "boîtes à outils" (fonctions) utilisées
 //                par accueil.js et parcours.js : fond de carte, dessin
 //                de la trace, motif de courbes de niveau...
 //
@@ -45,10 +46,24 @@ const MENU = [
 ];
 
 
+// Liens du pied de page, en bas de toutes les pages.
+// Remplace les "#" par tes vrais liens, par exemple :
+//   { texte: "Instagram", lien: "https://www.instagram.com/ton-compte" }
+//   { texte: "Contact",   lien: "mailto:ton.adresse@mail.fr" }
+// Pour retirer un lien : supprime sa ligne. Pour en ajouter : copie une ligne.
+const PIED_DE_PAGE = [
+  { texte: "À propos",  lien: "#" },
+  { texte: "Contact",   lien: "#" },
+  { texte: "Instagram", lien: "#" }
+];
+const MENTION_CARTES = "Fonds de carte © Esri, contributeurs OpenStreetMap, OpenTopoMap";
+
+
 // ---------------------------------------------------------------------
-// 2. CRÉATION DE L'EN-TÊTE (logo + menus)
+// 2. CRÉATION DE L'EN-TÊTE (logo + menus) ET DU PIED DE PAGE
 //    Ce bloc s'exécute tout seul au chargement de la page.
-//    Il fabrique le code HTML de l'en-tête et le place en haut de la page.
+//    Il fabrique le code HTML de l'en-tête (placé en haut de la page)
+//    et du pied de page (placé tout en bas).
 // ---------------------------------------------------------------------
 (function () {
   // Petite flèche "v" à côté de chaque menu (dessin SVG = dessin en code)
@@ -90,11 +105,87 @@ const MENU = [
   }));
   // Un clic ailleurs sur la page ferme les menus
   document.addEventListener("click", () => onglets.forEach(o => o.setAttribute("aria-expanded", "false")));
+
+  // Pied de page : fabriqué à partir de PIED_DE_PAGE et placé tout en bas
+  const pied = document.createElement("footer");
+  pied.className = "pied";
+  pied.innerHTML = `
+    <div class="contenu">
+      <div>${PIED_DE_PAGE.map(l => `<a href="${l.lien}">${l.texte}</a>`).join("")}</div>
+      <span>${MENTION_CARTES}</span>
+    </div>`;
+  document.body.appendChild(pied);
 })();
 
 
 // ---------------------------------------------------------------------
-// 3. BOÎTES À OUTILS (fonctions utilisées par accueil.js et parcours.js)
+// 3. CHARGEMENT DES PARCOURS ET MESSAGES D'ERREUR
+//    Chaque parcours = 2 fichiers :
+//      data/<nom>.js         les TEXTES (modifiés à la main)
+//      data/traces/<nom>.js  la TRACE (générée par gpx2trace.py)
+//    Si un fichier manque ou contient une faute de frappe, un message
+//    rouge s'affiche en bas de la page au lieu d'une page blanche.
+// ---------------------------------------------------------------------
+
+// "?v=..." oblige le navigateur à relire les fichiers à chaque visite
+// (une mise à jour envoyée sur GitHub apparaît tout de suite).
+const VERSION = "?v=" + Date.now();
+
+// Liste des problèmes rencontrés, affichée par afficherErreurs()
+const ERREURS = [];
+
+// Le navigateur signale ici toute faute de frappe dans un fichier de
+// données : on note le nom du fichier et le numéro de ligne.
+window.addEventListener("error", e => {
+  const m = (e.filename || "").match(/data\/.*?\.js/);
+  if (m) ERREURS.push(`Faute de frappe dans <b>${m[0]}</b>, ligne <b>${e.lineno}</b>. Regarde cette ligne et celle juste au-dessus : il manque souvent une virgule en fin de ligne, ou un guillemet.`);
+});
+
+// Charge un fichier .js et indique s'il a été trouvé (true) ou non (false)
+function chargerScript(chemin) {
+  return new Promise(ok => {
+    const s = document.createElement("script");
+    s.src = chemin + VERSION;
+    s.onload = () => ok(true);
+    s.onerror = () => ok(false);
+    document.head.appendChild(s);
+  });
+}
+
+// Charge les textes + la trace d'un parcours et les réunit.
+// Renvoie le parcours complet, ou null s'il y a un problème (noté dans ERREURS).
+async function chargerParcours(nom) {
+  const [texteTrouve, traceTrouvee] = await Promise.all([
+    chargerScript("data/" + nom + ".js"),
+    chargerScript("data/traces/" + nom + ".js")
+  ]);
+  const textes = (window.PARCOURS || {})[nom];
+  const trace = (window.TRACES || {})[nom];
+  if (!texteTrouve) ERREURS.push(`Fichier introuvable : <b>data/${nom}.js</b>. Vérifie son nom (il doit être identique à celui écrit dans data/liste.js).`);
+  else if (!textes && !ERREURS.some(x => x.includes(`data/${nom}.js`))) {
+    // Fichier trouvé mais illisible. En ligne, le message ci-dessus (avec le numéro
+    // de ligne) a normalement déjà été noté ; sur ton PC, le navigateur ne donne
+    // pas la ligne, d'où ce message plus général.
+    ERREURS.push(`<b>data/${nom}.js</b> n'a pas pu être lu. Deux causes possibles : une faute de frappe (virgule ou guillemet manquant, souvent près de ta dernière modification), ou le nom entre crochets <b>window.PARCOURS["..."]</b> qui n'est pas exactement <b>${nom}</b>.`);
+  }
+  if (!traceTrouvee) ERREURS.push(`Trace introuvable : <b>data/traces/${nom}.js</b>. Génère-la avec gpx2trace.py et dépose-la dans data/traces/.`);
+  if (!textes || !trace) return null;
+  return { ...textes, ...trace, slug: nom };   // textes + distance, D+ et points de la trace
+}
+
+// Affiche les problèmes éventuels dans un bandeau rouge en bas de l'écran
+function afficherErreurs() {
+  if (!ERREURS.length) return;
+  const b = document.createElement("div");
+  b.className = "alerte";
+  b.innerHTML = `<button aria-label="Fermer">×</button><b>Le site a repéré ${ERREURS.length > 1 ? "des problèmes" : "un problème"} :</b><ul>${[...new Set(ERREURS)].map(x => `<li>${x}</li>`).join("")}</ul>`;
+  b.querySelector("button").onclick = () => b.remove();
+  document.body.appendChild(b);
+}
+
+
+// ---------------------------------------------------------------------
+// 4. BOÎTES À OUTILS (fonctions utilisées par accueil.js et parcours.js)
 // ---------------------------------------------------------------------
 
 // libelleCategorie("velo", "journee") renvoie le texte "Vélo · À la journée".

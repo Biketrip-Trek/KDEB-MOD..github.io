@@ -10,7 +10,7 @@
    il n'apparaît pas sur le site.
  - Les textes que tu peux changer directement ici : le titre de l'onglet
    (<title>), la description pour Google, le grand titre et la phrase
-   d'accroche, les liens du pied de page.
+   d'accroche. Les liens du pied de page sont dans assets/entete.js.
 =======================================================================
 -->
 <html lang="fr">
@@ -56,16 +56,8 @@
 <!-- ===== RUBRIQUES ET VIGNETTES (remplies par accueil.js) ===== -->
 <main class="contenu" id="rubriques"></main>
 
-<!-- ===== PIED DE PAGE =====
-     Remplace les "#" par tes vrais liens, par exemple :
-     <a href="https://www.instagram.com/ton-compte">Instagram</a>
-     <a href="mailto:ton.adresse@mail.fr">Contact</a>             -->
-<footer class="pied">
-  <div class="contenu">
-    <div><a href="#">À propos</a><a href="#">Contact</a><a href="#">Instagram</a></div>
-    <span>Fonds de carte © Esri, contributeurs OpenStreetMap, OpenTopoMap</span>
-  </div>
-</footer>
+<!-- Le pied de page est ajouté automatiquement par assets/entete.js
+     (ses liens se modifient dans PIED_DE_PAGE, en haut de ce fichier). -->
 
 <!-- Programmes de la page, dans cet ordre : carte (Leaflet), en-tête commun, accueil -->
 <script src="assets/leaflet/leaflet.js"></script>
