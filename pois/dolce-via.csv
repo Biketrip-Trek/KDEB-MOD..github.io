@@ -1,0 +1,243 @@
+﻿nom;type;km;lat;lon;info;osm
+Café;resto;0,0;44.82629;4.80254;Café · à 420 m de la trace;node/979557543
+Le Patio;resto;0,0;44.82537;4.8013;Restaurant · à 270 m de la trace;node/6049355585
+Jocteur;ravito;0,0;44.82538;4.80084;Boulangerie · à 250 m de la trace;node/13050951407
+Point d'eau potable;eau;0,1;44.82727;4.7966;Point d'eau potable · à 400 m de la trace;node/6434265391
+Point de vue;vue;0,1;44.82786;4.79604;Point de vue · à 470 m de la trace;node/8309741000
+Intermarché;ravito;1,3;44.807;4.79238;"Supermarché · horaires : Mo-Sa 08:30-19:30; Su 08:30-12:30 · à 880 m de la trace";way/158339317
+Abri;bivouac;1,3;44.81212;4.79262;Abri · à 320 m de la trace;way/857834700
+Les Délices de Kassie;ravito;1,4;44.80939;4.78657;"Boulangerie · horaires : Mo,Tu,Th,Fr 07:00-13:30, 15:30-19:00; Sa,Su 07:00-13:00 · à 730 m de la trace";node/1831945323
+Tasty Food;resto;1,4;44.80976;4.78682;Restaurant · à 690 m de la trace;node/14027534989
+Restaurant Bakou;resto;1,4;44.81306;4.79028;"Restaurant · horaires : Mo-Sa 11:00-14:30;Su-Th 18:00-22:00;Fr-Sa 18:00-22:30 · à 250 m de la trace";node/14027534991
+Larouji Pizzeria;resto;1,4;44.80963;4.78675;Restaurant · horaires : Mo-Sa 11:30-15:00, 18:00-23:30 · à 700 m de la trace;node/14057210504
+Au Bon Appétit;resto;1,4;44.81303;4.79022;"Restaurant · horaires : We-Sa 12:00-14:00,18:30-21:00;Su 12:00-15:00 · à 250 m de la trace";node/14062660756
+JH Pizzas;resto;1,4;44.81197;4.7888;"Restaurant · horaires : We-Sa 11:30-14:00,18:00-22:00;Su 11:30-14:00 · à 400 m de la trace";node/14062660761
+Les délices de Pauline;ravito;1,4;44.81314;4.78852;"Boulangerie · horaires : We 09:00-17:00;Th-Sa 09:00-18:00;Su 09:00-12:00 · à 300 m de la trace";node/14062660768
+Netto;ravito;1,4;44.81243;4.78812;"Supermarché · horaires : Mo-Sa 08:30-19:30; Su 08:30-12:30 · à 380 m de la trace";way/158338939
+Au Tournesol - Épicerie Bio et Indépendante;ravito;2,6;44.82929;4.78282;"Supermarché · horaires : Tu,We,Fr,Sa 10:00-13:00,14:30-19:00+; Th 14:30-19:00+ · à 810 m de la trace";node/12348589179
+Point d'eau potable;eau;3,1;44.82153;4.77309;Point d'eau potable · à 10 m de la trace;node/3652364826
+Laffont;ravito;3,7;44.82247;4.76494;Boulangerie · à 230 m de la trace;node/1429505206
+Point d'eau potable;eau;3,7;44.82235;4.7661;Point d'eau potable · à 180 m de la trace;node/9955051274
+Bistrot de Saint Laurent;resto;3,7;44.82266;4.76597;"Restaurant · horaires : Tu 11:00-15:00; Th-Sa 11:00-15:00, 18:00-22:00; Su 10:00-22:00 · à 220 m de la trace";way/173926487
+Abri;bivouac;3,7;44.82238;4.7658;Abri · à 190 m de la trace;way/1422150224
+Vival;ravito;3,9;44.82274;4.76418;"Épicerie · horaires : Mo 14:30-19:00; Tu-Sa 08:00-12:30,14:30-19:00; Su 08:00-13:00,15:00-19:00 · à 270 m de la trace";node/11893531149
+Camping la Garenne;bivouac;4,0;44.82541;4.76064;Camping · à 610 m de la trace;way/346999437
+Domaine de l'Amiral;bivouac;5,1;44.82475;4.74664;Chambre d'hôtes · à 900 m de la trace;node/1429480651
+Royas;bivouac;6,2;44.8174;4.73949;Abri · à 30 m de la trace;node/6000909731
+Point de vue;vue;8,4;44.81416;4.71331;Point de vue · à 10 m de la trace;node/10213956076
+Défilé du Pontpierre;vue;8,6;44.81385;4.7112;Point de vue · à 30 m de la trace;node/2280498858
+Point de vue;vue;9,2;44.81575;4.70689;Point de vue · à 40 m de la trace;node/9966363483
+Camping la gare des amis;resto;12,3;44.82643;4.67919;Bar · à 20 m de la trace;node/4795750715
+Camping la Gare des Amis;bivouac;12,3;44.82633;4.6796;Camping · à 10 m de la trace;way/360676269
+Le Fournil de la Valée;ravito;12,5;44.82973;4.67761;Boulangerie · à 380 m de la trace;node/1829778043
+Le Touristique;resto;12,5;44.82938;4.67677;Restaurant · à 350 m de la trace;node/4215101333
+Chez Jean-Pierre;resto;12,6;44.82903;4.67599;Restaurant · à 320 m de la trace;node/4215101332
+Point d'eau potable;eau;12,6;44.83136;4.67515;Point d'eau potable · à 590 m de la trace;node/9966363473
+Proxi;ravito;12,8;44.82827;4.67362;"Supermarché · horaires : Mo-Sa 08:00-12:30,14:30-20:00; Su,PH 09:00-12:30 · à 290 m de la trace";node/3548242469
+Camping Associatif du Moulinage;bivouac;13,5;44.82236;4.66424;Camping · à 200 m de la trace;node/3712231636
+Point d'eau potable;eau;14,3;44.82206;4.65702;Point d'eau potable · à 410 m de la trace;node/12058035095
+Abri;bivouac;16,2;44.80563;4.64412;Abri · à 780 m de la trace;node/3911391877
+Point d'eau potable;eau;16,5;44.8099;4.6362;Point d'eau potable · à 130 m de la trace;node/14133832762
+Camping Domaine des Plantas;bivouac;16,5;44.80916;4.63659;Camping · à 220 m de la trace;way/455342620
+Domaine des Plantas;resto;16,6;44.80896;4.63597;Restaurant · à 210 m de la trace;node/3073049726
+Eyrieux Camping;bivouac;17,1;44.80717;4.63078;Camping · à 60 m de la trace;way/469970586
+Vival;ravito;17,6;44.80691;4.62385;Épicerie · à 90 m de la trace;node/955204921
+Le Siècle;resto;17,8;44.80523;4.62312;Restaurant · à 20 m de la trace;node/1829590595
+Chambre d'hôtes;bivouac;18,1;44.80658;4.62104;Chambre d'hôtes · à 170 m de la trace;node/10828795905
+Les Lodges de Praly;bivouac;18,2;44.80641;4.61919;Chambre d'hôtes · à 100 m de la trace;node/13801490371
+L'Angeline;ravito;18,3;44.80475;4.61744;"Boulangerie · horaires : Mo,Tu,Fr 06:30-13:00,16:00-19:00; We 06:30-19:00; Sa 06:30-14:00; Su 06:30-13:00 · à 70 m de la trace";node/955201091
+Point d'eau potable;eau;18,3;44.80547;4.61779;Point d'eau potable · à 10 m de la trace;node/955201419
+Campaillette;ravito;18,5;44.8041;4.61406;"Boulangerie · horaires : Tu-Sa 06:30-19:00; Su 06:30-12:30 · à 210 m de la trace";node/955200759
+Auberge de la Soie;resto;18,5;44.80445;4.61358;Restaurant · horaires : 24/7 · à 200 m de la trace;node/1829515026
+Vival;ravito;18,5;44.80509;4.61317;Épicerie · à 190 m de la trace;node/1829576344
+Maison Lacour;bivouac;18,5;44.80525;4.61165;Chambre d'hôtes · à 290 m de la trace;node/4642250858
+Casino Shop;ravito;18,5;44.80479;4.61325;Épicerie · à 200 m de la trace;way/150172621
+Mas de Champel;resto;18,6;44.80721;4.61465;Bar · horaires : Mo-Su 16:00-23:30 · à 70 m de la trace;node/12084053979
+Pass'Eyrieux;bivouac;18,6;44.80602;4.6129;Chambre d'hôtes · à 180 m de la trace;way/150172341
+Le Mas de Champel;resto;18,7;44.80728;4.61457;"Restaurant · horaires : Mo-We 18:45-21:45; Th-Su 10:00-14:00,18:45-21:45 || Mo-Su 08:45-10:00 ""sur réservation"" · à 80 m de la trace";node/12084053978
+Camping le Mas de Champel;bivouac;18,8;44.80806;4.61522;Camping · à 90 m de la trace;way/469970229
+Atelier Tri-cycle;velo;19,0;44.8093;4.61439;"Magasin vélo · horaires : Mo off; We,Fr 09:00-12:30; Tu,We,Fr 13:30-16:45; Sa 10:00-16:45; Th off; Su off · à 180 m de la trace";node/10001369087
+Belvédère de l'Eyrieux;vue;20,4;44.82163;4.62008;Point de vue · à 160 m de la trace;node/3118295362
+La Combe Noire;bivouac;20,6;44.81977;4.61571;Chambre d'hôtes · à 220 m de la trace;node/4642250855
+L'assiette du jardin;resto;20,6;44.82175;4.61595;Restaurant · à 10 m de la trace;node/9817931465
+l'assiette du jardin;bivouac;20,6;44.82173;4.61595;Camping · à 10 m de la trace;node/11147902324
+L'assiette du jardin;bivouac;20,6;44.82207;4.61618;Camping · à 40 m de la trace;way/1549093681
+La Cabane;resto;20,8;44.82205;4.61298;Café · à 30 m de la trace;node/2912104077
+Camping Les Châtaigniers;bivouac;22,1;44.8155;4.60053;Camping · à 400 m de la trace;way/761112293
+Abri;bivouac;22,2;44.81864;4.59743;Abri · à 20 m de la trace;way/636333328
+Carrefour Contact;ravito;23,2;44.82129;4.58497;"Épicerie · horaires : Mo-Sa 08:00-20:00; Su 09:00-13:00 · à 190 m de la trace";way/171377024
+Le Petit Casino;ravito;23,3;44.82171;4.58494;"Épicerie · horaires : Tu-Sa 08:00-12:30,14:30-19:15; Su 08:00-12:00 · à 160 m de la trace";node/1824320446
+Point d'eau potable;eau;23,3;44.82093;4.58416;Point d'eau potable · à 260 m de la trace;node/12832950649
+La Renardière;bivouac;23,3;44.82146;4.58401;Chambre d'hôtes · à 220 m de la trace;way/171377434
+La Châtaigneraie;ravito;23,6;44.82189;4.58109;"Boulangerie · horaires : Mo-Tu,Th-Sa 06:00-19:00; Su 06:00-12:30 · à 150 m de la trace";node/1824320448
+La Riveraine et les bicyclettes;bivouac;23,6;44.82309;4.58212;Chambre d'hôtes · à 20 m de la trace;node/12045212684
+Eyr'Jeux Café;resto;23,6;44.822;4.58121;"Café · horaires : Tu-We, Fr 09:30-12:00,15:00-18:30; Sa 09:30-12:30,15:00-18:30 · à 140 m de la trace";node/13011396557
+Khed'zza;resto;23,6;44.8217;4.58258;Restaurant · horaires : Tu-Sa 11:30-14:00,18:30-22:00 · à 170 m de la trace;node/13176308677
+Point d'eau potable;eau;23,7;44.82171;4.5801;Point d'eau potable · à 190 m de la trace;node/1828249206
+Ô Quinze;resto;23,7;44.82207;4.58053;Restaurant · horaires : We-Mo 06:30-14:00,17:00-22:00 · à 140 m de la trace;node/3391665690
+Boulangerie des Délices;ravito;23,7;44.82191;4.58012;"Boulangerie · horaires : Tu-Sa 06:00-13:00,15:00-19:00; Su 06:30-12:30 · à 170 m de la trace";node/3734401202
+Aux Sources;resto;23,7;44.82209;4.58017;"Café · horaires : Mo,Th,Su off; Tu 09:00-22:00; We 09:00-12:30; Fr 16:30-21:00; Sa 09:00-14:30 · à 150 m de la trace";node/13001105222
+Le Bayonnais;resto;23,7;44.82166;4.57998;"Restaurant · horaires : Tu-Sa 07:30-15:00,18:00-21:00; Su 08:00-15:00,18:00-20:00 · à 200 m de la trace";way/171376952
+Point de vue;vue;27,5;44.85402;4.57;Point de vue · à 250 m de la trace;node/8809439237
+Point de vue;vue;30,4;44.86082;4.55795;Point de vue · à 350 m de la trace;node/2594487874
+La clède d'Entraygues;bivouac;30,6;44.8602;4.55167;Chambre d'hôtes · à 440 m de la trace;node/1785825451
+Point d'eau potable;eau;32,7;44.87451;4.54117;Point d'eau potable · à 20 m de la trace;node/3652435202
+Quai des Haltes;ravito;32,7;44.8744;4.5417;Épicerie · à 20 m de la trace;node/11627881038
+Relais du pont;resto;32,8;44.87395;4.53822;Restaurant · à 170 m de la trace;node/12079906769
+Gîte d'étape;bivouac;33,2;44.88484;4.54288;Auberge de jeunesse · à 910 m de la trace;node/8350944558
+La Bergerie de l'Aulagner;bivouac;38,5;44.88919;4.49468;Chambre d'hôtes · à 20 m de la trace;way/445541996
+Point de vue;vue;40,9;44.90852;4.49659;Point de vue · à 930 m de la trace;node/3660384528
+Point de vue;vue;42,1;44.90847;4.47343;Point de vue · à 10 m de la trace;node/9439120112
+La Grange;bivouac;43,9;44.91556;4.4718;Abri · à 240 m de la trace;way/184603887
+Abri;bivouac;43,9;44.91556;4.47204;Abri · à 260 m de la trace;way/1445235385
+Abri;bivouac;44,4;44.92357;4.46003;Abri · à 820 m de la trace;node/13128297085
+Les Nonières;bivouac;46,5;44.93019;4.48301;Abri · 620 m · à 20 m de la trace;way/245763774
+Restaurant;resto;46,8;44.93271;4.48749;Restaurant · à 100 m de la trace;node/6769307709
+Point d'eau potable;eau;47,0;44.93229;4.48872;Point d'eau potable · à 140 m de la trace;node/6769324142
+Gîte d'étape;bivouac;47,0;44.93242;4.488;Chambre d'hôtes · à 120 m de la trace;way/184603769
+Gîte de l'abreuvoir;bivouac;47,0;44.93213;4.48861;Chambre d'hôtes · à 150 m de la trace;way/184603958
+Point d'eau potable;eau;48,3;44.94203;4.49749;Point d'eau potable · à 10 m de la trace;node/6429151074
+Point d'eau potable;eau;48,6;44.94309;4.50094;Point d'eau potable · à 140 m de la trace;node/2917923459
+Domaine de sela;resto;48,6;44.94321;4.50108;Restaurant · à 140 m de la trace;node/11962857071
+Abri;bivouac;50,3;44.95368;4.50825;Abri · à 10 m de la trace;way/1165153841
+Abri;bivouac;52,0;44.9584;4.52713;Abri · à 20 m de la trace;node/12831791018
+La Maison des Badons;bivouac;52,4;44.95893;4.53521;Chambre d'hôtes · à 280 m de la trace;way/445163212
+La ferme du teil;bivouac;53,2;44.95977;4.54084;Chambre d'hôtes · à 360 m de la trace;node/4466123790
+Marie-café;resto;53,7;44.96047;4.54204;Restaurant · horaires : Tu-Sa 07:30-22:00 · à 270 m de la trace;node/2713386541
+Abri;bivouac;53,7;44.96245;4.5444;Abri · à 60 m de la trace;way/396782314
+Maison Hérold;bivouac;53,7;44.96048;4.54341;Chambre d'hôtes · à 190 m de la trace;way/445163147
+Super U;ravito;55,9;44.97525;4.55896;"Supermarché · horaires : Mo-Sa 08:30-19:30; Su 08:30-12:30 · à 90 m de la trace";node/1586407815
+Chez Clo;ravito;57,8;44.98441;4.57682;Boulangerie · à 10 m de la trace;node/2068582076
+Intermarché;ravito;57,8;44.98474;4.57654;Supermarché · horaires : Mo-Sa 08:30-12:30,14:30-19:00 · à 30 m de la trace;way/274388638
+Les Chopes du Moulin;resto;57,9;44.98188;4.58031;Bar · à 350 m de la trace;node/1590093935
+Chez Mag;resto;58,0;44.98505;4.58006;Restaurant · à 20 m de la trace;node/2793856236
+La Terasse;resto;58,0;44.98504;4.57988;Restaurant · à 10 m de la trace;node/3729637044
+Boulangerie;ravito;58,0;44.98508;4.58033;Boulangerie · à 40 m de la trace;node/3729637050
+Le bistrot de Théo;resto;58,0;44.9849;4.57931;Restaurant · à 10 m de la trace;node/6696638671
+Point d'eau potable;eau;58,0;44.9853;4.57974;Point d'eau potable · à 10 m de la trace;node/6726347418
+Point de vue;vue;58,0;44.98392;4.57989;Point de vue · à 130 m de la trace;node/8309747773
+Centre;bivouac;58,0;44.98543;4.57998;Abri · à 20 m de la trace;way/1387877563
+Le Cabas de Steph;ravito;58,1;44.98544;4.5805;"Épicerie · horaires : Tu-Sa 08:30-19:00; Mo 14:30-19:00 · à 20 m de la trace";node/3729617455
+Le Châtaignier;resto;58,2;44.98543;4.58064;Restaurant · à 20 m de la trace;node/1590093929
+L'Arms Park;resto;58,2;44.98515;4.58108;Restaurant · à 40 m de la trace;node/3729617779
+L'Estaminet;resto;58,2;44.98531;4.58105;Bar · à 30 m de la trace;node/3729617780
+Chez Germaine;resto;58,3;44.98516;4.58415;Restaurant · à 180 m de la trace;node/1590093897
+Hôtel restaurant des Négociants;resto;58,4;44.98671;4.58263;Restaurant · à 10 m de la trace;node/1590093920
+Hôtel Restaurant du Commerce;resto;58,4;44.9865;4.58212;Restaurant · à 10 m de la trace;node/1590093922
+MS 2 Roues;velo;58,4;44.98695;4.58337;Magasin vélo · à 60 m de la trace;node/13725087566
+Le Petit Moulin;ravito;58,6;44.98623;4.57996;"Boulangerie · horaires : Tu-Sa 06:00-19:00; Su 06:00-12:30; Mo off · à 20 m de la trace";node/3729610366
+Lamastre;gare;58,6;44.98717;4.58159;Gare · à 80 m de la trace;node/5568717740
+Vélo Voies Douces;velo;58,6;44.98668;4.58101;Magasin vélo · à 10 m de la trace;node/9935243144
+Point d'eau potable;eau;58,6;44.98686;4.58137;Point d'eau potable · à 40 m de la trace;node/11097454678
+"Pizzeria ""Le Lieu Dit""";resto;58,7;44.986;4.58015;Restaurant · à 10 m de la trace;node/3729610362
+Proxi;ravito;58,7;44.98586;4.57932;Supermarché · à 10 m de la trace;node/3729623320
+Schuler;ravito;58,7;44.98578;4.57917;"Boulangerie · horaires : Mo-Sa 06:00-19:00; Su 06:00-15:00 · à 10 m de la trace";node/3729623322
+Au fil du Doux;bivouac;59,1;44.98745;4.57542;Chambre d'hôtes · à 180 m de la trace;node/1590093850
+Gîte «La Charrette Fleurie»;bivouac;59,1;44.99371;4.57574;Chambre d'hôtes · à 870 m de la trace;way/274383314
+Auberge du Retourtour;resto;60,5;44.99002;4.56463;Restaurant · à 190 m de la trace;node/1590093862
+Point d'eau potable;eau;60,5;44.98963;4.5639;Point d'eau potable · à 140 m de la trace;node/2917923483
+Restaurant / Snack du Camping;resto;60,5;44.99179;4.56526;Restaurant · à 400 m de la trace;node/10822602671
+Camping de Retourtour;bivouac;60,5;44.99113;4.56559;Camping · à 340 m de la trace;way/1173873475
+Les Sauvages Wil&Vic;bivouac;62,9;44.98796;4.54317;Hôtel · à 60 m de la trace;node/4324904090
+Ferme Auberge de Jameysse;resto;63,3;44.98285;4.53726;Restaurant · à 360 m de la trace;node/1586407814
+Gîte d'étape Le Vergier;bivouac;63,6;44.98956;4.53752;Chambre d'hôtes · à 380 m de la trace;node/1576220017
+Le Château du Vergier;bivouac;63,6;44.98913;4.53631;Chambre d'hôtes · à 290 m de la trace;node/1576220022
+Point d'eau potable;eau;65,6;44.99449;4.51734;Point d'eau potable · à 50 m de la trace;node/6192600618
+Proxi;ravito;65,7;44.99561;4.5171;"Épicerie · horaires : Mo-Fr 07:45-12:15,14:45-19:00; Sa,Su,PH 08:30-12:30 · à 80 m de la trace";node/1576221485
+Les caprices d'Emily;ravito;65,7;44.99523;4.51666;"Boulangerie · horaires : Tu-Sa 06:30-12:30,16:00-19:00; We 06:30-12:30; Su 06:30-12:00 · à 30 m de la trace";node/9935177950
+L'Âne Têtu;resto;65,7;44.99479;4.51682;Restaurant · à 30 m de la trace;node/9935177951
+Café Tandem;resto;65,7;44.99534;4.51689;"Bar · horaires : Tu-Th, Sa-Su 07:30-22:00; Fr 07:30-22:00 · à 50 m de la trace";node/13011663705
+L'auberge de la Fontaine;resto;65,7;44.99497;4.51689;Restaurant · à 30 m de la trace;node/13839370354
+Café Chomel;resto;65,7;44.99579;4.51707;Café · à 100 m de la trace;way/396793969
+Camping la douce Ardèche;bivouac;66,2;44.99776;4.51397;Camping · à 110 m de la trace;way/761095535
+Point d'eau potable;eau;66,4;44.99835;4.51299;Point d'eau potable · à 170 m de la trace;node/9912991608
+Bastide Jeaute Dessous;bivouac;66,7;45.00414;4.51355;Chambre d'hôtes · à 660 m de la trace;node/1576220008
+La Source;resto;66,7;45.00388;4.51094;Bar · à 520 m de la trace;node/10101294576
+L'Abeille du Doux;bivouac;66,9;45.00512;4.51007;Chambre d'hôtes · à 620 m de la trace;node/1576220021
+Auberge;resto;69,7;45.02461;4.49231;Restaurant · à 770 m de la trace;way/145479737
+Domaine de Rilhac;resto;79,7;44.99589;4.40142;Restaurant · à 930 m de la trace;node/2446896340
+Bar;resto;80,2;44.99991;4.40139;Bar · à 600 m de la trace;node/1867577066
+Le Lac De Veron;resto;80,2;44.99997;4.40132;Restaurant · à 600 m de la trace;node/1867577080
+La Grignotte;resto;80,3;45.00294;4.40309;Restaurant · à 270 m de la trace;node/1870195222
+Inter Sport;velo;80,9;45.00684;4.39774;Magasin vélo · à 240 m de la trace;node/1867559672
+U Express;ravito;80,9;45.00964;4.40084;Supermarché · à 150 m de la trace;node/4960144211
+"Café ""Les copains d'abord""";resto;81,0;45.0093;4.39852;Café · à 30 m de la trace;node/1807106973
+Le P'tit Primeur;ravito;81,0;45.00907;4.39837;Épicerie · à 20 m de la trace;node/1807106974
+Au Petit Atelier;ravito;81,0;45.00913;4.39886;Boulangerie · horaires : Mo,Tu,Th-Su 06:30-13:00 · à 10 m de la trace;node/4960144218
+L'art des choix;ravito;81,0;45.00897;4.39876;Boulangerie · à 10 m de la trace;node/4960146945
+Lavoir;eau;81,0;45.00994;4.39976;Point d'eau potable · à 120 m de la trace;node/6825783400
+L'Auberge des cévennes;resto;81,0;45.00927;4.3984;Restaurant · à 20 m de la trace;node/11054911655
+A 2 mains;ravito;81,0;45.00902;4.39858;Épicerie · à 10 m de la trace;node/11054930187
+PMU;resto;81,1;45.00919;4.39777;Bar · à 10 m de la trace;node/1868260827
+Isabelle & J. Philippe;ravito;81,2;45.00992;4.39595;Boulangerie · à 10 m de la trace;node/4960148278
+La Ramière;bivouac;81,2;45.00802;4.39616;Auberge de jeunesse · à 170 m de la trace;node/8351205129
+Le Verdun;resto;81,3;45.01023;4.39509;Restaurant · à 20 m de la trace;node/4960151502
+Fontaine de la Place du Blé,;eau;81,3;45.01214;4.39641;Point d'eau · à 240 m de la trace;node/8299176297
+Point d'eau potable;eau;81,4;45.01045;4.39341;Point d'eau potable · à 40 m de la trace;node/3068584153
+Point de vue;vue;81,5;45.01267;4.39478;Point de vue · à 230 m de la trace;node/1867579076
+Chez Bibi & Paulus;resto;81,9;45.01403;4.38898;Bar · à 20 m de la trace;node/1806595271
+Le 1050;resto;82,1;45.01481;4.38834;Restaurant · à 10 m de la trace;node/1806586919
+Point d'eau;eau;82,1;45.01505;4.38879;Point d'eau · à 20 m de la trace;node/6654749092
+Saint-Agrève;gare;82,1;45.01503;4.38848;Gare · à 0 m de la trace;node/6665722086
+Restaurant;resto;82,2;45.01522;4.38672;Restaurant · à 100 m de la trace;node/9967794825
+Carrefour Contact;ravito;82,4;45.0127;4.38857;Supermarché · horaires : Mo-Sa 08:00-20:00 · à 130 m de la trace;node/4960144223
+Abri;bivouac;82,9;45.01081;4.3838;Abri · à 30 m de la trace;node/10695072928
+Domaine de Maleval;bivouac;84,5;45.01334;4.35968;Chambre d'hôtes · à 740 m de la trace;way/206110761
+yourte;bivouac;84,5;45.0134;4.36035;Chambre d'hôtes · à 700 m de la trace;way/679048678
+Abri;bivouac;88,3;44.98837;4.3669;Abri · à 10 m de la trace;way/1446685281
+Le Relais des Cracks - La Maison Rose;resto;88,8;44.9885;4.37161;Café · horaires : Mo-Su 10:00-19:00 off · à 10 m de la trace;node/9935208965
+Au relais des cracks;resto;88,8;44.98847;4.37161;Restaurant · à 10 m de la trace;node/11989993969
+Borne de réparation vélo;velo;88,8;44.98828;4.3721;Borne de réparation vélo · à 50 m de la trace;node/13273729810
+Chapignac;bivouac;91,2;44.98117;4.36676;Abri · à 200 m de la trace;way/1446685284
+Point d'eau potable;eau;92,7;44.97411;4.35226;Point d'eau potable · à 230 m de la trace;node/4971054326
+Par Monts et par Vaux;velo;92,8;44.97361;4.34994;Magasin vélo · à 380 m de la trace;node/3073703836
+Point d'eau potable;eau;93,5;44.96773;4.35344;Point d'eau potable · à 10 m de la trace;node/5041488979
+Le Chat de Boutières;resto;93,5;44.96781;4.35446;Bar · à 60 m de la trace;way/507762215
+Restaurant;resto;98,0;44.9437;4.36586;Restaurant · à 230 m de la trace;node/499526836
+Point d'eau potable;eau;98,0;44.94168;4.3666;Point d'eau potable · à 270 m de la trace;node/2529287530
+Camping la Teyre;bivouac;98,1;44.94226;4.36827;Camping · à 130 m de la trace;way/303068402
+La Mi Do Ré;ravito;98,7;44.93751;4.36926;Boulangerie · à 240 m de la trace;node/4215095615
+À l'épicerie du bois;ravito;98,7;44.93739;4.3692;"Épicerie · horaires : Tu-Sa 08:00-12:00,15:00-19:00; Su 08:00-12:00 · à 250 m de la trace";node/8403283114
+Point d'eau potable;eau;98,7;44.93822;4.36926;Point d'eau potable · à 230 m de la trace;node/9968375726
+Bar des Pêcheurs;resto;98,8;44.93673;4.36916;Bar · à 260 m de la trace;node/1268129768
+Boulangerie;ravito;98,8;44.93717;4.3658;Boulangerie · à 520 m de la trace;node/1268129973
+Bar de la Place;resto;98,8;44.93685;4.36848;Bar · à 310 m de la trace;node/1268130053
+La Glycine;resto;98,8;44.93718;4.36901;Bar · à 260 m de la trace;node/4215095614
+Hôtel Restaurant Le Payanke Ardéchois;resto;98,9;44.93645;4.37328;Restaurant · horaires : Mo-Su 08:00-22:00 · à 20 m de la trace;node/5798251666
+Par Monts et Par Vaux;velo;98,9;44.93647;4.37311;Magasin vélo · à 20 m de la trace;node/9935234259
+Point d'eau potable;eau;100,5;44.93912;4.38935;Point d'eau potable · à 70 m de la trace;node/11992152850
+Riotord;bivouac;101,1;44.93949;4.39734;Abri · à 20 m de la trace;way/198412962
+Point de vue;vue;101,3;44.94731;4.40303;Point de vue · à 910 m de la trace;node/499474227
+Abri;bivouac;103,2;44.92632;4.4036;Abri · à 20 m de la trace;node/9812732966
+Gîte d'étape Le Vialon;bivouac;105,3;44.91507;4.41964;Chambre d'hôtes · à 210 m de la trace;way/150502612
+Camping municipal le Cheylard;bivouac;105,3;44.91538;4.42015;Camping · à 150 m de la trace;way/285468371
+Le Grégoire Café Hôtel;resto;105,9;44.90613;4.42242;Bar · horaires : Mo-Su 06:30-20:00 · à 760 m de la trace;node/1934364895
+Mathon;resto;105,9;44.90608;4.42248;Bar · à 760 m de la trace;node/1934364933
+Proxi;ravito;105,9;44.90629;4.42256;Épicerie · à 740 m de la trace;node/1934369760
+L'Estanco;resto;105,9;44.90636;4.42266;Restaurant · à 730 m de la trace;node/1934369762
+Les Tentations de S'Antoine;resto;105,9;44.90582;4.4215;Restaurant · à 820 m de la trace;node/4215106964
+Au Pain d'Antan;ravito;105,9;44.90646;4.42273;"Boulangerie · horaires : Tu-We,Fr-Sa 06:30-13:00,16:00-18:30; Th 06:30-13:00; Su 06:30-12:00 · à 720 m de la trace";node/13103381399
+Le Grand Café;resto;106,0;44.90581;4.4229;"Restaurant · horaires : Mo,We-Th 08:15-17:00; Tu 08:15-14:30; Fr 08:15-19:00; Sa 08:30-19:00 · à 780 m de la trace";node/1934364764
+Le Central;resto;106,0;44.90592;4.42275;Bar · à 770 m de la trace;node/2718174763
+Hôtel restaurant des Voyageurs;resto;106,0;44.90648;4.42483;Restaurant · horaires : 08:00-22:00 · à 670 m de la trace;node/2878282009
+La Calabraise;resto;106,0;44.90581;4.42311;Restaurant · à 780 m de la trace;node/4215095609
+Point de vue;vue;106,0;44.91012;4.42523;Point de vue · à 270 m de la trace;node/9363921585
+Point d'eau potable;eau;106,0;44.90707;4.43113;Point d'eau potable · à 660 m de la trace;node/9967879013
+Epiceyrieux;ravito;106,0;44.90604;4.42256;"Épicerie · horaires : Tu-Fr 08:30-13:00,15:00-18:30; Sa 09:00-13:00,14:30-18:00 · à 770 m de la trace";node/11502831247
+Point de vue;vue;106,0;44.90454;4.42484;Point de vue · à 880 m de la trace;node/12158137967
+L'AlphaBar;resto;106,0;44.90588;4.4228;Bar · à 780 m de la trace;node/13185593771
+Borne de réparation vélo;velo;106,0;44.90707;4.43147;Borne de réparation vélo · à 680 m de la trace;node/14004827349
+Proxi;ravito;106,1;44.91337;4.42773;Épicerie · à 50 m de la trace;node/3650990474
+L'Art Chais;resto;106,1;44.91317;4.4275;Restaurant · à 40 m de la trace;node/5159477355
+Point d'eau potable;eau;106,2;44.91338;4.42823;Point d'eau potable · à 20 m de la trace;node/3650990475
+Le Provençal;resto;106,2;44.91381;4.4282;Restaurant · à 50 m de la trace;node/6621300572
+Borne de réparation vélo;velo;106,2;44.91348;4.42861;Borne de réparation vélo · à 10 m de la trace;node/9812728296
+Boutières Loisirs;velo;106,7;44.91583;4.43363;"Magasin vélo · horaires : Tu-Fr 08:30-12:00,13:30-19:00; Sa 08:30-12:00,14:00-18:00 · à 20 m de la trace";way/977868595
+Les Gourmands Disent;ravito;107,2;44.91237;4.44125;"Boulangerie · horaires : Tu-Sa 06:30-19:00; Su 06:30-12:00 · à 480 m de la trace";node/9822463762
+Café de la Palisse;resto;107,4;44.91247;4.44165;Café · à 470 m de la trace;node/1934861952
+Intermarché Super;ravito;107,4;44.91294;4.44232;Supermarché · horaires : Mo-Sa 08:00-19:00 · à 410 m de la trace;way/150505646
+Super U;ravito;107,4;44.9117;4.44156;"Supermarché · horaires : Mo-Th 08:00-19:30; Fr 08:00-20:00; Sa 08:00-19:30 · à 560 m de la trace";way/183116178
+Auberge Le Champêtre;resto;107,6;44.92318;4.44792;Restaurant · à 770 m de la trace;way/184625755
+Chambre d'hôtes;bivouac;107,8;44.92316;4.44806;Chambre d'hôtes · à 770 m de la trace;node/9048308734
+L'O à la bouche;resto;109,3;44.91198;4.46404;Restaurant · horaires : Mo-Su 12:00-22:00 · à 30 m de la trace;way/612556878
+Point d'eau potable;eau;110,1;44.90907;4.47198;Point d'eau potable · à 10 m de la trace;node/3565755001
