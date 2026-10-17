@@ -45,7 +45,7 @@ window.PARCOURS["tmv-vosges-2026"] = {
     }
   ],
   "duree": null,
-  "velo": "[À compléter]",
+  "velo": "Gravel (pneus 40 mm mini) ou VTT",
   "pct_hors_bitume": null,
   "pct_singletrack": null,
   "difficulte": {
@@ -65,10 +65,16 @@ window.PARCOURS["tmv-vosges-2026"] = {
     "Tracé adapté de la TMV pour dormir en dur chaque soir : il ne suit pas toujours le balisage officiel.",
     "Même en mai, la neige est possible sur les crêtes : prévoir de quoi se couvrir."
   ],
-  "terrain_machine": "[À compléter]",
+  "terrain_machine": "Surtout des pistes et chemins de type VTT/gravel, sans grosse difficulté technique. Fait avec un gravel et un VTT : les deux passent partout. Prévoir des pneus d'au moins 40 mm pour rouler confortablement.",
   "saison": "Fait en mai 2026 : pluie au début, soleil ensuite, tempête de neige sur la route des Crêtes le dernier jour.",
   "ravitaillement": "[À compléter]",
-  "hebergement": "Logement en dur chaque soir, le tracé a été adapté pour cela. [À compléter] Adresses conseillées.",
+  "hebergement": [
+    "Veille du départ : Airbnb à Rosheim.",
+    "Jour 1 : Airbnb à Châtenois.",
+    "Jour 2 : Chambre d'hôtes Le Renard Perché.",
+    "Jour 3 : logement à Metzeral (réservé sur Booking).",
+    "Jour 4 : Gîte et Chambres d'hôtes Les Écureuils, à Geishouse."
+  ],
   "acces": "[À compléter]",
   "infos_complementaires": "La TMV (Traversée du Massif des Vosges à VTT), balisée par la Ligue d'Alsace de cyclotourisme, fait 418 km pour 9 370 m de dénivelé entre Wissembourg et Thann. Cette version en reprend une partie, de Rosheim à Bollwiller.",
   "etapes": [
@@ -78,43 +84,43 @@ window.PARCOURS["tmv-vosges-2026"] = {
       "a": "Châtenois",
       "km": 56.8,
       "dplus": 1310,
-      "note": "Piémont et forêts sous la pluie. Point haut à 811 m."
+      "note": "Piémont et forêts sous la pluie. Nuit en Airbnb à Châtenois."
     },
     {
       "jour": "Jour 2",
       "de": "Châtenois",
-      "a": "secteur Lapoutroie / Le Bonhomme",
+      "a": "Chambre d'hôtes Le Renard Perché",
       "km": 40.8,
       "dplus": 1270,
-      "note": "Montée vers les hautes Vosges. Arrivée à 895 m, point haut à 1119 m."
+      "note": "Montée vers les hautes Vosges, point haut à 1 119 m."
     },
     {
       "jour": "Jour 3",
-      "de": "secteur Lapoutroie / Le Bonhomme",
+      "de": "Le Renard Perché",
       "a": "Metzeral",
       "km": 52.1,
       "dplus": 1080,
-      "note": "Point haut à 1144 m, puis descente sur la vallée de Munster."
+      "note": "Point haut à 1 144 m, puis descente sur la vallée de Munster."
     },
     {
       "jour": "Jour 4",
       "de": "Metzeral",
-      "a": "secteur du Grand Ballon",
+      "a": "Geishouse",
       "km": 36.7,
       "dplus": 1160,
       "note": "Journée la plus haute : point culminant du voyage à 1 242 m."
     },
     {
       "jour": "Jour 5",
-      "de": "secteur du Grand Ballon",
+      "de": "Geishouse",
       "a": "Bollwiller",
       "km": 19.2,
       "dplus": 160,
-      "note": "Courte descente finale vers la plaine d'Alsace (point haut 822 m)."
+      "note": "Tempête de neige sur la route des Crêtes, puis descente vers la plaine d'Alsace."
     }
   ],
   "auteur": "Kévin",
-  "date_trace": "mai 2026",
+  "date_trace": "mai 2026 (du 11 au 15)",
   "date_maj": "octobre 2026",
   "origine_trace": "Trace de Kévin, adaptée de la TMV.",
   "pois": [],

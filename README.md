@@ -174,6 +174,7 @@ Pour **masquer** un parcours sans le supprimer, retire simplement sa ligne de `d
 | Les catégories du menu | `assets/entete.js` | Bloc `const MENU = [...]` |
 | Les liens du pied de page (Instagram, contact) | `assets/entete.js` | `PIED_DE_PAGE` : remplace les `#` |
 | Les couleurs du site | `assets/style.css` | Bloc `:root` tout en haut |
+| *(après toute modification de `style.css` ou d'un `.js` de `assets`)* | `index.html` **et** `parcours.html` | Change le numéro `?v=...` des liens (ex. la date du jour) pour que les visiteurs voient tout de suite la nouvelle version |
 | La couleur des traces vélo / rando sur l'accueil | `assets/accueil.js` | `COULEUR_ACTIVITE` |
 | Le fond de carte par défaut | `assets/entete.js` | Fonction `fondsDeCarte` |
 | L'ordre des sections d'une page parcours | `parcours.html` | Déplace les blocs entre deux `<h2 class="section">` |
