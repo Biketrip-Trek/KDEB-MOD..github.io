@@ -61,5 +61,6 @@ window.PARCOURS["briancon-cannes"] = {
   "date_trace": "17-19 octobre 2023",
   "date_maj": "octobre 2026",
   "origine_trace": "Trace enregistrée par Kévin.",
-  "pois": []
+  "pois": [],
+  "pois_exclus": []
 };

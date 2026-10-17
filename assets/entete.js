@@ -120,9 +120,11 @@ const MENTION_CARTES = "Fonds de carte © Esri, contributeurs OpenStreetMap, Ope
 
 // ---------------------------------------------------------------------
 // 3. CHARGEMENT DES PARCOURS ET MESSAGES D'ERREUR
-//    Chaque parcours = 2 fichiers :
+//    Chaque parcours = 2 fichiers obligatoires + 1 facultatif :
 //      data/<nom>.js         les TEXTES (modifiés à la main)
 //      data/traces/<nom>.js  la TRACE (générée par gpx2trace.py)
+//      data/pois/<nom>.js    les POINTS D'INTÉRÊT trouvés automatiquement
+//                            dans OpenStreetMap (générés par gpx2pois.py)
 //    Si un fichier manque ou contient une faute de frappe, un message
 //    rouge s'affiche en bas de la page au lieu d'une page blanche.
 // ---------------------------------------------------------------------
@@ -157,7 +159,8 @@ function chargerScript(chemin) {
 async function chargerParcours(nom) {
   const [texteTrouve, traceTrouvee] = await Promise.all([
     chargerScript("data/" + nom + ".js"),
-    chargerScript("data/traces/" + nom + ".js")
+    chargerScript("data/traces/" + nom + ".js"),
+    chargerScript("data/pois/" + nom + ".js")      // facultatif : pas d'erreur s'il n'existe pas
   ]);
   const textes = (window.PARCOURS || {})[nom];
   const trace = (window.TRACES || {})[nom];
@@ -170,7 +173,15 @@ async function chargerParcours(nom) {
   }
   if (!traceTrouvee) ERREURS.push(`Trace introuvable : <b>data/traces/${nom}.js</b>. Génère-la avec gpx2trace.py et dépose-la dans data/traces/.`);
   if (!textes || !trace) return null;
-  return { ...textes, ...trace, slug: nom };   // textes + distance, D+ et points de la trace
+
+  // Points d'intérêt = ceux écrits à la main dans les textes
+  //                  + ceux trouvés automatiquement (data/pois/<nom>.js),
+  //                    sauf ceux dont le code "osm" figure dans "pois_exclus".
+  const exclus = textes.pois_exclus || [];
+  const auto = ((window.POIS || {})[nom] || []).filter(p => !exclus.includes(p.osm));
+  const pois = [...(textes.pois || []), ...auto];
+
+  return { ...textes, ...trace, pois, slug: nom };   // textes + trace + points d'intérêt
 }
 
 // Affiche les problèmes éventuels dans un bandeau rouge en bas de l'écran

@@ -70,12 +70,15 @@ window.PARCOURS["nom-du-parcours"] = {
   },
 
   // --- Points d'intérêt sur la carte (peut rester vide : []) ---
-  // type possible : eau, ravito, bivouac, gare, vue, velo, mont, pave
+  // type possible : eau, ravito, resto, bivouac, gare, vue, velo, mont, pave
   // km : position sur la trace (lis-la en survolant le profil du site)
   // lat / lon : coordonnées (clic droit sur Google Maps)
   "pois": [
     { "type": "eau", "nom": "Fontaine", "km": 12.5, "lat": 45.0, "lon": 4.5, "info": "Eau potable" }
   ],
+  // Points trouvés automatiquement (data/pois/) à NE PAS afficher :
+  // recopie ici leur code "osm" (visible dans data/pois/<nom>.js), ex. "node/123456"
+  "pois_exclus": [],
 
   // --- Crédits en bas de page ---
   "auteur": "Kévin",

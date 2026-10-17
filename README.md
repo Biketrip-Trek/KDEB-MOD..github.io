@@ -25,6 +25,7 @@ data/                 Contenu des parcours
   _modele.js          Modèle commenté pour créer une nouvelle fiche
   <nom>.js            TEXTES d'un parcours (c'est toi qui les modifies)
   traces/<nom>.js     TRACE d'un parcours (générée par gpx2trace.py, ne pas modifier)
+  pois/<nom>.js       POINTS D'INTÉRÊT automatiques (générés par gpx2pois.py, facultatif)
 
 gpx/<nom>.gpx         Trace téléchargeable de chaque parcours
 photos/<nom>/         Photos de chaque parcours (format .jpg)
@@ -97,7 +98,7 @@ Ajouter un point fort à une liste (chaque élément entre guillemets, séparé 
 ],
 ```
 
-Ajouter un point d'intérêt (type possible : `eau`, `ravito`, `bivouac`, `gare`, `vue`, `velo`, `mont`, `pave`). La latitude et la longitude se copient depuis Google Maps (clic droit sur le lieu, puis clic sur les coordonnées). Le `km` est la position sur la trace : survole le profil de la page pour le lire.
+Ajouter un point d'intérêt (type possible : `eau`, `ravito`, `resto`, `bivouac`, `gare`, `vue`, `velo`, `mont`, `pave`). La latitude et la longitude se copient depuis Google Maps (clic droit sur le lieu, puis clic sur les coordonnées). Le `km` est la position sur la trace : survole le profil de la page pour le lire.
 ```
 "pois": [
   {
@@ -111,6 +112,24 @@ Ajouter un point d'intérêt (type possible : `eau`, `ravito`, `bivouac`, `gare`
 ],
 ```
 Pour plusieurs points, sépare les blocs `{ ... }` par une virgule.
+
+### Points d'intérêt automatiques (OpenStreetMap)
+
+L'outil `gpx2pois.py`, à garder sur ton PC, cherche dans OpenStreetMap tout ce qui se trouve à moins de 1 km de la trace : points d'eau, boulangeries, épiceries et supermarchés, bars, cafés et restaurants, campings, hôtels, refuges et abris, gares, points de vue, magasins vélo.
+
+1. Dans le dossier des outils, avec internet : `python gpx2pois.py ma-trace.gpx nom-du-parcours`. Compte 1 à 3 minutes selon la longueur.
+2. Il crée deux fichiers dans `pois\` :
+   - `nom-du-parcours.js` : à déposer sur GitHub dans `data/pois/`. Le site affiche alors ces points sur la carte, le profil et la feuille de route.
+   - `nom-du-parcours.csv` : à importer dans Google My Maps ou à ouvrir dans Excel.
+3. **Pour masquer un point faux ou inutile**, ne modifie pas le fichier généré. Copie son code `"osm"` (ex. `"node/123456"`) dans `"pois_exclus"` de `data/<nom>.js` :
+```
+"pois_exclus": ["node/123456", "way/7890"]
+```
+4. Les points ajoutés à la main dans `"pois"` restent affichés en plus des points automatiques.
+
+Pour changer ce qui est cherché (ajouter la restauration rapide, retirer les hôtels...) ou le rayon, modifie les réglages en haut de `gpx2pois.py`. Pour un autre rayon ponctuel : `python gpx2pois.py ma-trace.gpx nom-du-parcours 500`.
+
+Les données OpenStreetMap ne sont pas toujours complètes ni à jour, surtout pour les points d'eau et les horaires. Vérifie les points importants.
 
 ---
 

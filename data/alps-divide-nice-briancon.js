@@ -61,5 +61,6 @@ window.PARCOURS["alps-divide-nice-briancon"] = {
   "date_trace": "8-10 janvier 2025",
   "date_maj": "octobre 2026",
   "origine_trace": "Trace enregistrée par Kévin.",
-  "pois": []
+  "pois": [],
+  "pois_exclus": []
 };

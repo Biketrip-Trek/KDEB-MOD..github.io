@@ -1,0 +1,4 @@
+Dossier des points d'interet trouves automatiquement dans OpenStreetMap.
+Un fichier <nom>.js par parcours, genere par l'outil gpx2pois.py (a garder sur ton PC).
+Ne pas modifier ces fichiers a la main : pour masquer un point, ajoute son code "osm"
+dans "pois_exclus" du fichier de textes data/<nom>.js.

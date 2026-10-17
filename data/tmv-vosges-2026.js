@@ -117,5 +117,6 @@ window.PARCOURS["tmv-vosges-2026"] = {
   "date_trace": "mai 2026",
   "date_maj": "octobre 2026",
   "origine_trace": "Trace de Kévin, adaptée de la TMV.",
-  "pois": []
+  "pois": [],
+  "pois_exclus": []
 };

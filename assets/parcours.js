@@ -27,7 +27,8 @@ const ICONES = {
   mont:    '<path d="M2 20L9 8l4 6 3-4 6 10z"/>',
   pave:    '<rect x="3" y="4" width="8" height="6"/><rect x="13" y="4" width="8" height="6"/><rect x="7" y="14" width="10" height="6"/>',
   eau:     '<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/>',
-  ravito:  '<path d="M5 3v8a3 3 0 0 0 6 0V3M8 3v18M17 3c-2 2-2 6 0 8v10"/>',
+  ravito:  '<path d="M3 9h18l-2 11H5z"/><path d="M8 9l4-6 4 6"/>',                // panier
+  resto:   '<path d="M5 3v8a3 3 0 0 0 6 0V3M8 3v18M17 3c-2 2-2 6 0 8v10"/>',  // couverts
   bivouac: '<path d="M2 20L12 4l10 16zM12 4v16M8 20l4-6 4 6"/>',
   gare:    '<rect x="5" y="3" width="14" height="13" rx="2"/><path d="M5 11h14M8 20l2-4M16 20l-2-4"/>',
   vue:     '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
@@ -44,7 +45,8 @@ const TYPES = {
   mont:    { nom: "Montées",        coul: null },      // couleur selon la difficulté (voir NIVEAUX)
   pave:    { nom: "Secteurs pavés", coul: "#6b6f73" },
   eau:     { nom: "Points d'eau",   coul: "#2a7ab9" },
-  ravito:  { nom: "Ravitaillement", coul: "#7a4fa3" },
+  ravito:  { nom: "Ravitaillement", coul: "#7a4fa3" },   // magasins, boulangeries
+  resto:   { nom: "Bars et restaurants", coul: "#8c5a2b" },
   bivouac: { nom: "Bivouac / dodo", coul: "#2e5a45" },
   gare:    { nom: "Gares",          coul: "#1c2420" },
   vue:     { nom: "Points de vue",  coul: "#c99a06" },

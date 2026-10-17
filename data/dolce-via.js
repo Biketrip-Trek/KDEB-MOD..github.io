@@ -101,5 +101,6 @@ window.PARCOURS["dolce-via"] = {
   "date_trace": "avril 2024",
   "date_maj": "octobre 2026",
   "origine_trace": "Trace enregistrée par Kévin, boucle personnelle sur la Dolce Via.",
-  "pois": []
+  "pois": [],
+  "pois_exclus": []
 };

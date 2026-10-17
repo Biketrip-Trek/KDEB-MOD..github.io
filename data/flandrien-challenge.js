@@ -596,5 +596,6 @@ window.PARCOURS["flandrien-challenge"] = {
       "niveau": 1,
       "info": "69 m · 2 % / 4 % · ?"
     }
-  ]
+  ],
+  "pois_exclus": []
 };
