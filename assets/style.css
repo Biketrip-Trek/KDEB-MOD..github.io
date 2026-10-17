@@ -215,8 +215,23 @@ h2.section::after { content: ""; flex: 1; height: 1px; background: var(--ligne);
 .galerie img, .galerie .vide { aspect-ratio: 3 / 2; width: 100%; object-fit: cover; cursor: zoom-in; }
 .galerie .vide { background: repeating-linear-gradient(135deg, #ebe5d8 0 10px, #f1ece1 10px 20px); display: grid; place-items: center; color: var(--doux); font-size: 14px; cursor: default; }
 .galerie figcaption { font-size: 13px; color: var(--doux); padding-top: 4px; }
-.loupe { position: fixed; inset: 0; background: rgba(15,20,17,.94); display: none; place-items: center; z-index: 3000; padding: 16px; cursor: zoom-out; }
-.loupe img { max-height: 100%; }
+/* Visionneuse : fond sombre plein écran, photo centrée, flèches sur les côtés */
+.loupe { position: fixed; inset: 0; background: rgba(15,20,17,.97); display: none; place-items: center; z-index: 3000; padding: 16px 64px; cursor: zoom-out; }
+.loupe figure { margin: 0; display: flex; flex-direction: column; align-items: center; max-height: 100%; }
+.loupe img { max-width: 100%; max-height: calc(100vh - 80px); object-fit: contain; cursor: pointer; }
+.loupe figcaption { color: rgba(255,255,255,.85); font-size: 14px; padding-top: 10px; display: flex; gap: 16px; justify-content: center; text-align: center; }
+.loupe figcaption .mono { color: rgba(255,255,255,.55); white-space: nowrap; }
+.loupe-fleche, .loupe-fermer { position: absolute; background: rgba(255,255,255,.12); color: #fff; border: 0; cursor: pointer; font-family: inherit; line-height: 1; display: grid; place-items: center; }
+.loupe-fleche { top: 50%; transform: translateY(-50%); width: 48px; height: 64px; font-size: 44px; border-radius: 4px; }
+.loupe-fleche:hover, .loupe-fermer:hover { background: var(--balise); }
+.loupe-fleche.gauche { left: 8px; }
+.loupe-fleche.droite { right: 8px; }
+.loupe-fermer { top: 12px; right: 12px; width: 44px; height: 44px; font-size: 30px; border-radius: 50%; }
+/* Sur téléphone : flèches plus discrètes, posées sur la photo (on peut aussi glisser le doigt) */
+@media (max-width: 700px) {
+  .loupe { padding: 16px 8px; }
+  .loupe-fleche { width: 38px; height: 52px; font-size: 34px; background: rgba(0,0,0,.35); }
+}
 
 
 

@@ -84,8 +84,17 @@
 <!-- Le pied de page est ajouté automatiquement par assets/entete.js
      (ses liens se modifient dans PIED_DE_PAGE, en haut de ce fichier). -->
 
-<!-- Fenêtre d'affichage d'une photo en grand (cachée tant qu'on ne clique pas) -->
-<div class="loupe" id="loupe"><img alt=""></div>
+<!-- Visionneuse : photo en grand, flèches précédente / suivante, légende, compteur.
+     Cachée tant qu'on ne clique pas sur une photo de la galerie. -->
+<div class="loupe" id="loupe" role="dialog" aria-label="Photo en grand">
+  <button class="loupe-fermer" id="loupe-fermer" aria-label="Fermer">×</button>
+  <button class="loupe-fleche gauche" id="loupe-prec" aria-label="Photo précédente">‹</button>
+  <figure>
+    <img id="loupe-img" alt="">
+    <figcaption><span id="loupe-legende"></span><span class="mono" id="loupe-compteur"></span></figcaption>
+  </figure>
+  <button class="loupe-fleche droite" id="loupe-suiv" aria-label="Photo suivante">›</button>
+</div>
 
 <!-- Programmes de la page : carte (Leaflet), en-tête commun, construction de la page -->
 <script src="assets/leaflet/leaflet.js"></script>

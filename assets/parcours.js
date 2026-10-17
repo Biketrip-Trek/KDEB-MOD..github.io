@@ -170,10 +170,7 @@ function construire(P) {
   gal.innerHTML = (P.photos || []).length
     ? P.photos.map(ph => `<figure><img src="photos/${P.slug}/${ph.fichier}" alt="${ph.legende || ""}" loading="lazy"><figcaption>${ph.legende || ""}</figcaption></figure>`).join("")
     : [1, 2, 3, 4].map(i => `<figure><div class="vide">Photo ${i} à venir</div></figure>`).join("");
-  // Clic sur une photo : affichage en grand ("loupe"). Nouveau clic : fermeture.
-  const loupe = $("loupe");
-  gal.onclick = e => { if (e.target.tagName === "IMG") { loupe.querySelector("img").src = e.target.src; loupe.style.display = "grid"; } };
-  loupe.onclick = () => loupe.style.display = "none";
+  visionneuse(P);
 
   // --- Crédits en bas de page ---
   $("credits").innerHTML = `<b>Parcours tracé et roulé par ${P.auteur || "Kévin"}${P.date_trace ? " en " + P.date_trace : ""}.</b> ${P.date_maj ? "Mise à jour : " + P.date_maj + ". " : ""}Un chemin fermé, un point d'eau à sec ? Écris-moi pour que je corrige la trace. ${P.origine_trace || ""}`;
@@ -315,4 +312,70 @@ function carteProfilFeuille(P) {
     a.download = P.slug + "-avec-poi.gpx";
     a.click();
   };
+}
+
+
+// ---------------------------------------------------------------------
+// 6. VISIONNEUSE PHOTOS
+//    Clic sur une photo de la galerie : elle s'ouvre en grand.
+//    Pour passer d'une photo à l'autre :
+//      - ordinateur : flèches à gauche/droite de la photo, ou touches
+//        ← et → du clavier ; touche Échap pour fermer
+//      - téléphone : glisser le doigt vers la gauche ou la droite
+//    Clic sur le fond sombre ou sur la croix : fermeture.
+// ---------------------------------------------------------------------
+function visionneuse(P) {
+  const photos = P.photos || [];
+  if (!photos.length) return;
+  const loupe = $("loupe"), img = $("loupe-img");
+  let actuelle = 0;   // numéro de la photo affichée (0 = la première)
+
+  const afficher = n => {
+    actuelle = (n + photos.length) % photos.length;   // après la dernière, on revient à la première
+    const ph = photos[actuelle];
+    img.src = `photos/${P.slug}/${ph.fichier}`;
+    img.alt = ph.legende || "";
+    $("loupe-legende").textContent = ph.legende || "";
+    $("loupe-compteur").textContent = `${actuelle + 1} / ${photos.length}`;
+    // On précharge la photo suivante pour qu'elle s'affiche sans attendre
+    new Image().src = `photos/${P.slug}/${photos[(actuelle + 1) % photos.length].fichier}`;
+  };
+  const ouvrir = n => { afficher(n); loupe.style.display = "grid"; document.body.style.overflow = "hidden"; };
+  const fermer = () => { loupe.style.display = "none"; document.body.style.overflow = ""; };
+  const ouverte = () => loupe.style.display === "grid";
+
+  // Clic sur une photo de la galerie : on ouvre la visionneuse sur cette photo
+  $("galerie").onclick = e => {
+    if (e.target.tagName !== "IMG") return;
+    const n = [...$("galerie").querySelectorAll("img")].indexOf(e.target);
+    ouvrir(n);
+  };
+
+  // Flèches et croix (stopPropagation : le clic ne "traverse" pas jusqu'au fond)
+  $("loupe-prec").onclick = e => { e.stopPropagation(); afficher(actuelle - 1); };
+  $("loupe-suiv").onclick = e => { e.stopPropagation(); afficher(actuelle + 1); };
+  $("loupe-fermer").onclick = e => { e.stopPropagation(); fermer(); };
+  img.onclick = e => { e.stopPropagation(); afficher(actuelle + 1); };   // clic sur la photo = suivante
+  loupe.onclick = fermer;                                                // clic sur le fond = fermer
+
+  // Clavier
+  document.addEventListener("keydown", e => {
+    if (!ouverte()) return;
+    if (e.key === "ArrowRight") afficher(actuelle + 1);
+    if (e.key === "ArrowLeft") afficher(actuelle - 1);
+    if (e.key === "Escape") fermer();
+  });
+
+  // Téléphone : glisser le doigt (au moins 40 px) vers la gauche ou la droite
+  let departX = null;
+  loupe.addEventListener("touchstart", e => { departX = e.touches[0].clientX; }, { passive: true });
+  loupe.addEventListener("touchend", e => {
+    if (departX === null) return;
+    const ecart = e.changedTouches[0].clientX - departX;
+    if (Math.abs(ecart) > 40) afficher(actuelle + (ecart < 0 ? 1 : -1));
+    departX = null;
+  });
+
+  // Une seule photo : pas besoin de flèches
+  if (photos.length < 2) { $("loupe-prec").hidden = true; $("loupe-suiv").hidden = true; }
 }
