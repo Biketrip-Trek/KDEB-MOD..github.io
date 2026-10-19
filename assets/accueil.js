@@ -45,8 +45,27 @@ document.getElementById("fond").innerHTML = courbesDeNiveau();
   const noms = window.LISTE_PARCOURS || [];
   const parcours = (await Promise.all(noms.map(chargerParcours))).filter(Boolean);
   construireAccueil(parcours);
+  await appelNord();
   afficherErreurs();
 })();
+
+
+// ---------------------------------------------------------------------
+// ENCART « TRACES DU NORD » en haut des rubriques : mène vers nord.html.
+// Il n'apparaît que si data/liste-nord.js contient au moins une trace.
+// ---------------------------------------------------------------------
+async function appelNord() {
+  await chargerScript("data/liste-nord.js");
+  const n = (window.LISTE_NORD || []).length;
+  if (!n) return;
+  document.getElementById("rubriques").insertAdjacentHTML("afterbegin", `
+    <a class="appel-nord" href="${SECTION_NORD.lien}">
+      <div><span class="cat">Près de chez moi</span>
+        <h2>${SECTION_NORD.nom}</h2>
+        <p>${n} boucle${n > 1 ? "s" : ""} à la journée, sur les petites routes et les sentiers que j'ai testés moi-même, avec les incontournables de la région.</p></div>
+      <span class="aller">Voir les traces</span>
+    </a>`);
+}
 
 
 // ---------------------------------------------------------------------

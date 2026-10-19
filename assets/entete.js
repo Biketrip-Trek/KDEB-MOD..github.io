@@ -20,7 +20,7 @@
 
 // Nom du site : affiché dans le logo en haut à gauche
 // et dans le titre de l'onglet du navigateur.
-const NOM_DU_SITE = "Kévin à vélo";
+const NOM_DU_SITE = "Carnet de traces";
 
 // Le menu en haut à droite.
 // - "id"  : code interne, SANS accent ni espace. C'est ce code qu'on écrit
@@ -44,6 +44,21 @@ const MENU = [
     ]
   }
 ];
+
+
+// Section « Traces du Nord » : boucles locales à la journée, fiches courtes,
+// sur leur propre page (nord.html). Leur liste est dans data/liste-nord.js.
+// "nom" : texte du menu et des étiquettes (tu peux le changer ici seulement).
+const SECTION_NORD = { nom: "Traces du Nord", lien: "nord.html" };
+
+// Pratiques des traces du Nord (champ "pratique" des fiches courtes) :
+// texte affiché et couleur sur la carte et les étiquettes.
+const PRATIQUES = {
+  route:  { nom: "Route",  coul: "#e4572e" },   // orange
+  gravel: { nom: "Gravel", coul: "#b07d0a" },   // ocre
+  vtt:    { nom: "VTT",    coul: "#7a4fa3" },   // violet
+  marche: { nom: "À pied", coul: "#2e5a45" }    // vert forêt
+};
 
 
 // Liens du pied de page, en bas de toutes les pages.
@@ -90,7 +105,7 @@ const MENTION_CARTES = "Fonds de carte © Esri, contributeurs OpenStreetMap, Ope
         <svg viewBox="0 0 32 32" fill="none" stroke="#e4572e" stroke-width="2"><path d="M2 26 L11 12 L16 19 L21 9 L30 26 Z"/><path d="M8 26c3-4 6-2 8-5s5-4 8 0" stroke="#fff" stroke-width="1.4"/></svg>
         ${NOM_DU_SITE}
       </a>
-      <nav class="menu">${menus}</nav>
+      <nav class="menu">${menus}<a class="onglet" href="${SECTION_NORD.lien}">${SECTION_NORD.nom}</a></nav>
     </div>`;
   document.body.prepend(entete); // "prepend" = placer tout en haut de la page
 
@@ -179,7 +194,10 @@ async function chargerParcours(nom) {
   //                    sauf ceux dont le code "osm" figure dans "pois_exclus".
   const exclus = textes.pois_exclus || [];
   const auto = ((window.POIS || {})[nom] || []).filter(p => !exclus.includes(p.osm));
-  const pois = [...(textes.pois || []), ...auto];
+  // Les « incontournables » d'une fiche courte (Traces du Nord) sont aussi
+  // affichés sur la carte, le profil et la feuille de route.
+  const incontournables = (textes.incontournables || []).map(x => ({ ...x, type: "incontournable" }));
+  const pois = [...(textes.pois || []), ...incontournables, ...auto];
 
   return { ...textes, ...trace, pois, slug: nom };   // textes + trace + points d'intérêt
 }
@@ -205,6 +223,13 @@ function libelleCategorie(activite, format) {
   const m = MENU.find(x => x.id === activite);
   const s = m && m.sous.find(x => x.id === format);
   return [m && m.nom, s && s.nom].filter(Boolean).join(" · ");
+}
+
+// libelleFiche(P) : comme libelleCategorie, mais sait aussi écrire
+// « Traces du Nord · VTT » pour une fiche courte (format "locale").
+function libelleFiche(P) {
+  if (P.format === "locale") return [SECTION_NORD.nom, (PRATIQUES[P.pratique] || {}).nom].filter(Boolean).join(" · ");
+  return libelleCategorie(P.activite, P.format);
 }
 
 // courbesDeNiveau() dessine un fond sombre avec des courbes de niveau.

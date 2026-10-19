@@ -1,4 +1,4 @@
-# Kévin à vélo - mode d'emploi du site
+# Carnet de traces - mode d'emploi du site
 
 Ce site est un site **statique** : de simples fichiers (pages, styles, photos, traces), sans base de données ni serveur à gérer. Il est hébergé gratuitement par GitHub Pages. Chaque fichier envoyé sur GitHub est en ligne en 1 à 2 minutes.
 
@@ -64,12 +64,14 @@ Ouvre `data/<nom>.js`. Chaque information est sur sa propre ligne, sous la forme
 | `chapeau` | Résumé de 4 lignes | Sous le titre |
 | `photo_principale` | Nom de la photo de couverture | Bandeau, vignette |
 | `photos` | Photos et leurs légendes | Galerie |
-| `velo` | Vélo conseillé | Barre de chiffres |
-| `pct_hors_bitume` | Pourcentage de piste (un nombre, sans guillemets, ou `null`) | Barre de chiffres |
-| `difficulte` | Notes sur 10 (nombres sans guillemets, ou `null`) | Section Difficulté |
+| `velo` | Vélo conseillé (vélo seulement) | Barre de chiffres |
+| `pct_hors_bitume` | Pourcentage de piste (un nombre, sans guillemets, ou `null`) (vélo seulement) | Barre de chiffres |
+| `temps_marche` | Temps de marche (randonnée seulement) | Barre de chiffres |
+| `balisage`, `materiel` | Sentiers et balisage, équipement (randonnée seulement) | L'essentiel |
 | `points_forts`, `a_savoir` | Listes à puces | L'essentiel |
 | `terrain_machine`, `ravitaillement`, `hebergement`, `saison`, `acces`, `infos_complementaires` | Textes libres | L'essentiel |
-| `etapes` | Une ligne par jour | Tableau des étapes |
+| `etapes` | Une ligne par jour (`duree` en randonnée = colonne Temps) | Tableau des étapes |
+| `ressenti` (dans chaque étape) | Ce que tu as ressenti ce jour-là, en quelques phrases | Le carnet du jour |
 | `pois` | Points d'intérêt (eau, gare, vue...) | Carte, feuille de route |
 | `auteur`, `date_trace`, `date_maj`, `origine_trace` | Crédits | Bas de page |
 | Distance, D+, trace | Calculés depuis le GPX | Dans `data/traces/<nom>.js`, ne pas modifier |
@@ -151,7 +153,16 @@ La **première** photo de la liste s'affiche en grand dans la galerie. La photo 
 
 ## 5. Ajouter un nouveau parcours
 
-Choisis d'abord le nom court du parcours, par exemple `vosges-2027`.
+**Méthode automatique (conseillée) : `publier.py`**, dans le dossier des outils sur ton PC.
+1. Crée le dossier `parcours\vosges-2027\`, et mets-y la trace (1 GPX par jour, ou un KML/KMZ) et les photos.
+2. `python publier.py preparer vosges-2027` : crée `fiche.xlsx`, déjà pré-rempli (photos listées, km et D+ par jour).
+3. Remplis les 3 onglets du tableau (Fiche, Photos, Etapes), enregistre, ferme Excel.
+4. `python publier.py publier vosges-2027` : trace, points d'intérêt, photos (réduites, sans GPS), fiche et liste. Tout ce qu'il faut envoyer est rangé dans `a_deposer\`.
+5. Sur GitHub, page d'accueil du dépôt : **Add file > Upload files**, glisse tout le contenu de `a_deposer\`, puis **Commit changes**.
+
+Pour corriger un parcours publié de cette façon, modifie `fiche.xlsx` et relance l'étape 4. Une modification faite directement sur GitHub dans `data/<nom>.js` serait écrasée, sauf `"pois"` et `"pois_exclus"`.
+
+**Méthode manuelle**, fichier par fichier. Choisis d'abord le nom court du parcours, par exemple `vosges-2027`.
 
 1. **La trace.** Sur ton PC, dans le dossier des outils, lance `python gpx2trace.py ma-trace.gpx vosges-2027`. Si ta trace est un KML ou un KMZ, convertis-la d'abord avec `kml2gpx.py`. Le script crée `traces\vosges-2027.js` : dépose-le dans `data/traces/`. Dépose aussi le GPX dans `gpx/`, renommé `vosges-2027.gpx`.
 2. **Les textes.** Dans `data/`, copie `_modele.js` sous le nom `vosges-2027.js` et remplis-le. Sur GitHub : ouvre `_modele.js`, copie tout son contenu, puis **Add file > Create new file**.
@@ -189,3 +200,20 @@ Pour **masquer** un parcours sans le supprimer, retire simplement sa ligne de `d
 - **Le site est public**, comme le dépôt GitHub. Pense à la vie privée : pas de trace qui commence devant un domicile, pas de photo d'une personne qui ne serait pas d'accord.
 - **Après une modification**, si l'ancienne version reste affichée, fais Ctrl+F5 ou ouvre une fenêtre de navigation privée.
 - **Pour tester les pages sur ton PC sans les mettre en ligne**, télécharge le dépôt (bouton vert **Code > Download ZIP**), dézippe-le et double-clique sur `index.html`.
+
+---
+
+## Traces du Nord (fiches courtes)
+
+Page `nord.html` : les boucles à la journée autour de chez moi, avec une carte commune, des filtres (pratique, distance) et des fiches courtes.
+
+- Liste des traces : `data/liste-nord.js` (un nom par ligne).
+- Fiche courte `data/<nom>.js` avec `"format": "locale"` : `nom`, `nom_gras`, `pratique` (`route`, `gravel`, `vtt` ou `marche`), `depart`, `chapeau` (2 ou 3 lignes), 1 ou 2 `photos`, `incontournables` (nom, km, lat, lon, info).
+- Les incontournables s'affichent sur la carte, sur le profil et dans la liste « Les incontournables ».
+- Nom de la section, couleurs des pratiques : `SECTION_NORD` et `PRATIQUES` dans `assets/entete.js`.
+
+Ajouter des traces :
+- **plusieurs d'un coup** : GPX dans le dossier `nord\` des outils, puis `python traces_nord.py --depart "Nieppe"` ; tout le contenu de `a_deposer\` va sur GitHub ;
+- **une seule** : l'Atelier de parcours, choix « Trace du Nord ».
+
+Dans les deux cas, le départ et l'arrivée sont masqués sur 600 m (ton adresse n'apparaît ni sur la carte ni dans le GPX).

@@ -34,11 +34,18 @@ window.PARCOURS["nom-du-parcours"] = {
   ],
 
   // --- Barre de chiffres (distance et D+ sont calculés tout seuls) ---
+  // VÉLO seulement :
   "velo": "Gravel",                    // vélo conseillé
   "pct_hors_bitume": null,             // nombre sans guillemets, ex. 60 (ou null)
   "pct_singletrack": null,             // idem
+  // RANDONNÉE seulement (inutile pour un parcours vélo, tu peux supprimer ces lignes) :
+  "temps_marche": "",                  // ex. "5 à 7 h par jour" (barre de chiffres)
+  "balisage": "",                      // encart « Sentiers et balisage » (GR, couleurs, hors sentier...)
+  "materiel": "",                      // encart « Équipement » (chaussures, bâtons, crampons...)
 
   // --- L'essentiel ---
+  // En randonnée, "terrain_machine" s'affiche sous le titre « Terrain et
+  // passages délicats » et "hebergement" sous « Refuges et nuits ».
   "points_forts": [                    // liste à puces
     "Premier point fort.",
     "Deuxième point fort."
@@ -54,20 +61,16 @@ window.PARCOURS["nom-du-parcours"] = {
   "infos_complementaires": "Tout le reste.",
 
   // --- Étapes : une ligne { ... } par jour, séparées par des virgules ---
+  // "ressenti" : ce que tu as vécu ce jour-là (météo, humeur, un moment).
+  // Il s'affiche en fin de page, dans « Le carnet du jour », écrit à la main.
+  // Laisse "" si tu n'as rien à dire : la page de ce jour n'apparaît pas.
+  // En randonnée, tu peux ajouter "duree": "6 h" dans une étape :
+  // une colonne « Temps » apparaît alors dans le tableau.
   "etapes": [
-    { "jour": "Jour 1", "de": "Ville A", "a": "Ville B", "km": 60, "dplus": 800, "note": "Commentaire." },
-    { "jour": "Jour 2", "de": "Ville B", "a": "Ville C", "km": 55, "dplus": 600, "note": "" }
+    { "jour": "Jour 1", "de": "Ville A", "a": "Ville B", "km": 60, "dplus": 800, "note": "Commentaire.",
+      "ressenti": "Départ sous la pluie, les jambes lourdes. Le soleil revient au col et tout s'éclaire." },
+    { "jour": "Jour 2", "de": "Ville B", "a": "Ville C", "km": 55, "dplus": 600, "note": "", "ressenti": "" }
   ],
-
-  // --- Difficulté : notes sur 10, sans guillemets (ou null) ---
-  "difficulte": {
-    "globale": 5,
-    "denivele": 5,
-    "technique": 3,
-    "physique": 6,
-    "logistique": 4,
-    "note": ""
-  },
 
   // --- Points d'intérêt sur la carte (peut rester vide : []) ---
   // type possible : eau, ravito, resto, bivouac, gare, vue, velo, mont, pave

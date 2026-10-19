@@ -9,7 +9,7 @@
 //   data/traces/dolce-via.js (la trace), puis remplit,
 //   dans l'ordre de la page :
 //     bandeau (photo + titre) > chiffres > photos > carte + profil
-//     > l'essentiel > feuille de route > étapes > difficulté > crédits
+//     > l'essentiel > feuille de route > étapes > carnet du jour > crédits
 //
 // Les TEXTES se modifient dans data/<nom>.js, pas ici.
 // Ici, on modifie la façon dont ils sont AFFICHÉS.
@@ -33,7 +33,8 @@ const ICONES = {
   gare:    '<rect x="5" y="3" width="14" height="13" rx="2"/><path d="M5 11h14M8 20l2-4M16 20l-2-4"/>',
   vue:     '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   velo:    '<circle cx="6" cy="16" r="4"/><circle cx="18" cy="16" r="4"/><path d="M6 16l4-8h5l3 8M10 8l2 8"/>',
-  depart:  '<path d="M5 21V4h11l-2 4 2 4H5"/>'
+  depart:  '<path d="M5 21V4h11l-2 4 2 4H5"/>',
+  incontournable: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>'  // étoile
 };
 
 // Types de points d'intérêt (POI) qu'on peut mettre dans une fiche
@@ -50,7 +51,8 @@ const TYPES = {
   bivouac: { nom: "Bivouac / dodo", coul: "#2e5a45" },
   gare:    { nom: "Gares",          coul: "#1c2420" },
   vue:     { nom: "Points de vue",  coul: "#c99a06" },
-  velo:    { nom: "Atelier vélo",   coul: "#b8337a" }
+  velo:    { nom: "Atelier vélo",   coul: "#b8337a" },
+  incontournable: { nom: "Incontournables", coul: "#b8411f" }   // fiches courtes « Traces du Nord »
 };
 
 // Couleur et nom des niveaux de difficulté des montées ("niveau": 1 à 4)
@@ -64,7 +66,10 @@ const STAT_ICONES = {
   jours:    '<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   sommet:   '<path d="M2 20l8-14 4 6 2-3 6 11z"/><path d="M10 6V2l4 1-4 1"/>',
   terrain:  '<path d="M3 18c3-3 5-3 8 0s5 3 10-2M3 12c3-3 5-3 8 0s5 3 10-2"/>',
-  velo:     ICONES.velo
+  velo:     ICONES.velo,
+  temps:    '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',                          // horloge (rando)
+  balisage: '<path d="M12 3v18M5 6h11l3 3-3 3H5zM19 13H9l-3 3 3 3h10"/>',                    // panneau (rando)
+  materiel: '<rect x="5" y="7" width="14" height="14" rx="3"/><path d="M9 7V5a3 3 0 0 1 6 0v2M5 13h14"/>' // sac (rando)
 };
 
 
@@ -109,71 +114,105 @@ function construire(P) {
   $("fond").innerHTML = P.photo_principale
     ? `<img src="photos/${P.slug}/${P.photo_principale}" alt="">`
     : courbesDeNiveau();
-  const cat = libelleCategorie(P.activite, P.format);
+  const cat = libelleFiche(P);   // ex. « Vélo · À la journée » ou « Traces du Nord · VTT »
   $("lieu").innerHTML = (cat ? `<span class="cat">${cat}</span>` : "") + (P.lieu || []).map(l => `<span>${l}</span>`).join("");
   $("titre").innerHTML = `${P.nom}${P.nom_gras ? ` <em>${P.nom_gras}</em>` : ""}`; // nom_gras = partie en orange
   $("chapeau").textContent = P.chapeau || P.description_courte || "";
 
+  // --- Vélo ou randonnée ? Certains chiffres et encarts changent ---
+  const rando = P.activite === "rando";
+  // --- Fiche courte « Traces du Nord » (format "locale") : page allégée ---
+  const courte = P.format === "locale";
+  if (courte) document.body.classList.add("courte");
+  // Masque une section : son titre (idTitre) et son contenu (idBloc)
+  const masquer = (...ids) => ids.forEach(id => { const el = $(id); if (el) el.style.display = "none"; });
+
   // --- Barre de chiffres ---
   // Chaque ligne : [icône, intitulé, valeur]. On peut en retirer ou en ajouter.
+  // Les 4 premières sont communes, les suivantes dépendent de l'activité.
   const terrain = [
     P.pct_hors_bitume != null ? P.pct_hors_bitume + " % piste" : null,
     P.pct_singletrack != null ? P.pct_singletrack + " % single" : null
   ].filter(Boolean).join(" · ");
-  const stats = [
+  const stats = courte ? [
+    ["distance", "Distance",        fmt(P.distance_km) + " km"],
+    ["dplus",    "Dénivelé +",      fmt(P.denivele_m) + " m"],
+    ["velo",     "Pratique",        (PRATIQUES[P.pratique] || {}).nom || "-"],
+    ["jours",    "Départ",          P.depart || "à préciser"],
+    ["sommet",   "Point culminant", fmt(altMax) + " m"]
+  ] : [
     ["distance", "Distance",        fmt(P.distance_km) + " km"],
     ["dplus",    "Dénivelé +",      fmt(P.denivele_m) + " m"],
     ["jours",    "Durée",           P.jours ? P.jours + " j" : P.duree],
     ["sommet",   "Point culminant", fmt(altMax) + " m"],
-    ["terrain",  "Hors bitume",     terrain || "à compléter"],
-    ["velo",     "Vélo conseillé",  P.velo || "-"]
+    ...(rando
+      ? [["temps",   "Temps de marche", P.temps_marche || "à compléter"]]   // randonnée
+      : [["terrain", "Hors bitume",     terrain || "à compléter"],          // vélo
+         ["velo",    "Vélo conseillé",  P.velo || "-"]])
   ];
   $("stats").innerHTML = stats.map(([i, intitule, valeur]) =>
     `<div class="stat"><svg viewBox="0 0 24 24">${STAT_ICONES[i]}</svg><div><span>${intitule}</span><b>${valeur}</b></div></div>`
   ).join("");
 
-  // --- Difficulté : note globale + 4 jauges de 10 cases ---
-  const D = P.difficulte || {};
-  const jauge = (intitule, note) => `<div class="jauge"><span>${intitule}</span><div class="barre">${
-      Array.from({ length: 10 }, (_, i) => `<i class="${i < note ? "on" : ""}"></i>`).join("")
-    }</div><span class="mono">${note ?? "-"}/10</span></div>`;
-  $("jauges").innerHTML = `
-    <div class="note-globale"><div class="chiffre">${D.globale ?? "-"}<small>/10</small></div><p>Difficulté globale</p></div>
-    <div>${jauge("Dénivelé", D.denivele)}${jauge("Technique", D.technique)}${jauge("Physique", D.physique)}${jauge("Logistique", D.logistique)}
-    ${D.note ? `<p class="note-ex">${D.note}</p>` : ""}</div>`;
+  // --- Le carnet du jour : une page de carnet par étape qui a un "ressenti" ---
+  // Les étapes sans ressenti n'ont pas de page. Aucune : la section est masquée.
+  const pages = (P.etapes || []).filter(e => (e.ressenti || "").trim());
+  if (pages.length) {
+    $("carnet").innerHTML = pages.map(e => `<article class="page-carnet">
+        <div class="jour">${e.jour || ""}</div>
+        <div class="trajet">${[e.de, e.a].filter(Boolean).join(" > ")}</div>
+        <p class="mots">${e.ressenti.trim()}</p>
+      </article>`).join("");
+  } else {
+    $("carnet-titre").style.display = "none";
+    $("carnet").style.display = "none";
+  }
 
   // --- L'essentiel : les encarts pratiques ---
   // Chaque ligne : [titre de l'encart, icône, champ de la fiche].
   // Un champ entre [ ] dans la fiche devient une liste à puces.
   const contenu = v => Array.isArray(v) ? `<ul>${v.map(x => `<li>${x}</li>`).join("")}</ul>` : `<p>${v || "à compléter"}</p>`;
+  // En randonnée : « Sentiers et balisage » et « Équipement » en plus,
+  // et certains titres changent (terrain, nuits).
   const encarts = [
     ["Points forts",          STAT_ICONES.sommet, P.points_forts],
     ["À savoir absolument",   '<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>', P.a_savoir],
-    ["Terrain et vélo",       STAT_ICONES.terrain, P.terrain_machine],
+    ...(rando ? [["Sentiers et balisage", STAT_ICONES.balisage, P.balisage]] : []),
+    [rando ? "Terrain et passages délicats" : "Terrain et vélo", STAT_ICONES.terrain, P.terrain_machine],
+    ...(rando ? [["Équipement",           STAT_ICONES.materiel, P.materiel]] : []),
     ["Eau et ravitaillement", ICONES.eau, P.ravitaillement],
-    ["Dormir",                ICONES.bivouac, P.hebergement],
+    [rando ? "Refuges et nuits" : "Dormir", ICONES.bivouac, P.hebergement],
     ["Saison",                '<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/>', P.saison],
     ["Accès et retour",       ICONES.gare, P.acces],
     ["Infos complémentaires", '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>', P.infos_complementaires]
   ];
+  if (courte) masquer("essentiel-titre", "encarts", "etapes-titre", "etapes-bloc");
   $("encarts").innerHTML = encarts.map(([titre, ic, v]) =>
     `<div class="encart"><h3><svg viewBox="0 0 24 24">${ic}</svg>${titre}</h3>${contenu(v)}</div>`
   ).join("");
 
   // --- Tableau des étapes (une ligne par jour) ---
+  // Colonne « Temps » ajoutée seulement si au moins une étape a un "duree"
+  // (utile en randonnée : ex. "6 h").
+  const avecTemps = (P.etapes || []).some(e => e.duree);
+  if (avecTemps) document.querySelector("table.etapes thead th:nth-child(4)").insertAdjacentHTML("afterend", "<th>Temps</th>");
   $("etapes").innerHTML = (P.etapes || []).map(e =>
-    `<tr><td><b>${e.jour}</b></td><td>${e.de} > ${e.a}</td><td class="mono">${fmt(e.km)}</td><td class="mono">${e.dplus == null ? "-" : fmt(e.dplus) + " m"}</td><td>${e.note || ""}</td></tr>`
+    `<tr><td><b>${e.jour}</b></td><td>${e.de} > ${e.a}</td><td class="mono">${fmt(e.km)}</td><td class="mono">${e.dplus == null ? "-" : fmt(e.dplus) + " m"}</td>${avecTemps ? `<td class="mono">${e.duree || "-"}</td>` : ""}<td>${e.note || ""}</td></tr>`
   ).join("");
 
   // --- Galerie photos (ou 4 cases "Photo à venir" s'il n'y en a pas) ---
   const gal = $("galerie");
+  if (courte && !(P.photos || []).length) masquer("photos-titre", "galerie");   // pas de cases « à venir » sur une fiche courte
   gal.innerHTML = (P.photos || []).length
     ? P.photos.map(ph => `<figure><img src="photos/${P.slug}/${ph.fichier}" alt="${ph.legende || ""}" loading="lazy"><figcaption>${ph.legende || ""}</figcaption></figure>`).join("")
     : [1, 2, 3, 4].map(i => `<figure><div class="vide">Photo ${i} à venir</div></figure>`).join("");
   visionneuse(P);
 
+  // --- Fiche courte : lien de retour vers toutes les traces du Nord ---
+  if (courte) { $("retour").hidden = false; $("retour").innerHTML = `<a href="${SECTION_NORD.lien}">Retour aux ${SECTION_NORD.nom}</a>`; }
+
   // --- Crédits en bas de page ---
-  $("credits").innerHTML = `<b>Parcours tracé et roulé par ${P.auteur || "Kévin"}${P.date_trace ? " en " + P.date_trace : ""}.</b> ${P.date_maj ? "Mise à jour : " + P.date_maj + ". " : ""}Un chemin fermé, un point d'eau à sec ? Écris-moi pour que je corrige la trace. ${P.origine_trace || ""}`;
+  $("credits").innerHTML = `<b>Parcours tracé et ${rando ? "marché" : "roulé"} par ${P.auteur || "Kévin"}${P.date_trace ? " en " + P.date_trace : ""}.</b> ${P.date_maj ? "Mise à jour : " + P.date_maj + ". " : ""}Un chemin fermé, un point d'eau à sec ? Écris-moi pour que je corrige la trace. ${P.origine_trace || ""}`;
 
   carteProfilFeuille(P);
 }
@@ -283,6 +322,10 @@ function carteProfilFeuille(P) {
   svg.addEventListener("mouseleave", () => { lc.setAttribute("visibility", "hidden"); info.textContent = `alt. ${mini} - ${maxi} m`; curseur.remove(); });
 
   // --- Feuille de route : tableau des points d'intérêt, par km ---
+  // Sur une fiche courte, elle s'appelle « Les incontournables ».
+  // Sans aucun point d'intérêt, la section est masquée.
+  if (P.format === "locale") $("feuille-titre").textContent = "Les incontournables";
+  if (!P.pois.length) { $("feuille-titre").style.display = "none"; $("feuille-bloc").style.display = "none"; }
   // Un clic sur une ligne remonte à la carte, zoome sur le point et ouvre sa bulle.
   $("feuille").innerHTML = P.pois.map((p, i) => `<tr data-i="${i}" data-type="${p.type}">
       <td class="km">${p.km.toFixed(1)}</td>

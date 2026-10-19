@@ -9,7 +9,7 @@
 
  Pour changer l'ORDRE des sections de la page : déplace un bloc entier,
  depuis sa ligne <h2 class="section"> jusqu'à la ligne avant le <h2>
- suivant. Exemple : la section Difficulté est volontairement en dernier.
+ suivant. Exemple : le carnet du jour est volontairement en dernier.
 =======================================================================
 -->
 <html lang="fr">
@@ -18,12 +18,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Parcours</title>  <!-- remplacé automatiquement par le nom du parcours -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/leaflet/leaflet.css">
 <!-- VERSION DES FICHIERS : le "?v=..." force les navigateurs à recharger le style et les
      scripts après une mise à jour. Change ce numéro (ex. la date du jour) quand tu modifies
      style.css ou un fichier .js du dossier assets, ici ET dans l'autre page HTML. -->
-<link rel="stylesheet" href="assets/style.css?v=20261017">
+<link rel="stylesheet" href="assets/style.css?v=20261019d">
 </head>
 <body>
 
@@ -45,7 +45,7 @@
 <main class="contenu">
 
   <!-- ===== PHOTOS ===== -->
-  <h2 class="section">Photos</h2>
+  <h2 class="section" id="photos-titre">Photos</h2>
   <div class="galerie" id="galerie"></div>
 
   <!-- ===== CARTE, PROFIL, TÉLÉCHARGEMENTS ===== -->
@@ -65,20 +65,25 @@
   </div>
 
   <!-- ===== L'ESSENTIEL (encarts pratiques) ===== -->
-  <h2 class="section">L'essentiel</h2>
+  <h2 class="section" id="essentiel-titre">L'essentiel</h2>
   <div class="encarts" id="encarts"></div>
 
   <!-- ===== FEUILLE DE ROUTE (points d'intérêt par km) ===== -->
-  <h2 class="section">Feuille de route</h2>
-  <div class="feuille"><table><thead><tr><th>Km</th><th>Type</th><th>Lieu</th><th>Détail</th></tr></thead><tbody id="feuille"></tbody></table></div>
+  <h2 class="section" id="feuille-titre">Feuille de route</h2>
+  <div class="feuille" id="feuille-bloc"><table><thead><tr><th>Km</th><th>Type</th><th>Lieu</th><th>Détail</th></tr></thead><tbody id="feuille"></tbody></table></div>
 
   <!-- ===== ÉTAPES (une ligne par jour) ===== -->
-  <h2 class="section">Étapes</h2>
-  <div class="defile"><table class="etapes"><thead><tr><th>Jour</th><th>Trajet</th><th>Km</th><th>D+</th><th>Notes</th></tr></thead><tbody id="etapes"></tbody></table></div>
+  <h2 class="section" id="etapes-titre">Étapes</h2>
+  <div class="defile" id="etapes-bloc"><table class="etapes"><thead><tr><th>Jour</th><th>Trajet</th><th>Km</th><th>D+</th><th>Notes</th></tr></thead><tbody id="etapes"></tbody></table></div>
 
-  <!-- ===== DIFFICULTÉ (volontairement en fin de page) ===== -->
-  <h2 class="section">Difficulté</h2>
-  <div class="jauges" id="jauges"></div>
+  <!-- ===== LE CARNET DU JOUR (volontairement en fin de page) =====
+       Une page de carnet par étape, avec le ressenti du jour ("ressenti"
+       dans les étapes de la fiche). Section masquée si aucun ressenti. -->
+  <h2 class="section" id="carnet-titre">Le carnet du jour</h2>
+  <div class="carnet" id="carnet"></div>
+
+  <!-- ===== RETOUR (fiches courtes « Traces du Nord » seulement) ===== -->
+  <p class="retour" id="retour" hidden></p>
 
   <!-- ===== CRÉDITS ===== -->
   <p class="credits" id="credits"></p>
@@ -101,7 +106,7 @@
 
 <!-- Programmes de la page : carte (Leaflet), en-tête commun, construction de la page -->
 <script src="assets/leaflet/leaflet.js"></script>
-<script src="assets/entete.js?v=20261017"></script>
-<script src="assets/parcours.js?v=20261017"></script>
+<script src="assets/entete.js?v=20261019d"></script>
+<script src="assets/parcours.js?v=20261019d"></script>
 </body>
 </html>
