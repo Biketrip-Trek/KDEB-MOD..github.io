@@ -62,7 +62,7 @@ async function appelNord() {
     <a class="appel-nord" href="${SECTION_NORD.lien}">
       <div><span class="cat">Près de chez moi</span>
         <h2>${SECTION_NORD.nom}</h2>
-        <p>${n} boucle${n > 1 ? "s" : ""} à la journée, sur les petites routes et les sentiers que j'ai testés moi-même, avec les incontournables de la région.</p></div>
+        <p>${n} trace${n > 1 ? "s" : ""} sur les petites routes et les sentiers que j'ai testés moi-même : des sorties à la journée et des idées de trek ou de bike trip sur 2-3 jours, avec les incontournables de la région.</p></div>
       <span class="aller">Voir les traces</span>
     </a>`);
 }

@@ -15,6 +15,7 @@ window.PARCOURS["vtt-kemmel-mont-noir-et-mont-des-cats"] = {
   "nom_gras": "boucle VTT de 80 km",
   "activite": "velo",
   "format": "locale",
+  "jours": "1",
   "pratique": "vtt",
   "depart": "Nieppe",
   "lieu": [],

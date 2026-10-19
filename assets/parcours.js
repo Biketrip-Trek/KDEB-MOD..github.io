@@ -137,8 +137,9 @@ function construire(P) {
   const stats = courte ? [
     ["distance", "Distance",        fmt(P.distance_km) + " km"],
     ["dplus",    "Dénivelé +",      fmt(P.denivele_m) + " m"],
+    ["jours",    "Durée",           joursDe(P) > 1 ? joursDe(P) + " jours" : "À la journée"],
     ["velo",     "Pratique",        (PRATIQUES[P.pratique] || {}).nom || "-"],
-    ["jours",    "Départ",          P.depart || "à préciser"],
+    ["sommet",   "Départ",          P.depart || "à préciser"],
     ["sommet",   "Point culminant", fmt(altMax) + " m"]
   ] : [
     ["distance", "Distance",        fmt(P.distance_km) + " km"],
@@ -186,7 +187,9 @@ function construire(P) {
     ["Accès et retour",       ICONES.gare, P.acces],
     ["Infos complémentaires", '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>', P.infos_complementaires]
   ];
-  if (courte) masquer("essentiel-titre", "encarts", "etapes-titre", "etapes-bloc");
+  // Fiche courte : pas d'encarts ; tableau des étapes seulement pour une sortie de plusieurs jours
+  if (courte) masquer("essentiel-titre", "encarts");
+  if (courte && (joursDe(P) < 2 || !(P.etapes || []).length)) masquer("etapes-titre", "etapes-bloc");
   $("encarts").innerHTML = encarts.map(([titre, ic, v]) =>
     `<div class="encart"><h3><svg viewBox="0 0 24 24">${ic}</svg>${titre}</h3>${contenu(v)}</div>`
   ).join("");

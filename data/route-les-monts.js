@@ -15,6 +15,7 @@ window.PARCOURS["route-les-monts"] = {
   "nom_gras": "boucle route de 124 km",
   "activite": "velo",
   "format": "locale",
+  "jours": "1",
   "pratique": "route",
   "depart": "Nieppe",
   "lieu": [],

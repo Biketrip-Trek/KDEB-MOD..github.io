@@ -14,12 +14,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Traces du Nord - Carnet de traces</title>
-<meta name="description" content="Boucles à vélo et à pied dans le Nord : petites routes et sentiers testés sur le terrain, incontournables de la région et traces GPX à télécharger.">
+<meta name="description" content="Sorties à vélo et à pied dans le Nord, à la journée ou sur 2-3 jours : petites routes et sentiers testés sur le terrain, incontournables de la région et traces GPX à télécharger.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/leaflet/leaflet.css">
 <!-- VERSION DES FICHIERS : même numéro que dans index.html et parcours.html -->
-<link rel="stylesheet" href="assets/style.css?v=20261019d">
+<link rel="stylesheet" href="assets/style.css?v=20261019e">
 </head>
 <body class="accueil nord">
 
@@ -29,9 +29,9 @@
   <div class="contenu">
     <div class="etiquettes-lieu"><span class="cat" id="etiquette-section">Traces du Nord</span></div>
     <!-- Grand titre : la partie entre <em> et </em> s'affiche en orange -->
-    <h1>Mes boucles du Nord, <em>testées sur le terrain.</em></h1>
+    <h1>Mes traces du Nord, <em>testées sur le terrain.</em></h1>
     <!-- Phrase d'accroche -->
-    <p class="chapeau">Les meilleures petites routes et les sentiers que j'ai testés moi-même autour de chez moi, avec les incontournables de la région. Quelques lignes, une carte, une trace GPX : il n'y a plus qu'à partir.</p>
+    <p class="chapeau">Les meilleures petites routes et les sentiers que j'ai testés moi-même autour de chez moi, avec les incontournables de la région : des sorties à la journée et des idées de trek ou de bike trip sur 2-3 jours. Quelques lignes, une carte, une trace GPX : il n'y a plus qu'à partir.</p>
     <div class="compteurs" id="compteurs"></div>
   </div>
 </section>
@@ -39,6 +39,7 @@
 <!-- ===== CARTE DE TOUTES LES TRACES + FILTRES ===== -->
 <section class="bloc-carte-accueil">
   <div class="contenu filtres-accueil" id="filtres-pratique"></div>   <!-- Toutes / Route / Gravel / VTT / À pied -->
+  <div class="contenu filtres-accueil filtres-distance" id="filtres-duree"></div>      <!-- À la journée / 2-3 jours -->
   <div class="contenu filtres-accueil filtres-distance" id="filtres-distance"></div>   <!-- distances -->
   <div id="carte-globale"></div>
 </section>
@@ -50,7 +51,7 @@
 </main>
 
 <script src="assets/leaflet/leaflet.js"></script>
-<script src="assets/entete.js?v=20261019d"></script>
-<script src="assets/nord.js?v=20261019d"></script>
+<script src="assets/entete.js?v=20261019e"></script>
+<script src="assets/nord.js?v=20261019e"></script>
 </body>
 </html>

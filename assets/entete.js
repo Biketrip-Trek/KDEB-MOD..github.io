@@ -226,11 +226,15 @@ function libelleCategorie(activite, format) {
 }
 
 // libelleFiche(P) : comme libelleCategorie, mais sait aussi écrire
-// « Traces du Nord · VTT » pour une fiche courte (format "locale").
+// « Traces du Nord · VTT » ou « Traces du Nord · Gravel · 2 jours »
+// pour une fiche courte (format "locale").
 function libelleFiche(P) {
-  if (P.format === "locale") return [SECTION_NORD.nom, (PRATIQUES[P.pratique] || {}).nom].filter(Boolean).join(" · ");
+  if (P.format === "locale") return [SECTION_NORD.nom, (PRATIQUES[P.pratique] || {}).nom, joursDe(P) > 1 ? joursDe(P) + " jours" : ""].filter(Boolean).join(" · ");
   return libelleCategorie(P.activite, P.format);
 }
+
+// joursDe(P) : nombre de jours d'une fiche (1 si le champ "jours" est absent)
+function joursDe(P) { return Math.max(1, parseInt(P.jours, 10) || 1); }
 
 // courbesDeNiveau() dessine un fond sombre avec des courbes de niveau.
 // Il s'affiche quand un parcours n'a pas encore de photo principale,

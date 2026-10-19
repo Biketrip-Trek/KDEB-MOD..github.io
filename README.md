@@ -205,15 +205,15 @@ Pour **masquer** un parcours sans le supprimer, retire simplement sa ligne de `d
 
 ## Traces du Nord (fiches courtes)
 
-Page `nord.html` : les boucles à la journée autour de chez moi, avec une carte commune, des filtres (pratique, distance) et des fiches courtes.
+Page `nord.html` : les traces autour de chez moi, à la journée ou sur 2-3 jours (trek, bike trip), avec une carte commune, des filtres (pratique, durée, distance) et des fiches courtes.
 
 - Liste des traces : `data/liste-nord.js` (un nom par ligne).
-- Fiche courte `data/<nom>.js` avec `"format": "locale"` : `nom`, `nom_gras`, `pratique` (`route`, `gravel`, `vtt` ou `marche`), `depart`, `chapeau` (2 ou 3 lignes), 1 ou 2 `photos`, `incontournables` (nom, km, lat, lon, info).
+- Fiche courte `data/<nom>.js` avec `"format": "locale"` : `nom`, `nom_gras`, `pratique` (`route`, `gravel`, `vtt` ou `marche`), `jours` (`"1"` = à la journée, `"2"` ou `"3"` = plusieurs jours, avec alors un tableau `etapes`), `depart`, `chapeau` (2 ou 3 lignes), 1 ou 2 `photos`, `incontournables` (nom, km, lat, lon, info).
 - Les incontournables s'affichent sur la carte, sur le profil et dans la liste « Les incontournables ».
 - Nom de la section, couleurs des pratiques : `SECTION_NORD` et `PRATIQUES` dans `assets/entete.js`.
 
 Ajouter des traces :
-- **plusieurs d'un coup** : GPX dans le dossier `nord\` des outils, puis `python traces_nord.py --depart "Nieppe"` ; tout le contenu de `a_deposer\` va sur GitHub ;
+- **plusieurs d'un coup** : GPX dans le dossier `nord\` des outils (une sortie de 2-3 jours = un sous-dossier avec un GPX par jour), puis `python traces_nord.py --depart "Nieppe"` ; tout le contenu de `a_deposer\` va sur GitHub ;
 - **une seule** : l'Atelier de parcours, choix « Trace du Nord ».
 
 Dans les deux cas, le départ et l'arrivée sont masqués sur 600 m (ton adresse n'apparaît ni sur la carte ni dans le GPX).

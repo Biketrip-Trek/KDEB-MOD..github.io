@@ -15,6 +15,13 @@
 // RÉGLAGES FACILES À MODIFIER
 // ---------------------------------------------------------------------
 
+// Filtres de durée : [texte du bouton, jours mini, jours maxi]
+const DUREES = [
+  ["Toutes durées", 1, Infinity],
+  ["À la journée", 1, 1],
+  ["2-3 jours", 2, Infinity]
+];
+
 // Filtres de distance : [texte du bouton, km mini, km maxi]
 const TRANCHES_KM = [
   ["Toutes distances", 0, Infinity],
@@ -58,6 +65,7 @@ function construire(traces) {
   const dp = traces.reduce((t, p) => t + (p.denivele_m || 0), 0);
   document.getElementById("compteurs").innerHTML = `
     <div><b class="mono">${traces.length}</b><span>traces</span></div>
+    <div><b class="mono">${traces.filter(p => joursDe(p) > 1).length}</b><span>sur plusieurs jours</span></div>
     <div><b class="mono">${fmtN(km)}</b><span>km tracés</span></div>
     <div><b class="mono">${fmtN(dp)}</b><span>m de dénivelé</span></div>`;
 
@@ -73,7 +81,7 @@ function construire(traces) {
       L.polyline(ll, { color: "#fff", weight: 8, opacity: .85 }),
       ligne,
       L.circleMarker(ll[0], { radius: 6, color: "#fff", weight: 2, fillColor: c, fillOpacity: 1 })
-    ]).bindPopup(`<b>${p.nom} ${p.nom_gras || ""}</b><span class="km">${nomPratique(p)}</span><br>
+    ]).bindPopup(`<b>${p.nom} ${p.nom_gras || ""}</b><span class="km">${nomPratique(p)}${joursDe(p) > 1 ? " · " + joursDe(p) + " jours" : ""}</span><br>
       ${fmtN(p.distance_km)} km · ${fmtN(p.denivele_m)} m D+<br><a href="parcours.html?p=${p.slug}">Voir la trace</a>`);
     g.on("mouseover", () => ligne.setStyle({ weight: 7 }));
     g.on("mouseout", () => ligne.setStyle({ weight: 4 }));
@@ -89,12 +97,14 @@ function construire(traces) {
     ? traces.map(ficheCourte).join("")
     : `<p class="bientot">Les premières traces arrivent bientôt.</p>`;
 
-  // --- 4. Filtres : pratique + distance (les deux se combinent) ---
-  let pratique = "tout", tranche = 0;
+  // --- 4. Filtres : pratique + durée + distance (ils se combinent) ---
+  let pratique = "tout", duree = 0, tranche = 0;
   const appliquer = () => {
     const [, mini, maxi] = TRANCHES_KM[tranche];
+    const [, jmin, jmax] = DUREES[duree];
     const visibles = traces.filter(p =>
-      (pratique === "tout" || p.pratique === pratique) && p.distance_km >= mini && p.distance_km < maxi);
+      (pratique === "tout" || p.pratique === pratique) && joursDe(p) >= jmin && joursDe(p) <= jmax
+      && p.distance_km >= mini && p.distance_km < maxi);
     for (const p of traces) {
       const ok = visibles.includes(p);
       ok ? carte.addLayer(calques.get(p)) : carte.removeLayer(calques.get(p));
@@ -113,6 +123,14 @@ function construire(traces) {
     zoneP.appendChild(bouton(`${coul ? `<span class="pastille" style="background:${coul}"></span>` : ""}${nom} <span class="mono">${n}</span>`,
       id === "tout", b => { pratique = id; activer(zoneP, b); appliquer(); }));
   }
+  // Boutons de durée (seulement s'il y a à la fois des sorties d'un jour et de plusieurs jours)
+  const zoneJ = document.getElementById("filtres-duree");
+  if (traces.some(p => joursDe(p) > 1) && traces.some(p => joursDe(p) === 1)) {
+    DUREES.forEach(([nom, jmin, jmax], i) => {
+      const n = traces.filter(p => joursDe(p) >= jmin && joursDe(p) <= jmax).length;
+      zoneJ.appendChild(bouton(`${nom} <span class="mono">${n}</span>`, i === 0, b => { duree = i; activer(zoneJ, b); appliquer(); }));
+    });
+  } else zoneJ.style.display = "none";
   // Boutons de distance
   const zoneD = document.getElementById("filtres-distance");
   TRANCHES_KM.forEach(([nom], i) => zoneD.appendChild(bouton(nom, i === 0, b => { tranche = i; activer(zoneD, b); appliquer(); })));
@@ -144,12 +162,12 @@ function ficheCourte(p) {
   const nbInc = (p.incontournables || []).length;
   return `<a class="fiche fiche-courte" data-trace="${p.slug}" href="parcours.html?p=${p.slug}">
     <div class="visuel ${p.photo_principale ? "" : "sans-photo"}">${visuel}
-      <span class="etiquette" style="background:${couleurPratique(p)}">${nomPratique(p)}</span></div>
+      <span class="etiquette" style="background:${couleurPratique(p)}">${nomPratique(p)}${joursDe(p) > 1 ? " · " + joursDe(p) + " jours" : ""}</span></div>
     <div class="corps">
       <h4>${p.nom} ${p.nom_gras ? `<em>${p.nom_gras}</em>` : ""}</h4>
       <p class="lieu">${p.depart ? "Départ : " + p.depart : ""}</p>
       ${p.chapeau ? `<p class="resume">${p.chapeau}</p>` : ""}
-      <div class="chiffres mono"><span>${fmtN(p.distance_km)} km</span><span>${fmtN(p.denivele_m)} m D+</span>${nbInc ? `<span>${nbInc} incontournable${nbInc > 1 ? "s" : ""}</span>` : ""}</div>
+      <div class="chiffres mono"><span>${fmtN(p.distance_km)} km</span><span>${fmtN(p.denivele_m)} m D+</span><span>${joursDe(p) > 1 ? joursDe(p) + " j" : "1 j"}</span>${nbInc ? `<span>${nbInc} incontournable${nbInc > 1 ? "s" : ""}</span>` : ""}</div>
     </div>
   </a>`;
 }
