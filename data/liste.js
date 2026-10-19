@@ -19,5 +19,6 @@ window.LISTE_PARCOURS = [
   "ardennes-arbalete",
   "alps-divide-nice-briancon",
   "briancon-cannes",
-  "cretes-du-jura-en-3-jours"
+  "cretes-du-jura-en-3-jours",
+  "entre-tmv-et-la-route-des-vins-3-jours"
 ];
