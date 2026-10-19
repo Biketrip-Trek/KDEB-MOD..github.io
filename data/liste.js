@@ -18,5 +18,6 @@ window.LISTE_PARCOURS = [
   "tmv-vosges-2026",
   "ardennes-arbalete",
   "alps-divide-nice-briancon",
-  "briancon-cannes"
+  "briancon-cannes",
+  "cretes-du-jura-en-3-jours"
 ];
