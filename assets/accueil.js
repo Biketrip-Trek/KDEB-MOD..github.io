@@ -91,8 +91,8 @@ function construireAccueil(parcours) {
   for (const p of parcours) {
     const ll = p.trace.map(x => [x[0], x[1]]);          // [latitude, longitude]
     const c = COULEUR_ACTIVITE[p.activite] || "#e4572e";
-    const halo = L.polyline(ll, { color: "#fff", weight: 8, opacity: .85 }); // liseré blanc
-    const ligne = L.polyline(ll, { color: c, weight: 4 });                   // trace colorée
+    const halo = L.polyline(segments(p.trace), { color: "#fff", weight: 8, opacity: .85 }); // liseré blanc (sans trait droit aux coupures)
+    const ligne = L.polyline(segments(p.trace), { color: c, weight: 4 });   // trace colorée
     const depart = L.circleMarker(ll[0], { radius: 6, color: "#fff", weight: 2, fillColor: c, fillOpacity: 1 });
     // Bulle qui s'ouvre au clic sur une trace
     const bulle = `<b>${p.nom} ${p.nom_gras || ""}</b><span class="km">${libelleCategorie(p.activite, p.format)}</span><br>

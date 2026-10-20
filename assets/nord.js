@@ -76,9 +76,9 @@ function construire(traces) {
   for (const p of traces) {
     const ll = p.trace.map(x => [x[0], x[1]]);
     const c = couleurPratique(p);
-    const ligne = L.polyline(ll, { color: c, weight: 4 });
+    const ligne = L.polyline(segments(p.trace), { color: c, weight: 4 });   // sans trait droit aux coupures
     const g = L.featureGroup([
-      L.polyline(ll, { color: "#fff", weight: 8, opacity: .85 }),
+      L.polyline(segments(p.trace), { color: "#fff", weight: 8, opacity: .85 }),
       ligne,
       L.circleMarker(ll[0], { radius: 6, color: "#fff", weight: 2, fillColor: c, fillOpacity: 1 })
     ]).bindPopup(`<b>${p.nom} ${p.nom_gras || ""}</b><span class="km">${nomPratique(p)}${joursDe(p) > 1 ? " · " + joursDe(p) + " jours" : ""}</span><br>

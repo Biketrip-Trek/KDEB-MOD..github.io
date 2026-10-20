@@ -29,6 +29,7 @@ import urllib.request, urllib.parse, urllib.error
 # RÉGLAGES (mêmes valeurs que gpx2pois.py)
 # ---------------------------------------------------------------------
 RAYON_MIN, RAYON_MAX = 100, 10000   # zone acceptée, en mètres
+COUPURE_M = 1000                    # saut entre deux points au-delà duquel la trace est coupée (comme le site)
 MORCEAU_KM = 25                     # longueur des morceaux interrogés un par un
 PAUSE_S = 5                         # pause entre deux requêtes (service gratuit)
 ATTENTES_S = [20, 60, 120]          # serveur saturé : on attend 20 s, puis 60 s, puis 120 s
@@ -149,21 +150,28 @@ def generer(nom, rayon):
     points = [(float(a), float(b)) for a, b in re.findall(r'<trkpt\s+lat="([\d.-]+)"\s+lon="([\d.-]+)"', texte)]
     if len(points) < 2:
         raise RuntimeError("aucun point dans le GPX")
-    cumul = [0.0]
+    # Distance cumulée, comme sur le site : un saut de plus de COUPURE_M entre deux
+    # points (deux GPX qui ne se raccordent pas) n'ajoute pas de km
+    cumul, coupure = [0.0], set()
     for i in range(1, len(points)):
-        cumul.append(cumul[-1] + distance_m(points[i - 1], points[i]))
+        d = distance_m(points[i - 1], points[i])
+        if d > COUPURE_M:
+            coupure.add(i)
+        cumul.append(cumul[-1] + (0 if d > COUPURE_M else d))
 
-    # Un point de requête tous les 250 m (plus espacé pour une grande zone : jusqu'à 1 km)
+    # Un point de requête tous les 250 m (plus espacé pour une grande zone : jusqu'à 1 km).
+    # Morceaux de ~25 km ; une coupure ferme le morceau en cours, pour ne pas
+    # chercher de POI le long d'une ligne droite entre deux GPX.
     pas = max(250, min(1000, rayon / 4))
-    simplifie, dernier = [], -1e9
+    morceaux, courant, dernier, debut = [], [], -1e9, 0.0
     for i, p in enumerate(points):
-        if cumul[i] - dernier >= pas or i == len(points) - 1:
-            simplifie.append((p, cumul[i])); dernier = cumul[i]
-    morceaux, courant = [], []
-    for p, c in simplifie:
-        courant.append(p)
-        if c >= (len(morceaux) + 1) * MORCEAU_KM * 1000:
-            morceaux.append(courant); courant = [p]
+        if i in coupure:
+            if len(courant) > 1: morceaux.append(courant)
+            courant, dernier, debut = [], -1e9, cumul[i]
+        if cumul[i] - dernier >= pas or i == len(points) - 1 or (i + 1) in coupure:
+            courant.append(p); dernier = cumul[i]
+            if cumul[i] - debut >= MORCEAU_KM * 1000:
+                morceaux.append(courant); courant, debut = [p], cumul[i]
     if len(courant) > 1 or not morceaux:
         morceaux.append(courant)
 

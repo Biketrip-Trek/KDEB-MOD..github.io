@@ -311,6 +311,26 @@ function fondsDeCarte(carte) {
   });
 }
 
+// COUPURE_M : au-delà de cette distance entre deux points qui se suivent, la
+// trace est considérée comme coupée (deux fichiers GPX qui ne se raccordent pas :
+// navette, enregistrement arrêté...). On ne trace pas de ligne droite entre eux.
+const COUPURE_M = 1000;
+function ecartM(a, b) {
+  const r = Math.PI / 180, l1 = a[0] * r, l2 = b[0] * r;
+  const h = Math.sin((l2 - l1) / 2) ** 2 + Math.cos(l1) * Math.cos(l2) * Math.sin((b[1] - a[1]) * r / 2) ** 2;
+  return 12742000 * Math.asin(Math.sqrt(h));
+}
+// segments(trace) : la trace en morceaux continus, [[ [lat,lon], ... ], ...],
+// à donner à L.polyline (qui accepte plusieurs morceaux).
+function segments(trace) {
+  const out = [];
+  trace.forEach((p, i) => {
+    if (!i || ecartM(trace[i - 1], p) > COUPURE_M) out.push([]);
+    out[out.length - 1].push([p[0], p[1]]);
+  });
+  return out;
+}
+
 // silhouette(trace) dessine la forme de la trace en orange, en petit.
 // Sert de vignette sur l'accueil quand un parcours n'a pas de photo.
 // "trace" est la liste des points [latitude, longitude, altitude, km].
@@ -325,8 +345,15 @@ function silhouette(trace, largeur = 400, hauteur = 260, marge = 26) {
   // On garde au plus ~500 points : c'est largement assez pour une vignette
   const pas = Math.max(1, Math.floor(trace.length / 500));
   let d = "";
-  for (let i = 0; i < trace.length; i += pas) {
-    d += (d ? "L" : "M") + (ox + (xs[i] - x0) * echelle).toFixed(1) + " " + (hauteur - oy - (ys[i] - y0) * echelle).toFixed(1);
+  // Une coupure dans la trace (voir COUPURE_M) : on lève le crayon (« M ») au lieu de relier
+  const coupures = new Set();
+  trace.forEach((p, i) => { if (i && ecartM(trace[i - 1], p) > COUPURE_M) coupures.add(i); });
+  let leve = true;
+  for (let i = 0; i < trace.length; i++) {
+    if (coupures.has(i)) leve = true;
+    if (i % pas && i !== trace.length - 1 && !leve && !coupures.has(i + 1)) continue;
+    d += (leve ? "M" : "L") + (ox + (xs[i] - x0) * echelle).toFixed(1) + " " + (hauteur - oy - (ys[i] - y0) * echelle).toFixed(1);
+    leve = false;
   }
   return `<svg viewBox="0 0 ${largeur} ${hauteur}" class="silhouette"><path d="${d}"/></svg>`;
 }

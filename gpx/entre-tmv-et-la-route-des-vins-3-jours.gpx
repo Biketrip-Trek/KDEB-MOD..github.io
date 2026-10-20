@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="carnet-de-traces" xmlns="http://www.topografix.com/GPX/1/1">
-  <metadata><name>Entre TMV et la route des vins 3 jours</name></metadata>
-  <trk><name>Entre TMV et la route des vins 3 jours</name><trkseg>
+  <metadata><name>Entre TMV et la route des vins en 3 jours</name></metadata>
+  <trk><name>Entre TMV et la route des vins en 3 jours</name><trkseg>
     <trkpt lat="48.462468" lon="7.481155"><ele>188.6</ele></trkpt>
     <trkpt lat="48.462378" lon="7.481157"><ele>188.6</ele></trkpt>
     <trkpt lat="48.462379" lon="7.480978"><ele>188.6</ele></trkpt>
@@ -3292,6 +3292,7 @@
     <trkpt lat="48.145378" lon="7.129367"><ele>944.3</ele></trkpt>
     <trkpt lat="48.145292" lon="7.129605"><ele>944.3</ele></trkpt>
     <trkpt lat="48.145260" lon="7.129660"><ele>944.3</ele></trkpt>
+  </trkseg><trkseg>
     <trkpt lat="48.131045" lon="7.130553"><ele>713.1</ele></trkpt>
     <trkpt lat="48.131047" lon="7.130538"><ele>713.1</ele></trkpt>
     <trkpt lat="48.131055" lon="7.129975"><ele>713.1</ele></trkpt>

@@ -240,8 +240,8 @@ function carteProfilFeuille(P) {
   // --- La carte ---
   const carte = L.map("carte", { scrollWheelZoom: false });
   fondsDeCarte(carte);
-  L.polyline(ll, { color: "#fff", weight: 8, opacity: .8 }).addTo(carte);  // liseré blanc
-  const ligne = L.polyline(ll, { color: "#e4572e", weight: 4 }).addTo(carte); // trace orange
+  L.polyline(segments(pts), { color: "#fff", weight: 8, opacity: .8 }).addTo(carte);  // liseré blanc (sans trait droit aux coupures)
+  const ligne = L.polyline(segments(pts), { color: "#e4572e", weight: 4 }).addTo(carte); // trace orange
   carte.fitBounds(ligne.getBounds(), { padding: [24, 24] });                  // cadrage sur la trace
 
   // Pastille ronde colorée avec une icône (marqueurs de la carte)

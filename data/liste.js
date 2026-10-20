@@ -20,5 +20,6 @@ window.LISTE_PARCOURS = [
   "alps-divide-nice-briancon",
   "briancon-cannes",
   "cretes-du-jura-en-3-jours",
-  "entre-tmv-et-la-route-des-vins-3-jours"
+  "entre-tmv-et-la-route-des-vins-3-jours",
+  "les-cevennes-au-printemps-en-3-jours"
 ];
