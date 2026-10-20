@@ -3,14 +3,20 @@
 window.ETAT_POIS = {
  "cretes-du-jura-en-3-jours": {
   "etat": "ok",
-  "maj": "2026-10-20T09:03Z",
+  "maj": "2026-10-20T09:22Z",
   "poi": 51,
   "rayon": 1000
  },
  "les-cevennes-au-printemps-en-3-jours": {
   "etat": "ok",
-  "maj": "2026-10-20T09:03Z",
+  "maj": "2026-10-20T09:22Z",
   "poi": 98,
   "rayon": 1000
+ },
+ "tmv-vosges-2026": {
+  "etat": "ok",
+  "maj": "2026-10-20T09:22Z",
+  "poi": 938,
+  "rayon": 3000
  }
 };
