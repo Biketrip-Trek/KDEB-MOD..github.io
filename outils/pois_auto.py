@@ -26,7 +26,7 @@
 #      suivant (au plus tard dans l'heure) reprend là où il s'était arrêté.
 #   4. Il essaie d'abord le serveur qui a répondu en dernier, puis les autres
 #      dans l'ordre de fiabilité observé.
-#   5. Il écrit son état dans data/pois/_etat.js : la page du parcours affiche
+#   5. Il écrit son état dans data/pois/etat.js : la page du parcours affiche
 #      « points d'intérêt en cours de recherche » tant que ce n'est pas fini.
 #
 #   Durée habituelle : environ 1 min par tranche de 25 km, plus 1 min pour
@@ -93,7 +93,7 @@ RECHERCHES = [
 VERSION_ROBOT = 2
 SIGNATURE_RECHERCHES = hashlib.md5((str(RECHERCHES) + f"v{VERSION_ROBOT}").encode()).hexdigest()[:6]
 ESSAI = "--essai" in sys.argv
-FICHIER_ETAT = "data/pois/_etat.js"
+FICHIER_ETAT = "data/pois/etat.js"   # sans « _ » au début : GitHub Pages masque ces fichiers
 
 
 def distance_m(a, b):

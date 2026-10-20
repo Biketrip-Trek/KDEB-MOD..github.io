@@ -95,8 +95,8 @@ const fmt = n => n == null ? "-" : Number(n).toLocaleString("fr-FR");
 const slug = new URLSearchParams(location.search).get("p") || "flandrien-challenge";
 // Charge textes + trace (fonction définie dans entete.js), puis construit la page.
 // En cas de problème, un message rouge explique quoi corriger.
-// data/pois/_etat.js (écrit par le robot POI) dit si les points d'intérêt sont prêts.
-Promise.all([chargerParcours(slug), chargerScript("data/pois/_etat.js")]).then(([P]) => {
+// data/pois/etat.js (écrit par le robot POI) dit si les points d'intérêt sont prêts.
+Promise.all([chargerParcours(slug), chargerScript("data/pois/etat.js")]).then(([P]) => {
   if (P) construire(P);
   else $("titre").textContent = "Parcours introuvable";
   afficherErreurs();

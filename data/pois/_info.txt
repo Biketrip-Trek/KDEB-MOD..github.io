@@ -2,7 +2,7 @@ Dossier des points d'intérêt trouvés automatiquement dans OpenStreetMap.
 
 <nom>.js   : points d'un parcours, générés par le robot POI (outils/pois_auto.py, lancé par GitHub
              après chaque publication et toutes les heures), ou par l'ancien outil gpx2pois.py du PC.
-_etat.js   : avancement du robot, fiche par fiche (ok, en_attente, erreur).
+etat.js    : avancement du robot, fiche par fiche (ok, en_attente, erreur).
 _cache/    : tranches déjà obtenues par le robot pendant une recherche pas encore terminée.
 
 Ne pas modifier ces fichiers à la main : pour masquer un point, ajoute son code "osm"

@@ -28,7 +28,7 @@ data/                 Contenu des parcours
   <nom>.js            TEXTES d'un parcours (c'est toi qui les modifies)
   traces/<nom>.js     TRACE d'un parcours (générée par l'Atelier, ne pas modifier)
   pois/<nom>.js       POINTS D'INTÉRÊT automatiques (générés par le robot POI, facultatif)
-  pois/_etat.js       Avancement du robot POI, fiche par fiche (généré)
+  pois/etat.js        Avancement du robot POI, fiche par fiche (généré)
   pois/_cache/        Tranches déjà obtenues par le robot, en attente de la fin (généré)
 
 outils/pois_auto.py   Le robot POI (lancé par GitHub, voir section 3)
