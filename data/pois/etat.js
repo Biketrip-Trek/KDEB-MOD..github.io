@@ -14,11 +14,10 @@ window.ETAT_POIS = {
   "rayon": 1000
  },
  "entre-tmv-et-la-route-des-vins-3-jours": {
-  "etat": "en_attente",
-  "maj": "2026-10-20T10:35Z",
-  "obtenus": 2,
-  "rayon": 1000,
-  "total": 10
+  "etat": "ok",
+  "maj": "2026-10-20T12:32Z",
+  "poi": 852,
+  "rayon": 1000
  },
  "les-cevennes-au-printemps-en-3-jours": {
   "etat": "ok",
