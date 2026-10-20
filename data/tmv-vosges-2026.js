@@ -126,5 +126,5 @@ window.PARCOURS["tmv-vosges-2026"] = {
   "pois": [],
   "pois_exclus": [],
   "pois_auto": true,
-  "pois_rayon_m": 3000
+  "pois_rayon_m": 1000
 };

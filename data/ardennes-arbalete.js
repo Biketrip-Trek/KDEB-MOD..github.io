@@ -61,5 +61,7 @@ window.PARCOURS["ardennes-arbalete"] = {
   "date_maj": "octobre 2026",
   "origine_trace": "Trace enregistrée par Kévin.",
   "pois": [],
-  "pois_exclus": []
+  "pois_exclus": [],
+  "pois_auto": true,
+  "pois_rayon_m": 1000
 };

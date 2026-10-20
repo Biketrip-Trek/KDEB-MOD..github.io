@@ -69,6 +69,8 @@ window.PARCOURS["entre-tmv-et-la-route-des-vins-3-jours"] = {
   ],
   "pois": [],
   "pois_exclus": [],
+  "pois_auto": true,
+  "pois_rayon_m": 1000,
   "auteur": "Kévin",
   "date_trace": "juillet 2024",
   "date_maj": "octobre 2026",
