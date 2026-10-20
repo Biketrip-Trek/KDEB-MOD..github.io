@@ -48,7 +48,7 @@ window.PARCOURS["des-lacs-et-des-copains-en-2-jours"] = {
   "pois": [],
   "pois_exclus": [],
   "auteur": "Kévin",
-  "date_trace": "Avril 2025",
+  "date_trace": "avril 2025",
   "date_maj": "octobre 2026",
   "origine_trace": "Trace enregistrée par Kévin."
 };

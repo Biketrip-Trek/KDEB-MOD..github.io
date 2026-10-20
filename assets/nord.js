@@ -166,7 +166,7 @@ function ficheCourte(p) {
     <div class="corps">
       <h4>${p.nom} ${p.nom_gras ? `<em>${p.nom_gras}</em>` : ""}</h4>
       <p class="lieu">${p.depart ? "Départ : " + p.depart : ""}</p>
-      ${p.chapeau ? `<p class="resume">${p.chapeau}</p>` : ""}
+      ${propre(p.chapeau) ? `<p class="resume">${propre(p.chapeau)}</p>` : ""}
       <div class="chiffres mono"><span>${fmtN(p.distance_km)} km</span><span>${fmtN(p.denivele_m)} m D+</span><span>${joursDe(p) > 1 ? joursDe(p) + " j" : "1 j"}</span>${nbInc ? `<span>${nbInc} incontournable${nbInc > 1 ? "s" : ""}</span>` : ""}</div>
     </div>
   </a>`;

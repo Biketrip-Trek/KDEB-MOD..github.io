@@ -62,6 +62,7 @@ const PRATIQUES = {
 
 
 // Liens du pied de page, en bas de toutes les pages.
+// Un lien laissé à "#" n'est pas affiché (pas de lien qui ne mène nulle part).
 // Remplace les "#" par tes vrais liens, par exemple :
 //   { texte: "Instagram", lien: "https://www.instagram.com/ton-compte" }
 //   { texte: "Contact",   lien: "mailto:ton.adresse@mail.fr" }
@@ -126,7 +127,7 @@ const MENTION_CARTES = "Fonds de carte © Esri, contributeurs OpenStreetMap, Ope
   pied.className = "pied";
   pied.innerHTML = `
     <div class="contenu">
-      <div>${PIED_DE_PAGE.map(l => `<a href="${l.lien}">${l.texte}</a>`).join("")}</div>
+      <div>${PIED_DE_PAGE.filter(l => l.lien && l.lien !== "#").map(l => `<a href="${l.lien}">${l.texte}</a>`).join("")}</div>
       <span>${MENTION_CARTES}</span>
     </div>`;
   document.body.appendChild(pied);
@@ -231,6 +232,16 @@ function libelleCategorie(activite, format) {
 function libelleFiche(P) {
   if (P.format === "locale") return [SECTION_NORD.nom, (PRATIQUES[P.pratique] || {}).nom, joursDe(P) > 1 ? joursDe(P) + " jours" : ""].filter(Boolean).join(" · ");
   return libelleCategorie(P.activite, P.format);
+}
+
+// propre(v) : texte prêt à afficher, sans les mentions de rappel « [À compléter] ... ».
+// Tout ce qui suit « [À compléter] » est retiré (c'est la consigne pour toi, pas pour le
+// visiteur) ; « à compléter » seul devient vide. Une liste [ ] garde ses lignes non vides.
+// Tes fichiers ne changent pas : la mention reste visible quand tu les ouvres.
+function propre(v) {
+  if (Array.isArray(v)) return v.map(propre).filter(Boolean);
+  if (v == null) return "";
+  return String(v).replace(/\s*\[\s*à compléter\s*\][\s\S]*$/i, "").replace(/^\s*à compléter\s*\.?\s*$/i, "").trim();
 }
 
 // joursDe(P) : nombre de jours d'une fiche (1 si le champ "jours" est absent)

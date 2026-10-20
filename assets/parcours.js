@@ -117,7 +117,7 @@ function construire(P) {
   const cat = libelleFiche(P);   // ex. « Vélo · À la journée » ou « Traces du Nord · VTT »
   $("lieu").innerHTML = (cat ? `<span class="cat">${cat}</span>` : "") + (P.lieu || []).map(l => `<span>${l}</span>`).join("");
   $("titre").innerHTML = `${P.nom}${P.nom_gras ? ` <em>${P.nom_gras}</em>` : ""}`; // nom_gras = partie en orange
-  $("chapeau").textContent = P.chapeau || P.description_courte || "";
+  $("chapeau").textContent = propre(P.chapeau) || propre(P.description_courte);
 
   // --- Vélo ou randonnée ? Certains chiffres et encarts changent ---
   const rando = P.activite === "rando";
@@ -130,6 +130,7 @@ function construire(P) {
   // --- Barre de chiffres ---
   // Chaque ligne : [icône, intitulé, valeur]. On peut en retirer ou en ajouter.
   // Les 4 premières sont communes, les suivantes dépendent de l'activité.
+  // Une case sans valeur (champ vide ou « à compléter ») n'est pas affichée.
   const terrain = [
     P.pct_hors_bitume != null ? P.pct_hors_bitume + " % piste" : null,
     P.pct_singletrack != null ? P.pct_singletrack + " % single" : null
@@ -147,22 +148,22 @@ function construire(P) {
     ["jours",    "Durée",           P.jours ? P.jours + " j" : P.duree],
     ["sommet",   "Point culminant", fmt(altMax) + " m"],
     ...(rando
-      ? [["temps",   "Temps de marche", P.temps_marche || "à compléter"]]   // randonnée
-      : [["terrain", "Hors bitume",     terrain || "à compléter"],          // vélo
-         ["velo",    "Vélo conseillé",  P.velo || "-"]])
-  ];
+      ? [["temps",   "Temps de marche", propre(P.temps_marche)]]   // randonnée
+      : [["terrain", "Hors bitume",     terrain],                  // vélo
+         ["velo",    "Vélo conseillé",  propre(P.velo)]])
+  ].filter(([, , valeur]) => valeur);
   $("stats").innerHTML = stats.map(([i, intitule, valeur]) =>
     `<div class="stat"><svg viewBox="0 0 24 24">${STAT_ICONES[i]}</svg><div><span>${intitule}</span><b>${valeur}</b></div></div>`
   ).join("");
 
   // --- Le carnet du jour : une page de carnet par étape qui a un "ressenti" ---
   // Les étapes sans ressenti n'ont pas de page. Aucune : la section est masquée.
-  const pages = (P.etapes || []).filter(e => (e.ressenti || "").trim());
+  const pages = (P.etapes || []).filter(e => propre(e.ressenti));
   if (pages.length) {
     $("carnet").innerHTML = pages.map(e => `<article class="page-carnet">
         <div class="jour">${e.jour || ""}</div>
         <div class="trajet">${[e.de, e.a].filter(Boolean).join(" > ")}</div>
-        <p class="mots">${e.ressenti.trim()}</p>
+        <p class="mots">${propre(e.ressenti)}</p>
       </article>`).join("");
   } else {
     $("carnet-titre").style.display = "none";
@@ -172,7 +173,9 @@ function construire(P) {
   // --- L'essentiel : les encarts pratiques ---
   // Chaque ligne : [titre de l'encart, icône, champ de la fiche].
   // Un champ entre [ ] dans la fiche devient une liste à puces.
-  const contenu = v => Array.isArray(v) ? `<ul>${v.map(x => `<li>${x}</li>`).join("")}</ul>` : `<p>${v || "à compléter"}</p>`;
+  // Un encart vide (ou seulement « à compléter ») n'est pas affiché.
+  const contenu = v => Array.isArray(v) ? `<ul>${v.map(x => `<li>${x}</li>`).join("")}</ul>` : `<p>${v}</p>`;
+  const rempli = v => Array.isArray(v) ? v.length > 0 : !!v;
   // En randonnée : « Sentiers et balisage » et « Équipement » en plus,
   // et certains titres changent (terrain, nuits).
   const encarts = [
@@ -188,9 +191,10 @@ function construire(P) {
     ["Infos complémentaires", '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>', P.infos_complementaires]
   ];
   // Fiche courte : pas d'encarts ; tableau des étapes seulement pour une sortie de plusieurs jours
-  if (courte) masquer("essentiel-titre", "encarts");
+  const encartsRemplis = encarts.map(([t, ic, v]) => [t, ic, propre(v)]).filter(([, , v]) => rempli(v));
+  if (courte || !encartsRemplis.length) masquer("essentiel-titre", "encarts");
   if (courte && (joursDe(P) < 2 || !(P.etapes || []).length)) masquer("etapes-titre", "etapes-bloc");
-  $("encarts").innerHTML = encarts.map(([titre, ic, v]) =>
+  $("encarts").innerHTML = encartsRemplis.map(([titre, ic, v]) =>
     `<div class="encart"><h3><svg viewBox="0 0 24 24">${ic}</svg>${titre}</h3>${contenu(v)}</div>`
   ).join("");
 
@@ -199,23 +203,25 @@ function construire(P) {
   // (utile en randonnée : ex. "6 h").
   const avecTemps = (P.etapes || []).some(e => e.duree);
   if (avecTemps) document.querySelector("table.etapes thead th:nth-child(4)").insertAdjacentHTML("afterend", "<th>Temps</th>");
+  // Trajet : « départ > arrivée », ou ce qui est connu, ou « - » si rien n'est rempli.
+  // Colonne « Notes » retirée si aucune étape n'a de note.
+  const avecNotes = (P.etapes || []).some(e => propre(e.note));
+  if (!avecNotes) { const th = document.querySelector("table.etapes thead th:last-child"); if (th) th.remove(); }
   $("etapes").innerHTML = (P.etapes || []).map(e =>
-    `<tr><td><b>${e.jour}</b></td><td>${e.de} > ${e.a}</td><td class="mono">${fmt(e.km)}</td><td class="mono">${e.dplus == null ? "-" : fmt(e.dplus) + " m"}</td>${avecTemps ? `<td class="mono">${e.duree || "-"}</td>` : ""}<td>${e.note || ""}</td></tr>`
+    `<tr><td class="nw"><b>${e.jour}</b></td><td>${[e.de, e.a].filter(Boolean).join(" > ") || "-"}</td><td class="mono nw">${fmt(e.km)}</td><td class="mono nw">${e.dplus == null ? "-" : fmt(e.dplus) + " m"}</td>${avecTemps ? `<td class="mono nw">${e.duree || "-"}</td>` : ""}${avecNotes ? `<td>${propre(e.note)}</td>` : ""}</tr>`
   ).join("");
 
-  // --- Galerie photos (ou 4 cases "Photo à venir" s'il n'y en a pas) ---
+  // --- Galerie photos (section masquée s'il n'y en a pas) ---
   const gal = $("galerie");
-  if (courte && !(P.photos || []).length) masquer("photos-titre", "galerie");   // pas de cases « à venir » sur une fiche courte
-  gal.innerHTML = (P.photos || []).length
-    ? P.photos.map(ph => `<figure><img src="photos/${P.slug}/${ph.fichier}" alt="${ph.legende || ""}" loading="lazy"><figcaption>${ph.legende || ""}</figcaption></figure>`).join("")
-    : [1, 2, 3, 4].map(i => `<figure><div class="vide">Photo ${i} à venir</div></figure>`).join("");
+  if (!(P.photos || []).length) masquer("photos-titre", "galerie");
+  gal.innerHTML = (P.photos || []).map(ph => `<figure><img src="photos/${P.slug}/${ph.fichier}" alt="${ph.legende || ""}" loading="lazy"><figcaption>${ph.legende || ""}</figcaption></figure>`).join("");
   visionneuse(P);
 
   // --- Fiche courte : lien de retour vers toutes les traces du Nord ---
   if (courte) { $("retour").hidden = false; $("retour").innerHTML = `<a href="${SECTION_NORD.lien}">Retour aux ${SECTION_NORD.nom}</a>`; }
 
   // --- Crédits en bas de page ---
-  $("credits").innerHTML = `<b>Parcours tracé et ${rando ? "marché" : "roulé"} par ${P.auteur || "Kévin"}${P.date_trace ? " en " + P.date_trace : ""}.</b> ${P.date_maj ? "Mise à jour : " + P.date_maj + ". " : ""}Un chemin fermé, un point d'eau à sec ? Écris-moi pour que je corrige la trace. ${P.origine_trace || ""}`;
+  $("credits").innerHTML = `<b>Parcours tracé et ${rando ? "marché" : "roulé"} par ${P.auteur || "Kévin"}${P.date_trace ? (/^\d/.test(P.date_trace) ? " le " : " en ") + P.date_trace : ""}.</b> ${P.date_maj ? "Mise à jour : " + P.date_maj + ". " : ""}Un chemin fermé, un point d'eau à sec ? Écris-moi pour que je corrige la trace. ${P.origine_trace || ""}`;
 
   carteProfilFeuille(P);
 }

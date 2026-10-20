@@ -200,6 +200,7 @@ h2.section::after { content: ""; flex: 1; height: 1px; background: var(--ligne);
    --------------------------------------------------------------------- */
 .etapes { width: 100%; border-collapse: collapse; background: var(--carte); border: 1px solid var(--ligne); font-size: 15px; }
 .etapes th, .etapes td { padding: 12px 14px; text-align: left; border-top: 1px solid var(--ligne); }
+.etapes td.nw { white-space: nowrap; }
 .etapes th { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--doux); font-weight: 600; border-top: 0; }
 
 
