@@ -31,8 +31,11 @@ import urllib.request, urllib.parse, urllib.error
 RAYON_MIN, RAYON_MAX = 100, 10000   # zone acceptée, en mètres
 COUPURE_M = 1000                    # saut entre deux points au-delà duquel la trace est coupée (comme le site)
 MORCEAU_KM = 25                     # longueur des morceaux interrogés un par un
-PAUSE_S = 5                         # pause entre deux requêtes (service gratuit)
-ATTENTES_S = [20, 60, 120]          # serveur saturé : on attend 20 s, puis 60 s, puis 120 s
+PAUSE_S = 3                         # pause entre deux requêtes (service gratuit)
+ATTENTES_S = [15, 45]               # serveurs saturés : on attend 15 s, puis 45 s, avant de réessayer
+DELAI_REQUETE_S = 90                # attente maximale d'une réponse (avant : 240 s)
+BUDGET_S = 12 * 60                  # durée maximale du robot : au-delà il s'arrête sans rien écrire de faux
+DEBUT = time.time()
 SERVEURS = [
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
@@ -126,10 +129,14 @@ def interroger(question):
             nom_serveur = serveur.split("/")[2]
             try:
                 req = urllib.request.Request(serveur, data=donnees, headers={"User-Agent": "carnet-de-traces/1.0 (site perso)"})
-                with urllib.request.urlopen(req, timeout=240) as r:
+                if time.time() - DEBUT > BUDGET_S:
+                    raise RuntimeError(f"temps maximal de {BUDGET_S // 60} min dépassé, POI non mis à jour (relancer plus tard)")
+                with urllib.request.urlopen(req, timeout=DELAI_REQUETE_S) as r:
                     rep = json.loads(r.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
                 print(f"    {nom_serveur} : erreur {e.code}"); continue
+            except RuntimeError:
+                raise
             except Exception as e:
                 print(f"    {nom_serveur} ne répond pas ({type(e).__name__})"); continue
             remarque = rep.get("remark", "")
@@ -137,7 +144,7 @@ def interroger(question):
                 print(f"    {nom_serveur} : réponse incomplète ({remarque[:120]})"); continue
             elements = rep.get("elements", [])
             if elements:
-                print(f"    {nom_serveur} : {len(elements)} éléments")
+                print(f"::notice title=Overpass::{nom_serveur} : {len(elements)} éléments ({int(time.time() - DEBUT)} s)", flush=True)
                 return elements
             vides += 1
             print(f"    {nom_serveur} : aucune réponse utile ({vides})")
@@ -162,7 +169,7 @@ def generer(nom, rayon):
     # Un point de requête tous les 250 m (plus espacé pour une grande zone : jusqu'à 1 km).
     # Morceaux de ~25 km ; une coupure ferme le morceau en cours, pour ne pas
     # chercher de POI le long d'une ligne droite entre deux GPX.
-    pas = max(250, min(1000, rayon / 4))
+    pas = max(250, min(1000, rayon / 2))     # 1 km de zone > un point tous les 500 m
     morceaux, courant, dernier, debut = [], [], -1e9, 0.0
     for i, p in enumerate(points):
         if i in coupure:
@@ -182,8 +189,8 @@ def generer(nom, rayon):
     for n, m in enumerate(morceaux, 1):
         ligne = ",".join(f"{lat:.5f},{lon:.5f}" for lat, lon in m)
         filtres = "\n".join(f'  nwr["{cle}"~"^({"|".join(vals)})$"](around:{rayon},{ligne});' for cle, vals in par_cle.items())
-        print(f"  morceau {n}/{len(morceaux)}...")
-        recus = interroger(f"[out:json][timeout:180];\n(\n{filtres}\n);\nout center tags;")
+        print(f"::notice title={nom}::morceau {n}/{len(morceaux)} ({int(time.time() - DEBUT)} s)", flush=True)
+        recus = interroger(f"[out:json][timeout:80];\n(\n{filtres}\n);\nout center tags;")
         par_morceau.append(len(recus))
         elements += recus
         time.sleep(PAUSE_S)
