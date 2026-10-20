@@ -1,0 +1,46 @@
+# =====================================================================
+# Robot POI : à chaque mise à jour d'une trace ou d'une fiche, GitHub
+# lance outils/pois_auto.py sur ses serveurs (qui ont accès à
+# OpenStreetMap), puis enregistre les POI trouvés dans data/pois/.
+# Lancement à la main possible : onglet Actions > Robot POI > Run workflow.
+# =====================================================================
+name: Robot POI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "gpx/**"
+      - "data/*.js"
+      - "outils/pois_auto.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: robot-poi
+  cancel-in-progress: false
+
+jobs:
+  pois:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Chercher les POI des fiches qui en demandent
+        run: python3 outils/pois_auto.py
+
+      - name: Enregistrer les POI sur le site
+        run: |
+          git config user.name "Robot POI"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add -A data/pois
+          if git diff --cached --quiet; then
+            echo "Aucun changement de POI."
+          else
+            git commit -m "POI automatiques (OpenStreetMap)"
+            git pull --rebase origin main
+            git push origin main
+          fi

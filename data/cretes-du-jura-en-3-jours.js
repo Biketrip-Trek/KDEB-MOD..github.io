@@ -95,5 +95,7 @@ window.PARCOURS["cretes-du-jura-en-3-jours"] = {
   "auteur": "Kévin",
   "date_trace": "juillet",
   "date_maj": "octobre 2026",
-  "origine_trace": "Trace enregistrée par Kévin."
+  "origine_trace": "Trace enregistrée par Kévin.",
+  "pois_auto": true,
+  "pois_rayon_m": 1000
 };
