@@ -214,6 +214,7 @@ function construire(P) {
   // --- Galerie photos (section masquée s'il n'y en a pas) ---
   const gal = $("galerie");
   if (!(P.photos || []).length) masquer("photos-titre", "galerie");
+  gal.dataset.n = Math.min((P.photos || []).length, 6);   // disposition de la mosaïque (voir style.css, section 15)
   gal.innerHTML = (P.photos || []).map(ph => `<figure><img src="photos/${P.slug}/${ph.fichier}" alt="${ph.legende || ""}" loading="lazy"><figcaption>${ph.legende || ""}</figcaption></figure>`).join("");
   visionneuse(P);
 

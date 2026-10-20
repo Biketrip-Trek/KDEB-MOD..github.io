@@ -290,14 +290,28 @@ h2.section::after { content: ""; flex: 1; height: 1px; background: var(--ligne);
 
 
 /* ---------------------------------------------------------------------
-   15. GALERIE EN MOSAÏQUE sur grand écran (plus de 800 px de large) :
-   la 1re photo prend 2 colonnes x 2 lignes, les autres se rangent autour.
-   Sur téléphone, les photos s'affichent simplement les unes sous les autres.
+   15. GALERIE EN MOSAÏQUE sur grand écran (plus de 800 px de large).
+   La disposition dépend du nombre de photos (data-n, posé par parcours.js),
+   pour que la mosaïque soit toujours pleine, sans case vide :
+     1 photo   : seule, au format 3/2
+     2 photos  : côte à côte, même format
+     3 photos  : la 1re en grand à gauche, 2 petites empilées à droite
+     4 photos  : la 1re en grand à gauche, 3 petites empilées à droite
+     5 photos  : la 1re en grand (2 x 2), 4 petites autour
+     6 et plus : grille régulière de 3 colonnes, toutes au même format
+   Sur téléphone, les photos s'affichent les unes sous les autres, au même format.
    --------------------------------------------------------------------- */
 @media (min-width: 800px) {
-  .galerie { grid-template-columns: repeat(4, 1fr); grid-auto-flow: dense; }
-  .galerie figure:first-child:not(:only-child) { grid-column: span 2; grid-row: span 2; display: flex; flex-direction: column; }
-  .galerie figure:first-child:not(:only-child) img { flex: 1; aspect-ratio: auto; min-height: 0; height: 100%; }
+  .galerie[data-n="2"] { grid-template-columns: 1fr 1fr; }
+  .galerie[data-n="3"], .galerie[data-n="4"] { grid-template-columns: 2fr 1fr; }
+  .galerie[data-n="5"] { grid-template-columns: repeat(4, 1fr); }
+  .galerie[data-n="6"] { grid-template-columns: repeat(3, 1fr); }
+  .galerie[data-n="3"] figure:first-child { grid-row: span 2; }
+  .galerie[data-n="4"] figure:first-child { grid-row: span 3; }
+  .galerie[data-n="5"] figure:first-child { grid-column: span 2; grid-row: span 2; }
+  /* La grande photo remplit toute la hauteur des petites qui l'accompagnent */
+  .galerie[data-n="3"] figure:first-child, .galerie[data-n="4"] figure:first-child, .galerie[data-n="5"] figure:first-child { display: flex; flex-direction: column; }
+  .galerie[data-n="3"] figure:first-child img, .galerie[data-n="4"] figure:first-child img, .galerie[data-n="5"] figure:first-child img { flex: 1; aspect-ratio: auto; min-height: 0; height: 100%; }
 }
 
 
