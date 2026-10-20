@@ -53,15 +53,15 @@ window.PARCOURS["les-cevennes-au-printemps-en-3-jours"] = {
     "Nuit 2 : au refuge de Barre-des-Cévennes."
   ],
   "saison": "Mai 2025, au printemps.",
-  "acces": "Parking gratuit à Florac.",
+  "acces": "Départ et arrivée à Florac, parking gratuit.",
   "infos_complementaires": "Le Mont Aigoual se situe à la frontière de plusieurs départements.",
   "etapes": [
     {
       "jour": "Jour 1",
-      "de": "",
+      "de": "Florac",
       "a": "Valleraugue",
-      "km": 45.6,
-      "dplus": 1390,
+      "km": 73.4,
+      "dplus": 1530,
       "note": "",
       "ressenti": "Nous attaquons par l'ascension du Mont Aigoual, sur des chemins typés VTT. Au sommet, le panorama s'ouvre sur les sommets environnants."
     },
@@ -69,15 +69,15 @@ window.PARCOURS["les-cevennes-au-printemps-en-3-jours"] = {
       "jour": "Jour 2",
       "de": "Valleraugue",
       "a": "Barre-des-Cévennes",
-      "km": 73.4,
-      "dplus": 1530,
+      "km": 45.6,
+      "dplus": 1390,
       "note": "",
       "ressenti": "Nous roulons sur de petites routes confidentielles, presque sans trafic."
     },
     {
       "jour": "Jour 3",
       "de": "Barre-des-Cévennes",
-      "a": "",
+      "a": "Florac",
       "km": 27.9,
       "dplus": 120,
       "note": "",
