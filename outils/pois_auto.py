@@ -41,7 +41,6 @@ SERVEURS = [
     "https://overpass.kumi.systems/api/interpreter",
     "https://overpass.private.coffee/api/interpreter",
     "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
-    "https://overpass.osm.jp/api/interpreter",
 ]
 # ("clé", "valeur", "type du site", "nom par défaut") : copie de gpx2pois.py
 RECHERCHES = [
