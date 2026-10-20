@@ -61,7 +61,10 @@ RECHERCHES = [
     ("shop",    "bicycle",                "velo",    "Magasin vélo"),
     ("amenity", "bicycle_repair_station", "velo",    "Borne de réparation vélo"),
 ]
-SIGNATURE_RECHERCHES = hashlib.md5(str(RECHERCHES).encode()).hexdigest()[:6]
+# Version du robot : la changer fait refaire tous les POI automatiques
+# (v2 : réponses vides ou incomplètes d'Overpass détectées et redemandées)
+VERSION_ROBOT = 2
+SIGNATURE_RECHERCHES = hashlib.md5((str(RECHERCHES) + f"v{VERSION_ROBOT}").encode()).hexdigest()[:6]
 ESSAI = "--essai" in sys.argv
 
 
@@ -107,7 +110,13 @@ def entete_pois(nom):
 # 2. Recherche OpenStreetMap pour une trace (logique de gpx2pois.py)
 # ---------------------------------------------------------------------
 def interroger(question):
+    """Envoie la question aux serveurs Overpass.
+    Attention : un serveur saturé peut répondre « 200 OK » avec une liste VIDE et
+    une simple remarque d'erreur (délai dépassé, mémoire). Une telle réponse est
+    traitée comme un échec : on essaie le serveur suivant. Une réponse vide sans
+    remarque est vérifiée auprès d'un deuxième serveur avant d'être acceptée."""
     donnees = urllib.parse.urlencode({"data": question}).encode()
+    vides = 0
     for attente in [0] + ATTENTES_S:
         if attente:
             print(f"    pause de {attente} s avant de réessayer...")
@@ -117,12 +126,23 @@ def interroger(question):
             try:
                 req = urllib.request.Request(serveur, data=donnees, headers={"User-Agent": "carnet-de-traces/1.0 (site perso)"})
                 with urllib.request.urlopen(req, timeout=240) as r:
-                    return json.loads(r.read().decode("utf-8"))["elements"]
+                    rep = json.loads(r.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
-                print(f"    {nom_serveur} : erreur {e.code}")
+                print(f"    {nom_serveur} : erreur {e.code}"); continue
             except Exception as e:
-                print(f"    {nom_serveur} ne répond pas ({type(e).__name__})")
-    raise RuntimeError("aucun serveur Overpass n'a répondu")
+                print(f"    {nom_serveur} ne répond pas ({type(e).__name__})"); continue
+            remarque = rep.get("remark", "")
+            if "error" in remarque.lower():
+                print(f"    {nom_serveur} : réponse incomplète ({remarque[:120]})"); continue
+            elements = rep.get("elements", [])
+            if elements:
+                print(f"    {nom_serveur} : {len(elements)} éléments")
+                return elements
+            vides += 1
+            print(f"    {nom_serveur} : aucune réponse utile ({vides})")
+            if vides >= 2:
+                return []          # deux serveurs confirment : il n'y a vraiment rien
+    raise RuntimeError("aucun serveur Overpass n'a donné de réponse complète")
 
 def generer(nom, rayon):
     texte = open(f"gpx/{nom}.gpx", encoding="utf-8").read()
@@ -150,12 +170,14 @@ def generer(nom, rayon):
     par_cle = {}
     for cle, val, _, _ in RECHERCHES:
         par_cle.setdefault(cle, []).append(val)
-    elements = []
+    elements, par_morceau = [], []
     for n, m in enumerate(morceaux, 1):
         ligne = ",".join(f"{lat:.5f},{lon:.5f}" for lat, lon in m)
         filtres = "\n".join(f'  nwr["{cle}"~"^({"|".join(vals)})$"](around:{rayon},{ligne});' for cle, vals in par_cle.items())
         print(f"  morceau {n}/{len(morceaux)}...")
-        elements += interroger(f"[out:json][timeout:180];\n(\n{filtres}\n);\nout center tags;")
+        recus = interroger(f"[out:json][timeout:180];\n(\n{filtres}\n);\nout center tags;")
+        par_morceau.append(len(recus))
+        elements += recus
         time.sleep(PAUSE_S)
 
     def classer(tags):
@@ -199,14 +221,15 @@ def generer(nom, rayon):
     for p in pois:   # doublons (ex. camping dessiné en point et en contour)
         if not any(q["type"] == p["type"] and q["nom"] == p["nom"] and distance_m((q["lat"], q["lon"]), (p["lat"], p["lon"])) < 200 for q in uniques):
             uniques.append(p)
-    return uniques
+    return uniques, par_morceau
 
-def ecrire(nom, rayon, empreinte, pois):
+def ecrire(nom, rayon, empreinte, pois, par_morceau):
     os.makedirs("data/pois", exist_ok=True)
     with open(f"data/pois/{nom}.js", "w", encoding="utf-8") as f:
         f.write(f"// Fichier GÉNÉRÉ par le robot POI (OpenStreetMap, rayon {rayon} m) : ne pas modifier à la main.\n")
         f.write(f"// Pour supprimer un point : ajoute son code \"osm\" dans \"pois_exclus\" de data/{nom}.js\n")
         f.write(f"// auto : rayon={rayon} trace={empreinte} recherches={SIGNATURE_RECHERCHES}\n")
+        f.write(f"// éléments OpenStreetMap reçus par morceau de {MORCEAU_KM} km : {par_morceau}\n")
         f.write("window.POIS = window.POIS || {};\n")
         f.write("window.POIS[" + json.dumps(nom) + "] = [\n")
         f.write(",\n".join("  " + json.dumps(p, ensure_ascii=False) for p in pois))
@@ -248,8 +271,8 @@ for nom in slugs_du_site():
     if ESSAI:
         bilan.append(f"{nom} : à générer, rayon {rayon} m ({raison})"); continue
     try:
-        pois = generer(nom, rayon)
-        ecrire(nom, rayon, empreinte, pois)
+        pois, par_morceau = generer(nom, rayon)
+        ecrire(nom, rayon, empreinte, pois, par_morceau)
         compte = {}
         for p in pois: compte[p["type"]] = compte.get(p["type"], 0) + 1
         bilan.append(f"{nom} : {len(pois)} POI à {rayon} m ({', '.join(f'{t} {n}' for t, n in sorted(compte.items()))})")
