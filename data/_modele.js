@@ -83,6 +83,13 @@ window.PARCOURS["nom-du-parcours"] = {
   // recopie ici leur code "osm" (visible dans data/pois/<nom>.js), ex. "node/123456"
   "pois_exclus": [],
 
+  // Points d'intérêt AUTOMATIQUES (OpenStreetMap), cherchés par le robot POI sur GitHub
+  // après la publication (réglés dans l'Atelier, étape 1) :
+  //   true = oui, false = non (le robot retire ceux qu'il avait mis)
+  "pois_auto": true,
+  // zone autour de la trace, en mètres : 3000 conseillé à vélo, 1000 à pied
+  "pois_rayon_m": 3000,
+
   // --- Crédits en bas de page ---
   "auteur": "Kévin",
   "date_trace": "mai 2027",

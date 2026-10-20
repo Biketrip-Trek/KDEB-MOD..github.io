@@ -133,6 +133,9 @@ h2.section::after { content: ""; flex: 1; height: 1px; background: var(--ligne);
    --------------------------------------------------------------------- */
 .bloc-carte { background: var(--carte); border: 1px solid var(--ligne); }
 .filtres { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-bottom: 1px solid var(--ligne); }
+.filtres:empty { display: none; }
+/* Message « points d'intérêt en cours de recherche » (robot POI) */
+.note-poi { margin: 0; padding: 10px 14px; border-bottom: 1px solid var(--ligne); font-size: 14px; color: var(--doux); background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(228,87,46,.05) 10px 20px); }
 .filtre { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--ligne); background: #fff; padding: 5px 12px 5px 6px; font: inherit; font-size: 14px; cursor: pointer; border-radius: 999px; }
 .filtre[aria-pressed="false"] { opacity: .45; }
 .filtre .pastille { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; }

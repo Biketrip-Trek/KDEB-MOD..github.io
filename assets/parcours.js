@@ -95,7 +95,8 @@ const fmt = n => n == null ? "-" : Number(n).toLocaleString("fr-FR");
 const slug = new URLSearchParams(location.search).get("p") || "flandrien-challenge";
 // Charge textes + trace (fonction définie dans entete.js), puis construit la page.
 // En cas de problème, un message rouge explique quoi corriger.
-chargerParcours(slug).then(P => {
+// data/pois/_etat.js (écrit par le robot POI) dit si les points d'intérêt sont prêts.
+Promise.all([chargerParcours(slug), chargerScript("data/pois/_etat.js")]).then(([P]) => {
   if (P) construire(P);
   else $("titre").textContent = "Parcours introuvable";
   afficherErreurs();
@@ -225,6 +226,24 @@ function construire(P) {
   $("credits").innerHTML = `<b>Parcours tracé et ${rando ? "marché" : "roulé"} par ${P.auteur || "Kévin"}${P.date_trace ? (/^\d/.test(P.date_trace) ? " le " : " en ") + P.date_trace : ""}.</b> ${P.date_maj ? "Mise à jour : " + P.date_maj + ". " : ""}Un chemin fermé, un point d'eau à sec ? Écris-moi pour que je corrige la trace. ${P.origine_trace || ""}`;
 
   carteProfilFeuille(P);
+  notePoi(P);
+}
+
+// ---------------------------------------------------------------------
+// Points d'intérêt automatiques pas encore prêts : petit message sous les
+// filtres de la carte (le robot POI les cherche sur GitHub après chaque
+// publication ; si OpenStreetMap est saturé, il reprend toutes les heures).
+// ---------------------------------------------------------------------
+function notePoi(P) {
+  if (!P.pois_auto) return;
+  const e = (window.ETAT_POIS || {})[P.slug];
+  const prets = ((window.POIS || {})[P.slug] || []).length > 0;
+  let texte = "";
+  if (e && e.etat === "en_attente")
+    texte = `Points d'intérêt en cours de recherche dans OpenStreetMap (${e.obtenus} tranche${e.obtenus > 1 ? "s" : ""} sur ${e.total}). Ils apparaîtront d'ici une heure au plus.`;
+  else if (!prets && (!e || e.rayon !== P.pois_rayon_m))
+    texte = "Points d'intérêt en cours de recherche dans OpenStreetMap : ils apparaîtront dans quelques minutes.";
+  if (texte) { $("note-poi").textContent = texte; $("note-poi").hidden = false; }
 }
 
 

@@ -23,7 +23,7 @@
 <!-- VERSION DES FICHIERS : le "?v=..." force les navigateurs à recharger le style et les
      scripts après une mise à jour. Change ce numéro (ex. la date du jour) quand tu modifies
      style.css ou un fichier .js du dossier assets, ici ET dans l'autre page HTML. -->
-<link rel="stylesheet" href="assets/style.css?v=20261020c">
+<link rel="stylesheet" href="assets/style.css?v=20261020d">
 </head>
 <body>
 
@@ -52,6 +52,7 @@
   <h2 class="section" id="carte-titre">Carte, profil et points d'intérêt</h2>
   <div class="bloc-carte">
     <div class="filtres" id="filtres"></div>         <!-- boutons de filtre des points d'intérêt -->
+    <p class="note-poi" id="note-poi" hidden></p>     <!-- « points d'intérêt en cours de recherche » (robot POI) -->
     <div id="carte"></div>                           <!-- la carte -->
     <div class="profil">                             <!-- le profil altimétrique -->
       <div class="infobulle" id="info"></div>
@@ -106,7 +107,7 @@
 
 <!-- Programmes de la page : carte (Leaflet), en-tête commun, construction de la page -->
 <script src="assets/leaflet/leaflet.js"></script>
-<script src="assets/entete.js?v=20261020c"></script>
-<script src="assets/parcours.js?v=20261020c"></script>
+<script src="assets/entete.js?v=20261020d"></script>
+<script src="assets/parcours.js?v=20261020d"></script>
 </body>
 </html>

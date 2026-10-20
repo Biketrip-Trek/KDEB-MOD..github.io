@@ -1,48 +1,70 @@
 # =====================================================================
-# OUTIL : outils/pois_auto.py
-# RÔLE  : le « robot POI ». Lancé automatiquement par GitHub (voir
-#         .github/workflows/pois.yml) à chaque mise à jour du site.
-#         Même recherche que gpx2pois.py (OpenStreetMap, service Overpass),
-#         mais réglée fiche par fiche, depuis l'Atelier :
+# OUTIL : outils/pois_auto.py   (robot POI, version 3)
+# RÔLE  : trouver les points d'intérêt (POI) d'OpenStreetMap autour des
+#         traces du site. Lancé tout seul par GitHub (voir
+#         .github/workflows/pois.yml) :
+#           - à chaque publication (trace ou fiche modifiée),
+#           - et toutes les heures, pour finir ce qui est resté en attente.
 #
-#   Dans data/<nom>.js :
+#   Réglage fiche par fiche (posé par l'Atelier, dans data/<nom>.js) :
 #     "pois_auto": true      > le robot crée data/pois/<nom>.js
 #     "pois_rayon_m": 3000   > zone autour de la trace, en mètres
-#     "pois_auto": false     > le robot retire les POI générés
+#     "pois_auto": false     > le robot retire les POI qu'il avait générés
 #     champ absent           > le robot ne touche à rien (anciennes fiches)
 #
 #   Il refait les POI seulement si c'est utile : nouvelle fiche, zone
-#   changée ou trace GPX changée. Sinon il ne fait rien (pas de requête).
+#   changée ou trace GPX changée. Sinon il ne fait rien (aucune requête).
+#
+# COMMENT IL TRAVAILLE (leçons du 20/10/2026, serveurs OpenStreetMap saturés) :
+#   1. La trace est coupée en tranches de 25 km (une coupure entre deux GPX
+#      qui ne se raccordent pas ferme aussi la tranche).
+#   2. Pour chaque tranche, il demande à Overpass tout ce qui se trouve dans
+#      un RECTANGLE autour de la tranche (requête légère, la plus rapide),
+#      puis garde lui-même ce qui est à la bonne distance de la trace.
+#   3. Chaque tranche obtenue est enregistrée dans data/pois/_cache/<nom>/ :
+#      si les serveurs saturent, il s'arrête au bout de 12 min et le passage
+#      suivant (au plus tard dans l'heure) reprend là où il s'était arrêté.
+#   4. Il essaie d'abord le serveur qui a répondu en dernier, puis les autres
+#      dans l'ordre de fiabilité observé.
+#   5. Il écrit son état dans data/pois/_etat.js : la page du parcours affiche
+#      « points d'intérêt en cours de recherche » tant que ce n'est pas fini.
+#
+#   Durée habituelle : environ 1 min par tranche de 25 km, plus 1 min pour
+#   la mise en ligne du site. Serveurs saturés : jusqu'à une heure ou deux.
 #
 # UTILISATION À LA MAIN (facultatif, depuis la racine du dépôt) :
 #     python outils/pois_auto.py            > traite toutes les fiches
 #     python outils/pois_auto.py --essai    > dit ce qu'il ferait, sans rien faire
 #
-# Données © contributeurs OpenStreetMap (licence ODbL), mention déjà
-# présente en bas des cartes du site.
+# Données © contributeurs OpenStreetMap (licence ODbL), mention présente
+# en bas des cartes du site.
 # =====================================================================
 
 import re, math, json, sys, os, time, hashlib, shutil
+from datetime import datetime, timezone
 import urllib.request, urllib.parse, urllib.error
 
 # ---------------------------------------------------------------------
-# RÉGLAGES (mêmes valeurs que gpx2pois.py)
+# RÉGLAGES
 # ---------------------------------------------------------------------
 RAYON_MIN, RAYON_MAX = 100, 10000   # zone acceptée, en mètres
 COUPURE_M = 1000                    # saut entre deux points au-delà duquel la trace est coupée (comme le site)
-MORCEAU_KM = 25                     # longueur des morceaux interrogés un par un
+MORCEAU_KM = 25                     # longueur des tranches interrogées une par une
 PAUSE_S = 3                         # pause entre deux requêtes (service gratuit)
-ATTENTES_S = [15, 45]               # serveurs saturés : on attend 15 s, puis 45 s, avant de réessayer
-DELAI_REQUETE_S = 90                # attente maximale d'une réponse (avant : 240 s)
-BUDGET_S = 12 * 60                  # durée maximale du robot : au-delà il s'arrête sans rien écrire de faux
+ATTENTES_S = [15, 45]               # tous les serveurs ont échoué : on attend 15 s, puis 45 s, et on recommence
+DELAI_REQUETE_S = 75                # attente maximale d'une réponse ; une requête « rectangle » saine répond en moins d'1 min
+BUDGET_S = 12 * 60                  # durée maximale d'un passage ; la suite au passage suivant
 DEBUT = time.time()
+# Serveurs Overpass gratuits, dans l'ordre de fiabilité observé (20/10/2026) :
+# overpass-api.de le plus souvent utile (parfois 502 quand il sature),
+# private.coffee de temps en temps, mail.ru rarement, kumi.systems presque jamais.
 SERVEURS = [
     "https://overpass-api.de/api/interpreter",
-    "https://overpass.kumi.systems/api/interpreter",
     "https://overpass.private.coffee/api/interpreter",
     "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
 ]
-# ("clé", "valeur", "type du site", "nom par défaut") : copie de gpx2pois.py
+# ("clé", "valeur", "type du site", "nom par défaut") : mêmes recherches que gpx2pois.py
 RECHERCHES = [
     ("amenity", "drinking_water",         "eau",     "Point d'eau potable"),
     ("amenity", "water_point",            "eau",     "Point d'eau"),
@@ -66,11 +88,12 @@ RECHERCHES = [
     ("shop",    "bicycle",                "velo",    "Magasin vélo"),
     ("amenity", "bicycle_repair_station", "velo",    "Borne de réparation vélo"),
 ]
-# Version du robot : la changer fait refaire tous les POI automatiques
-# (v2 : réponses vides ou incomplètes d'Overpass détectées et redemandées)
+# Version des résultats : la changer fait refaire tous les POI automatiques.
+# (Elle ne bouge pas quand seule la façon d'interroger les serveurs change.)
 VERSION_ROBOT = 2
 SIGNATURE_RECHERCHES = hashlib.md5((str(RECHERCHES) + f"v{VERSION_ROBOT}").encode()).hexdigest()[:6]
 ESSAI = "--essai" in sys.argv
+FICHIER_ETAT = "data/pois/_etat.js"
 
 
 def distance_m(a, b):
@@ -79,9 +102,12 @@ def distance_m(a, b):
     h = math.sin((lat2 - lat1) / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(math.radians(b[1] - a[1]) / 2) ** 2
     return 12742000 * math.asin(math.sqrt(h))
 
+def ecoule():
+    return int(time.time() - DEBUT)
+
 
 # ---------------------------------------------------------------------
-# 1. Lecture des fiches et des listes du site
+# 1. Lecture des fiches, des listes et de l'état précédent
 # ---------------------------------------------------------------------
 def slugs_du_site():
     noms = []
@@ -110,67 +136,82 @@ def entete_pois(nom):
     m = re.search(r"// auto : rayon=(\d+) trace=(\w+) recherches=(\w+)", open(f, encoding="utf-8").read(2000))
     return {"rayon": int(m.group(1)), "trace": m.group(2), "recherches": m.group(3)} if m else {"manuel": True}
 
+def lire_etat():
+    try:
+        t = open(FICHIER_ETAT, encoding="utf-8").read()
+        return json.loads(t[t.index("=") + 1:t.rindex(";")])
+    except (OSError, ValueError):
+        return {}
+
 
 # ---------------------------------------------------------------------
-# 2. Recherche OpenStreetMap pour une trace (logique de gpx2pois.py)
+# 2. Questions aux serveurs Overpass
 # ---------------------------------------------------------------------
+class TempsDepasse(Exception):
+    pass
+
+dernier_bon = None   # serveur qui a répondu en dernier : essayé en premier ensuite
+
 def interroger(question):
-    """Envoie la question aux serveurs Overpass.
-    Attention : un serveur saturé peut répondre « 200 OK » avec une liste VIDE et
-    une simple remarque d'erreur (délai dépassé, mémoire). Une telle réponse est
-    traitée comme un échec : on essaie le serveur suivant. Une réponse vide sans
-    remarque est vérifiée auprès d'un deuxième serveur avant d'être acceptée."""
+    """Envoie la question aux serveurs, du plus fiable au moins fiable.
+    Un serveur saturé peut répondre « 200 OK » avec une liste VIDE et une simple
+    remarque d'erreur : c'est traité comme un échec. Une réponse vide sans remarque
+    est vérifiée auprès d'un deuxième serveur avant d'être acceptée."""
+    global dernier_bon
     donnees = urllib.parse.urlencode({"data": question}).encode()
     vides = 0
     for attente in [0] + ATTENTES_S:
         if attente:
-            print(f"    pause de {attente} s avant de réessayer...")
+            print(f"    pause de {attente} s avant de réessayer...", flush=True)
             time.sleep(attente)
-        for serveur in SERVEURS:
+        ordre = ([dernier_bon] if dernier_bon else []) + [s for s in SERVEURS if s != dernier_bon]
+        for serveur in ordre:
             nom_serveur = serveur.split("/")[2]
+            if time.time() - DEBUT + DELAI_REQUETE_S > BUDGET_S:
+                raise TempsDepasse(f"temps maximal de {BUDGET_S // 60} min atteint")
             try:
                 req = urllib.request.Request(serveur, data=donnees, headers={"User-Agent": "carnet-de-traces/1.0 (site perso)"})
-                if time.time() - DEBUT > BUDGET_S:
-                    raise RuntimeError(f"temps maximal de {BUDGET_S // 60} min dépassé, POI non mis à jour (relancer plus tard)")
                 with urllib.request.urlopen(req, timeout=DELAI_REQUETE_S) as r:
                     rep = json.loads(r.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
-                print(f"::warning title={nom_serveur}::erreur HTTP {e.code} ({int(time.time() - DEBUT)} s)", flush=True); continue
-            except RuntimeError:
-                raise
+                print(f"::warning title={nom_serveur}::erreur HTTP {e.code} ({ecoule()} s)", flush=True); continue
             except Exception as e:
-                print(f"::warning title={nom_serveur}::ne répond pas : {type(e).__name__} {str(e)[:80]} ({int(time.time() - DEBUT)} s)", flush=True); continue
+                print(f"::warning title={nom_serveur}::ne répond pas : {type(e).__name__} {str(e)[:80]} ({ecoule()} s)", flush=True); continue
             remarque = rep.get("remark", "")
             if "error" in remarque.lower():
-                print(f"::warning title={nom_serveur}::réponse incomplète : {remarque[:100]} ({int(time.time() - DEBUT)} s)", flush=True); continue
+                print(f"::warning title={nom_serveur}::réponse incomplète : {remarque[:100]} ({ecoule()} s)", flush=True); continue
             elements = rep.get("elements", [])
             if elements:
-                print(f"::notice title=Overpass::{nom_serveur} : {len(elements)} éléments ({int(time.time() - DEBUT)} s)", flush=True)
+                dernier_bon = serveur
+                print(f"::notice title=Overpass::{nom_serveur} : {len(elements)} éléments ({ecoule()} s)", flush=True)
                 return elements
             vides += 1
-            print(f"    {nom_serveur} : aucune réponse utile ({vides})")
+            print(f"    {nom_serveur} : réponse vide ({vides})", flush=True)
             if vides >= 2:
                 return []          # deux serveurs confirment : il n'y a vraiment rien
-    raise RuntimeError("aucun serveur Overpass n'a donné de réponse complète")
+    raise TempsDepasse("aucun serveur n'a donné de réponse complète")
 
-def generer(nom, rayon):
+
+# ---------------------------------------------------------------------
+# 3. Recherche des POI d'une trace
+# ---------------------------------------------------------------------
+def lire_trace(nom):
     texte = open(f"gpx/{nom}.gpx", encoding="utf-8").read()
     points = [(float(a), float(b)) for a, b in re.findall(r'<trkpt\s+lat="([\d.-]+)"\s+lon="([\d.-]+)"', texte)]
     if len(points) < 2:
         raise RuntimeError("aucun point dans le GPX")
-    # Distance cumulée, comme sur le site : un saut de plus de COUPURE_M entre deux
-    # points (deux GPX qui ne se raccordent pas) n'ajoute pas de km
+    # Distance cumulée, comme sur le site : un saut de plus de COUPURE_M n'ajoute pas de km
     cumul, coupure = [0.0], set()
     for i in range(1, len(points)):
         d = distance_m(points[i - 1], points[i])
         if d > COUPURE_M:
             coupure.add(i)
         cumul.append(cumul[-1] + (0 if d > COUPURE_M else d))
+    return texte, points, cumul, coupure
 
-    # Un point de requête tous les 250 m (plus espacé pour une grande zone : jusqu'à 1 km).
-    # Morceaux de ~25 km ; une coupure ferme le morceau en cours, pour ne pas
-    # chercher de POI le long d'une ligne droite entre deux GPX.
-    pas = max(250, min(1000, rayon / 2))     # 1 km de zone > un point tous les 500 m
+def decouper(points, cumul, coupure, rayon):
+    """Tranches de ~25 km ; une coupure ferme la tranche en cours."""
+    pas = max(250, min(1000, rayon / 2))
     morceaux, courant, dernier, debut = [], [], -1e9, 0.0
     for i, p in enumerate(points):
         if i in coupure:
@@ -182,17 +223,20 @@ def generer(nom, rayon):
                 morceaux.append(courant); courant, debut = [p], cumul[i]
     if len(courant) > 1 or not morceaux:
         morceaux.append(courant)
+    return morceaux
 
-    # Requête « rectangle » (bbox) autour de chaque morceau, agrandi de la zone :
-    # bien plus rapide pour Overpass qu'une recherche « à moins de X m d'une ligne ».
-    # Le tri à la bonne distance de la trace est fait ensuite, ici (voir plus bas).
+def generer(nom, rayon, suivi):
+    """Renvoie (POI, éléments reçus par tranche). Met à jour suivi = {"obtenus", "total"}."""
+    texte, points, cumul, coupure = lire_trace(nom)
+    morceaux = decouper(points, cumul, coupure, rayon)
+    suivi["total"], suivi["obtenus"] = len(morceaux), 0
+
     par_cle = {}
     for cle, val, _, _ in RECHERCHES:
         par_cle.setdefault(cle, []).append(val)
     filtres = "\n".join(f'  nwr["{cle}"~"^({"|".join(vals)})$"];' for cle, vals in par_cle.items())
 
-    # Les morceaux déjà obtenus sont gardés dans data/pois/_cache/<nom>/ (enregistrés sur
-    # GitHub) : si les serveurs saturent, le passage suivant reprend où il s'était arrêté.
+    # Tranches déjà obtenues : data/pois/_cache/<nom>/ (enregistré sur GitHub)
     empreinte = hashlib.sha1(texte.encode()).hexdigest()[:10]
     dossier = f"data/pois/_cache/{nom}"
     cle_cache = f"r{rayon}-t{empreinte}-{SIGNATURE_RECHERCHES}"
@@ -206,18 +250,19 @@ def generer(nom, rayon):
         f_cache = os.path.join(dossier, f"{cle_cache}-{n}.json")
         if os.path.exists(f_cache):
             recus = json.load(open(f_cache, encoding="utf-8"))
-            print(f"::notice title={nom}::morceau {n}/{len(morceaux)} déjà obtenu ({len(recus)} éléments)", flush=True)
+            print(f"::notice title={nom}::tranche {n}/{len(morceaux)} déjà obtenue ({len(recus)} éléments)", flush=True)
         else:
             lats, lons = [p[0] for p in m], [p[1] for p in m]
             dlat = rayon / 111320
             dlon = rayon / (111320 * math.cos(math.radians(sum(lats) / len(lats))))
             bbox = f"{min(lats) - dlat:.5f},{min(lons) - dlon:.5f},{max(lats) + dlat:.5f},{max(lons) + dlon:.5f}"
-            print(f"::notice title={nom}::morceau {n}/{len(morceaux)} ({int(time.time() - DEBUT)} s)", flush=True)
+            print(f"::notice title={nom}::tranche {n}/{len(morceaux)} ({ecoule()} s)", flush=True)
             recus = interroger(f"[out:json][timeout:60][bbox:{bbox}];\n(\n{filtres}\n);\nout center tags;")
             json.dump(recus, open(f_cache, "w", encoding="utf-8"))
             time.sleep(PAUSE_S)
         par_morceau.append(len(recus))
         elements += recus
+        suivi["obtenus"] = n
 
     def classer(tags):
         for cle, val, type_site, nom_defaut in RECHERCHES:
@@ -250,7 +295,7 @@ def generer(nom, rayon):
         k = math.cos(math.radians(lat))
         i = min(range(len(points)), key=lambda j: (points[j][0] - lat) ** 2 + ((points[j][1] - lon) * k) ** 2)
         ecart = distance_m((lat, lon), points[i])
-        if ecart > rayon:
+        if ecart > rayon:                                # le rectangle déborde : on ne garde que la bonne distance
             continue
         pois.append({"type": type_site, "nom": tags.get("name", nom_defaut), "km": round(cumul[i] / 1000, 1),
                      "lat": round(lat, 5), "lon": round(lon, 5),
@@ -268,7 +313,7 @@ def ecrire(nom, rayon, empreinte, pois, par_morceau):
         f.write(f"// Fichier GÉNÉRÉ par le robot POI (OpenStreetMap, rayon {rayon} m) : ne pas modifier à la main.\n")
         f.write(f"// Pour supprimer un point : ajoute son code \"osm\" dans \"pois_exclus\" de data/{nom}.js\n")
         f.write(f"// auto : rayon={rayon} trace={empreinte} recherches={SIGNATURE_RECHERCHES}\n")
-        f.write(f"// éléments OpenStreetMap reçus par morceau de {MORCEAU_KM} km : {par_morceau}\n")
+        f.write(f"// éléments OpenStreetMap reçus par tranche de {MORCEAU_KM} km : {par_morceau}\n")
         f.write("window.POIS = window.POIS || {};\n")
         f.write("window.POIS[" + json.dumps(nom) + "] = [\n")
         f.write(",\n".join("  " + json.dumps(p, ensure_ascii=False) for p in pois))
@@ -276,9 +321,17 @@ def ecrire(nom, rayon, empreinte, pois, par_morceau):
 
 
 # ---------------------------------------------------------------------
-# 3. Décision fiche par fiche
+# 4. Décision fiche par fiche, puis état d'avancement
 # ---------------------------------------------------------------------
-bilan, echecs = [], []
+ancien_etat = lire_etat()
+etat, bilan, echecs = {}, [], []
+
+def noter(nom, **infos):
+    """Etat d'une fiche ; la date ne change que si l'état change (pas de mise à jour inutile du site)."""
+    precedent = {k: v for k, v in ancien_etat.get(nom, {}).items() if k != "maj"}
+    etat[nom] = dict(infos, maj=ancien_etat.get(nom, {}).get("maj") if precedent == infos
+                     else datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"))
+
 for nom in slugs_du_site():
     if not os.path.exists(f"data/{nom}.js"):
         continue
@@ -292,6 +345,7 @@ for nom in slugs_du_site():
         if deja and not deja.get("manuel"):               # retire seulement ce que le robot a fait
             bilan.append(f"{nom} : POI retirés")
             if not ESSAI: os.remove(f"data/pois/{nom}.js")
+        if not ESSAI: shutil.rmtree(f"data/pois/_cache/{nom}", ignore_errors=True)
         continue
     try:
         rayon = int(fiche.get("pois_rayon_m") or 1000)
@@ -304,24 +358,39 @@ for nom in slugs_du_site():
     if deja and deja.get("manuel"):
         continue                                          # fichier fait à la main avec gpx2pois.py : on le garde
     if deja and deja["rayon"] == rayon and deja["trace"] == empreinte and deja["recherches"] == SIGNATURE_RECHERCHES:
-        continue                                          # déjà à jour
+        if nom in ancien_etat: etat[nom] = ancien_etat[nom]   # déjà à jour : état inchangé
+        else: noter(nom, etat="ok", rayon=rayon, poi=open(f"data/pois/{nom}.js", encoding="utf-8").read().count('{"type"'))
+        continue
     raison = "nouvelle fiche" if not deja else "zone changée" if deja["rayon"] != rayon else "trace ou recherches changées"
-    print(f"{nom} : recherche des POI à {rayon} m ({raison})")
+    print(f"{nom} : recherche des POI à {rayon} m ({raison})", flush=True)
     if ESSAI:
         bilan.append(f"{nom} : à générer, rayon {rayon} m ({raison})"); continue
+    suivi = {"obtenus": 0, "total": 0}
     try:
-        pois, par_morceau = generer(nom, rayon)
+        pois, par_morceau = generer(nom, rayon, suivi)
         ecrire(nom, rayon, empreinte, pois, par_morceau)
-        shutil.rmtree(f"data/pois/_cache/{nom}", ignore_errors=True)   # fiche terminée : morceaux en attente inutiles
+        shutil.rmtree(f"data/pois/_cache/{nom}", ignore_errors=True)   # fiche terminée
         compte = {}
         for p in pois: compte[p["type"]] = compte.get(p["type"], 0) + 1
         bilan.append(f"{nom} : {len(pois)} POI à {rayon} m ({', '.join(f'{t} {n}' for t, n in sorted(compte.items()))})")
+        noter(nom, etat="ok", rayon=rayon, poi=len(pois))
+    except TempsDepasse as e:
+        # Serveurs saturés : on garde les tranches obtenues, la suite au passage suivant
+        echecs.append(f"{nom} : {suivi['obtenus']}/{suivi['total']} tranches obtenues, {e}")
+        noter(nom, etat="en_attente", rayon=rayon, obtenus=suivi["obtenus"], total=suivi["total"])
     except Exception as e:
         echecs.append(f"{nom} : {e}")
+        noter(nom, etat="erreur", rayon=rayon, message=str(e)[:120])
+
+if not ESSAI:
+    os.makedirs("data/pois", exist_ok=True)
+    with open(FICHIER_ETAT, "w", encoding="utf-8") as f:
+        f.write("// Fichier GÉNÉRÉ par le robot POI : état de la recherche des points d'intérêt, fiche par fiche.\n")
+        f.write("// ok = POI en ligne ; en_attente = recherche en cours (serveurs OpenStreetMap saturés) ; erreur = à regarder.\n")
+        f.write("window.ETAT_POIS = " + json.dumps(etat, ensure_ascii=False, indent=1, sort_keys=True) + ";\n")
 
 print("\n".join(bilan) or ("" if echecs else "Rien à faire : tous les POI sont à jour."))
-if echecs:
-    # Pas d'échec du passage : les morceaux déjà obtenus doivent être enregistrés,
+for e in echecs:
+    # Le passage ne s'arrête pas en échec : les tranches obtenues doivent être enregistrées,
     # et le passage suivant (toutes les heures) reprendra là où celui-ci s'est arrêté.
-    for e in echecs:
-        print(f"::warning title=POI à reprendre::{e}")
+    print(f"::warning title=POI à reprendre::{e}")

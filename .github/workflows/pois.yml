@@ -1,9 +1,12 @@
 # =====================================================================
-# Robot POI : à chaque mise à jour d'une trace ou d'une fiche, GitHub
-# lance outils/pois_auto.py sur ses serveurs (qui ont accès à
-# OpenStreetMap), puis enregistre les POI trouvés dans data/pois/.
-# Lancement à la main possible : onglet Actions > Robot POI > Run workflow.
-# Reprise automatique toutes les heures si des POI sont restés en attente.
+# Robot POI : GitHub lance outils/pois_auto.py sur ses serveurs (qui ont
+# accès à OpenStreetMap), puis enregistre le résultat dans data/pois/.
+#   - à chaque publication d'une trace ou d'une fiche ;
+#   - toutes les heures (à h + 17 min), pour finir ce qui est resté en
+#     attente quand les serveurs OpenStreetMap étaient saturés ;
+#   - à la main : onglet Actions > Robot POI > Run workflow.
+# Le détail de chaque passage (tranches, serveurs, erreurs) est visible
+# dans l'onglet Actions, en « annotations ».
 # =====================================================================
 name: Robot POI
 
@@ -15,14 +18,13 @@ on:
       - "data/*.js"
       - "outils/pois_auto.py"
   workflow_dispatch:
-  # Reprise automatique toutes les heures des POI restés en attente (serveurs saturés).
-  # S'il n'y a rien à faire, le passage dure quelques secondes.
   schedule:
     - cron: "17 * * * *"
 
 permissions:
   contents: write
 
+# Un seul passage à la fois ; un passage en attente reprend la dernière version du site
 concurrency:
   group: robot-poi
   cancel-in-progress: false
@@ -30,12 +32,12 @@ concurrency:
 jobs:
   pois:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Chercher les POI des fiches qui en demandent
-        run: python3 outils/pois_auto.py
+        run: python3 outils/pois_auto.py | tee bilan.txt
 
       - name: Enregistrer les POI sur le site
         run: |
@@ -45,7 +47,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Aucun changement de POI."
           else
-            git commit -m "POI automatiques (OpenStreetMap)"
+            git commit -m "POI automatiques (OpenStreetMap)" -m "$(grep -v '^::' bilan.txt | tail -20)"
             git pull --rebase origin main
             git push origin main
           fi
