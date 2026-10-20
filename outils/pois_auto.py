@@ -40,6 +40,8 @@ SERVEURS = [
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
     "https://overpass.private.coffee/api/interpreter",
+    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+    "https://overpass.osm.jp/api/interpreter",
 ]
 # ("clé", "valeur", "type du site", "nom par défaut") : copie de gpx2pois.py
 RECHERCHES = [
@@ -134,14 +136,14 @@ def interroger(question):
                 with urllib.request.urlopen(req, timeout=DELAI_REQUETE_S) as r:
                     rep = json.loads(r.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
-                print(f"    {nom_serveur} : erreur {e.code}"); continue
+                print(f"::warning title={nom_serveur}::erreur HTTP {e.code} ({int(time.time() - DEBUT)} s)", flush=True); continue
             except RuntimeError:
                 raise
             except Exception as e:
-                print(f"    {nom_serveur} ne répond pas ({type(e).__name__})"); continue
+                print(f"::warning title={nom_serveur}::ne répond pas : {type(e).__name__} {str(e)[:80]} ({int(time.time() - DEBUT)} s)", flush=True); continue
             remarque = rep.get("remark", "")
             if "error" in remarque.lower():
-                print(f"    {nom_serveur} : réponse incomplète ({remarque[:120]})"); continue
+                print(f"::warning title={nom_serveur}::réponse incomplète : {remarque[:100]} ({int(time.time() - DEBUT)} s)", flush=True); continue
             elements = rep.get("elements", [])
             if elements:
                 print(f"::notice title=Overpass::{nom_serveur} : {len(elements)} éléments ({int(time.time() - DEBUT)} s)", flush=True)
