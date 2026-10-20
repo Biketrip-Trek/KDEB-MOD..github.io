@@ -2,7 +2,7 @@
 # Robot POI : GitHub lance outils/pois_auto.py sur ses serveurs (qui ont
 # accès à OpenStreetMap), puis enregistre le résultat dans data/pois/.
 #   - à chaque publication d'une trace ou d'une fiche ;
-#   - toutes les heures (à h + 17 min), pour finir ce qui est resté en
+#   - toutes les 30 minutes (à h + 17 et h + 47), pour finir ce qui est resté en
 #     attente quand les serveurs OpenStreetMap étaient saturés ;
 #   - à la main : onglet Actions > Robot POI > Run workflow.
 # Le détail de chaque passage (tranches, serveurs, erreurs) est visible
@@ -19,7 +19,7 @@ on:
       - "outils/pois_auto.py"
   workflow_dispatch:
   schedule:
-    - cron: "17 * * * *"
+    - cron: "17,47 * * * *"
 
 permissions:
   contents: write
@@ -32,7 +32,7 @@ concurrency:
 jobs:
   pois:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v5
 

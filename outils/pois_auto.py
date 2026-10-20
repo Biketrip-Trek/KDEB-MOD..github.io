@@ -4,7 +4,7 @@
 #         traces du site. Lancé tout seul par GitHub (voir
 #         .github/workflows/pois.yml) :
 #           - à chaque publication (trace ou fiche modifiée),
-#           - et toutes les heures, pour finir ce qui est resté en attente.
+#           - et toutes les 30 minutes, pour finir ce qui est resté en attente.
 #
 #   Réglage fiche par fiche (posé par l'Atelier, dans data/<nom>.js) :
 #     "pois_auto": true      > le robot crée data/pois/<nom>.js
@@ -22,8 +22,8 @@
 #      un RECTANGLE autour de la tranche (requête légère, la plus rapide),
 #      puis garde lui-même ce qui est à la bonne distance de la trace.
 #   3. Chaque tranche obtenue est enregistrée dans data/pois/_cache/<nom>/ :
-#      si les serveurs saturent, il s'arrête au bout de 12 min et le passage
-#      suivant (au plus tard dans l'heure) reprend là où il s'était arrêté.
+#      si les serveurs saturent, il s'arrête au bout de 25 min et le passage
+#      suivant (30 min plus tard) reprend là où il s'était arrêté.
 #   4. Il essaie d'abord le serveur qui a répondu en dernier, puis les autres
 #      dans l'ordre de fiabilité observé.
 #   5. Il écrit son état dans data/pois/etat.js : la page du parcours affiche
@@ -53,7 +53,7 @@ MORCEAU_KM = 25                     # longueur des tranches interrogées une par
 PAUSE_S = 3                         # pause entre deux requêtes (service gratuit)
 ATTENTES_S = [15, 45]               # tous les serveurs ont échoué : on attend 15 s, puis 45 s, et on recommence
 DELAI_REQUETE_S = 75                # attente maximale d'une réponse ; une requête « rectangle » saine répond en moins d'1 min
-BUDGET_S = 12 * 60                  # durée maximale d'un passage ; la suite au passage suivant
+BUDGET_S = 25 * 60                  # durée maximale d'un passage ; la suite au passage suivant (toutes les 30 min)
 DEBUT = time.time()
 # Serveurs Overpass gratuits, dans l'ordre de fiabilité observé (20/10/2026) :
 # overpass-api.de le plus souvent utile (parfois 502 quand il sature),
@@ -139,7 +139,7 @@ def entete_pois(nom):
 def lire_etat():
     try:
         t = open(FICHIER_ETAT, encoding="utf-8").read()
-        return json.loads(t[t.index("=") + 1:t.rindex(";")])
+        return json.loads(t[t.index("window.ETAT_POIS =") + len("window.ETAT_POIS ="):t.rindex(";")])
     except (OSError, ValueError):
         return {}
 
