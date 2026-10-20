@@ -1,6 +1,7 @@
 // Fichier GÉNÉRÉ par le robot POI (OpenStreetMap, rayon 1000 m) : ne pas modifier à la main.
 // Pour supprimer un point : ajoute son code "osm" dans "pois_exclus" de data/cretes-du-jura-en-3-jours.js
-// auto : rayon=1000 trace=ebfba6ac0d recherches=b707cf
+// auto : rayon=1000 trace=ebfba6ac0d recherches=2cee00
+// éléments OpenStreetMap reçus par morceau de 25 km : [45, 14]
 window.POIS = window.POIS || {};
 window.POIS["cretes-du-jura-en-3-jours"] = [
   {"type": "ravito", "nom": "Sherpa", "km": 0.0, "lat": 46.36722, "lon": 5.99523, "info": "Épicerie · horaires : Mo-Su,PH 08:00-19:00 · à 130 m de la trace", "osm": "node/4961571923"},
@@ -41,5 +42,17 @@ window.POIS["cretes-du-jura-en-3-jours"] = [
   {"type": "bivouac", "nom": "Chalet du Nardérans", "km": 20.7, "lat": 46.24758, "lon": 5.93722, "info": "Cabane · 1338 m · à 990 m de la trace", "osm": "way/30596281"},
   {"type": "bivouac", "nom": "La Chaz", "km": 21.0, "lat": 46.24426, "lon": 5.92756, "info": "Cabane · 1490 m · à 340 m de la trace", "osm": "way/30642281"},
   {"type": "bivouac", "nom": "Le Gralet", "km": 25.3, "lat": 46.21458, "lon": 5.89811, "info": "Cabane · 1461 m · à 10 m de la trace", "osm": "node/2173233610"},
-  {"type": "vue", "nom": "Point de vue", "km": 25.4, "lat": 46.21519, "lon": 5.89659, "info": "Point de vue · à 120 m de la trace", "osm": "node/7741699017"}
+  {"type": "vue", "nom": "Point de vue", "km": 25.4, "lat": 46.21519, "lon": 5.89659, "info": "Point de vue · à 120 m de la trace", "osm": "node/7741699017"},
+  {"type": "bivouac", "nom": "La Poutouille", "km": 29.5, "lat": 46.18799, "lon": 5.87026, "info": "Cabane · 1446 m · à 20 m de la trace", "osm": "way/201835095"},
+  {"type": "vue", "nom": "Beauchateau", "km": 31.0, "lat": 46.18633, "lon": 5.859, "info": "Point de vue · à 150 m de la trace", "osm": "node/1676806364"},
+  {"type": "bivouac", "nom": "La Biolaz", "km": 32.4, "lat": 46.18043, "lon": 5.84849, "info": "Chambre d'hôtes · à 160 m de la trace", "osm": "node/1685681384"},
+  {"type": "resto", "nom": "Le Petit Chamois", "km": 33.1, "lat": 46.17504, "lon": 5.84776, "info": "Restaurant · à 40 m de la trace", "osm": "node/1681662388"},
+  {"type": "bivouac", "nom": "Cabane du Téléphone", "km": 35.2, "lat": 46.17233, "lon": 5.86121, "info": "Abri · à 10 m de la trace", "osm": "node/1904485536"},
+  {"type": "bivouac", "nom": "Chalet du Sac", "km": 36.5, "lat": 46.16237, "lon": 5.86689, "info": "Cabane · 1381 m · à 20 m de la trace", "osm": "way/201876791"},
+  {"type": "bivouac", "nom": "Chalet Bizot", "km": 40.0, "lat": 46.13785, "lon": 5.87124, "info": "Cabane · 1515 m · à 20 m de la trace", "osm": "way/201824708"},
+  {"type": "vue", "nom": "Point de vue", "km": 40.4, "lat": 46.13325, "lon": 5.88055, "info": "Point de vue · à 800 m de la trace", "osm": "node/11264443474"},
+  {"type": "resto", "nom": "Le Bistro Gourmand", "km": 47.5, "lat": 46.12438, "lon": 5.83555, "info": "Restaurant · à 50 m de la trace", "osm": "node/2975271464"},
+  {"type": "bivouac", "nom": "Le Sorgia", "km": 47.6, "lat": 46.12522, "lon": 5.8321, "info": "Hôtel · à 160 m de la trace", "osm": "node/2975271465"},
+  {"type": "bivouac", "nom": "Abri", "km": 47.6, "lat": 46.12062, "lon": 5.82489, "info": "Abri · à 850 m de la trace", "osm": "node/9893459523"},
+  {"type": "eau", "nom": "Point d'eau potable", "km": 47.6, "lat": 46.1256, "lon": 5.82838, "info": "Point d'eau potable · à 450 m de la trace", "osm": "node/9894722704"}
 ];
