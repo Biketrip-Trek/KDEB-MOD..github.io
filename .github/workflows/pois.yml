@@ -3,6 +3,7 @@
 # lance outils/pois_auto.py sur ses serveurs (qui ont accès à
 # OpenStreetMap), puis enregistre les POI trouvés dans data/pois/.
 # Lancement à la main possible : onglet Actions > Robot POI > Run workflow.
+# Reprise automatique toutes les heures si des POI sont restés en attente.
 # =====================================================================
 name: Robot POI
 
@@ -14,6 +15,10 @@ on:
       - "data/*.js"
       - "outils/pois_auto.py"
   workflow_dispatch:
+  # Reprise automatique toutes les heures des POI restés en attente (serveurs saturés).
+  # S'il n'y a rien à faire, le passage dure quelques secondes.
+  schedule:
+    - cron: "17 * * * *"
 
 permissions:
   contents: write

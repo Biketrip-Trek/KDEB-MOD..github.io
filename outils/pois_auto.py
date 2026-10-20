@@ -22,7 +22,7 @@
 # présente en bas des cartes du site.
 # =====================================================================
 
-import re, math, json, sys, os, time, hashlib
+import re, math, json, sys, os, time, hashlib, shutil
 import urllib.request, urllib.parse, urllib.error
 
 # ---------------------------------------------------------------------
@@ -182,18 +182,41 @@ def generer(nom, rayon):
     if len(courant) > 1 or not morceaux:
         morceaux.append(courant)
 
+    # Requête « rectangle » (bbox) autour de chaque morceau, agrandi de la zone :
+    # bien plus rapide pour Overpass qu'une recherche « à moins de X m d'une ligne ».
+    # Le tri à la bonne distance de la trace est fait ensuite, ici (voir plus bas).
     par_cle = {}
     for cle, val, _, _ in RECHERCHES:
         par_cle.setdefault(cle, []).append(val)
+    filtres = "\n".join(f'  nwr["{cle}"~"^({"|".join(vals)})$"];' for cle, vals in par_cle.items())
+
+    # Les morceaux déjà obtenus sont gardés dans data/pois/_cache/<nom>/ (enregistrés sur
+    # GitHub) : si les serveurs saturent, le passage suivant reprend où il s'était arrêté.
+    empreinte = hashlib.sha1(texte.encode()).hexdigest()[:10]
+    dossier = f"data/pois/_cache/{nom}"
+    cle_cache = f"r{rayon}-t{empreinte}-{SIGNATURE_RECHERCHES}"
+    os.makedirs(dossier, exist_ok=True)
+    for f in os.listdir(dossier):                      # restes d'une autre zone ou d'une autre trace
+        if not f.startswith(cle_cache):
+            os.remove(os.path.join(dossier, f))
+
     elements, par_morceau = [], []
     for n, m in enumerate(morceaux, 1):
-        ligne = ",".join(f"{lat:.5f},{lon:.5f}" for lat, lon in m)
-        filtres = "\n".join(f'  nwr["{cle}"~"^({"|".join(vals)})$"](around:{rayon},{ligne});' for cle, vals in par_cle.items())
-        print(f"::notice title={nom}::morceau {n}/{len(morceaux)} ({int(time.time() - DEBUT)} s)", flush=True)
-        recus = interroger(f"[out:json][timeout:80];\n(\n{filtres}\n);\nout center tags;")
+        f_cache = os.path.join(dossier, f"{cle_cache}-{n}.json")
+        if os.path.exists(f_cache):
+            recus = json.load(open(f_cache, encoding="utf-8"))
+            print(f"::notice title={nom}::morceau {n}/{len(morceaux)} déjà obtenu ({len(recus)} éléments)", flush=True)
+        else:
+            lats, lons = [p[0] for p in m], [p[1] for p in m]
+            dlat = rayon / 111320
+            dlon = rayon / (111320 * math.cos(math.radians(sum(lats) / len(lats))))
+            bbox = f"{min(lats) - dlat:.5f},{min(lons) - dlon:.5f},{max(lats) + dlat:.5f},{max(lons) + dlon:.5f}"
+            print(f"::notice title={nom}::morceau {n}/{len(morceaux)} ({int(time.time() - DEBUT)} s)", flush=True)
+            recus = interroger(f"[out:json][timeout:60][bbox:{bbox}];\n(\n{filtres}\n);\nout center tags;")
+            json.dump(recus, open(f_cache, "w", encoding="utf-8"))
+            time.sleep(PAUSE_S)
         par_morceau.append(len(recus))
         elements += recus
-        time.sleep(PAUSE_S)
 
     def classer(tags):
         for cle, val, type_site, nom_defaut in RECHERCHES:
@@ -288,13 +311,16 @@ for nom in slugs_du_site():
     try:
         pois, par_morceau = generer(nom, rayon)
         ecrire(nom, rayon, empreinte, pois, par_morceau)
+        shutil.rmtree(f"data/pois/_cache/{nom}", ignore_errors=True)   # fiche terminée : morceaux en attente inutiles
         compte = {}
         for p in pois: compte[p["type"]] = compte.get(p["type"], 0) + 1
         bilan.append(f"{nom} : {len(pois)} POI à {rayon} m ({', '.join(f'{t} {n}' for t, n in sorted(compte.items()))})")
     except Exception as e:
         echecs.append(f"{nom} : {e}")
 
-print("\n".join(bilan) or "Rien à faire : tous les POI sont à jour.")
+print("\n".join(bilan) or ("" if echecs else "Rien à faire : tous les POI sont à jour."))
 if echecs:
-    print("PROBLÈMES :\n" + "\n".join(echecs))
-    sys.exit(1 if not bilan else 0)
+    # Pas d'échec du passage : les morceaux déjà obtenus doivent être enregistrés,
+    # et le passage suivant (toutes les heures) reprendra là où celui-ci s'est arrêté.
+    for e in echecs:
+        print(f"::warning title=POI à reprendre::{e}")
