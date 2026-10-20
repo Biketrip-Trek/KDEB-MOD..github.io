@@ -4,7 +4,7 @@
 #         traces du site. Lancé tout seul par GitHub (voir
 #         .github/workflows/pois.yml) :
 #           - à chaque publication (trace ou fiche modifiée),
-#           - et toutes les 30 minutes, pour finir ce qui est resté en attente.
+#           - et, s'il reste du travail, il se relance lui-même 10 min plus tard.
 #
 #   Réglage fiche par fiche (posé par l'Atelier, dans data/<nom>.js) :
 #     "pois_auto": true      > le robot crée data/pois/<nom>.js
@@ -23,7 +23,7 @@
 #      puis garde lui-même ce qui est à la bonne distance de la trace.
 #   3. Chaque tranche obtenue est enregistrée dans data/pois/_cache/<nom>/ :
 #      si les serveurs saturent, il s'arrête au bout de 25 min et le passage
-#      suivant (30 min plus tard) reprend là où il s'était arrêté.
+#      suivant (10 min plus tard, lancé par le robot lui-même) reprend là où il s'était arrêté.
 #   4. Il essaie d'abord le serveur qui a répondu en dernier, puis les autres
 #      dans l'ordre de fiabilité observé.
 #   5. Il écrit son état dans data/pois/etat.js : la page du parcours affiche

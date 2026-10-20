@@ -134,7 +134,7 @@ Le robot POI cherche dans OpenStreetMap ce qui se trouve autour de la trace : po
 "pois_rayon_m": 3000,
 ```
 2. **À chaque publication**, le robot lit ce réglage et crée `data/pois/<nom>.js`. Il refait les points si la zone ou la trace change, et les retire si `"pois_auto"` passe à `false`. Les fiches sans ce réglage (anciennes fiches) et les fichiers faits à la main avec `gpx2pois.py` ne sont jamais touchés.
-3. **Délai** : environ 1 minute par tranche de 25 km de trace, plus 1 minute de mise en ligne (5 à 7 minutes pour 150 km) quand OpenStreetMap répond bien ; plusieurs heures pour de longues traces quand il est saturé. Quand les serveurs gratuits d'OpenStreetMap sont saturés, le robot s'arrête au bout de 25 minutes, garde ce qu'il a obtenu et reprend tout seul toutes les 30 minutes. En attendant, la page du parcours affiche « Points d'intérêt en cours de recherche ».
+3. **Délai** : environ 1 minute par tranche de 25 km de trace, plus 1 minute de mise en ligne (5 à 7 minutes pour 150 km) quand OpenStreetMap répond bien ; plusieurs heures pour de longues traces quand il est saturé. Quand les serveurs gratuits d'OpenStreetMap sont saturés, le robot s'arrête au bout de 25 minutes, garde ce qu'il a obtenu, patiente 10 minutes et se relance tout seul jusqu'à avoir fini. En attendant, la page du parcours affiche « Points d'intérêt en cours de recherche ».
 4. **Pour masquer un point faux ou inutile**, ne modifie pas le fichier généré. Copie son code `"osm"` (ex. `"node/123456"`) dans `"pois_exclus"` de `data/<nom>.js` :
 ```
 "pois_exclus": ["node/123456", "way/7890"]

@@ -2,8 +2,10 @@
 # Robot POI : GitHub lance outils/pois_auto.py sur ses serveurs (qui ont
 # accès à OpenStreetMap), puis enregistre le résultat dans data/pois/.
 #   - à chaque publication d'une trace ou d'une fiche ;
-#   - toutes les 30 minutes (à h + 17 et h + 47), pour finir ce qui est resté en
-#     attente quand les serveurs OpenStreetMap étaient saturés ;
+#   - s'il reste du travail (serveurs OpenStreetMap saturés), il patiente
+#     10 min puis se relance lui-même, jusqu'à avoir fini ;
+#   - en secours, toutes les 30 minutes (GitHub ne déclenche pas toujours
+#     ces passages programmés : constaté le 20/10/2026) ;
 #   - à la main : onglet Actions > Robot POI > Run workflow.
 # Le détail de chaque passage (tranches, serveurs, erreurs) est visible
 # dans l'onglet Actions, en « annotations ».
@@ -23,6 +25,7 @@ on:
 
 permissions:
   contents: write
+  actions: write      # pour se relancer lui-même s'il reste du travail
 
 # Un seul passage à la fois ; un passage en attente reprend la dernière version du site
 concurrency:
@@ -50,4 +53,16 @@ jobs:
             git commit -m "POI automatiques (OpenStreetMap)" -m "$(grep -v '^::' bilan.txt | tail -20)"
             git pull --rebase origin main
             git push origin main
+          fi
+
+      - name: Se relancer s'il reste des POI en attente
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if grep -q '"etat": "en_attente"' data/pois/etat.js; then
+            echo "Il reste des POI en attente : nouveau passage dans 10 minutes."
+            sleep 600
+            gh api -X POST "repos/${{ github.repository }}/actions/workflows/pois.yml/dispatches" -f ref=main
+          else
+            echo "Tous les POI sont à jour."
           fi
