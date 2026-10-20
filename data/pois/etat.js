@@ -2,11 +2,10 @@
 // ok = POI en ligne ; en_attente = recherche en cours (serveurs OpenStreetMap saturés) ; erreur = à regarder.
 window.ETAT_POIS = {
  "ardennes-arbalete": {
-  "etat": "en_attente",
-  "maj": "2026-10-20T09:51Z",
-  "obtenus": 0,
-  "rayon": 1000,
-  "total": 15
+  "etat": "ok",
+  "maj": "2026-10-20T10:33Z",
+  "poi": 990,
+  "rayon": 1000
  },
  "cretes-du-jura-en-3-jours": {
   "etat": "ok",
@@ -16,8 +15,8 @@ window.ETAT_POIS = {
  },
  "entre-tmv-et-la-route-des-vins-3-jours": {
   "etat": "en_attente",
-  "maj": "2026-10-20T09:51Z",
-  "obtenus": 0,
+  "maj": "2026-10-20T10:35Z",
+  "obtenus": 2,
   "rayon": 1000,
   "total": 10
  },
@@ -28,10 +27,9 @@ window.ETAT_POIS = {
   "rayon": 1000
  },
  "tmv-vosges-2026": {
-  "etat": "en_attente",
-  "maj": "2026-10-20T09:51Z",
-  "obtenus": 5,
-  "rayon": 1000,
-  "total": 9
+  "etat": "ok",
+  "maj": "2026-10-20T10:17Z",
+  "poi": 380,
+  "rayon": 1000
  }
 };
