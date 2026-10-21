@@ -13,10 +13,8 @@
 // (la virgule est facultative sur la dernière ligne).
 // =====================================================================
 window.LISTE_PARCOURS = [
-  "flandrien-challenge",
   "dolce-via",
   "tmv-vosges-2026",
-  "ardennes-arbalete",
   "alps-divide-nice-briancon",
   "briancon-cannes",
   "cretes-du-jura-en-3-jours",

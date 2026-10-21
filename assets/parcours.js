@@ -96,8 +96,9 @@ const slug = new URLSearchParams(location.search).get("p") || "flandrien-challen
 // Charge textes + trace (fonction définie dans entete.js), puis construit la page.
 // En cas de problème, un message rouge explique quoi corriger.
 // data/pois/etat.js (écrit par le robot POI) dit si les points d'intérêt sont prêts.
-Promise.all([chargerParcours(slug), chargerScript("data/pois/etat.js")]).then(([P]) => {
-  if (P) construire(P);
+// Les deux listes disent à quelle catégorie appartient la trace (Nord ou ailleurs en France).
+Promise.all([chargerParcours(slug), chargerScript("data/pois/etat.js"), chargerListes()]).then(([P, , listes]) => {
+  if (P) { P.categorie = categorieDe(slug, listes); construire(P); }
   else $("titre").textContent = "Parcours introuvable";
   afficherErreurs();
 });
@@ -115,7 +116,7 @@ function construire(P) {
   $("fond").innerHTML = P.photo_principale
     ? `<img src="photos/${P.slug}/${P.photo_principale}" alt="">`
     : courbesDeNiveau();
-  const cat = libelleFiche(P);   // ex. « Vélo · À la journée » ou « Traces du Nord · VTT »
+  const cat = `${P.categorie.nom} · ${etiquetteFiche(P)}`;   // ex. « Traces du Nord · VTT · À la journée »
   $("lieu").innerHTML = (cat ? `<span class="cat">${cat}</span>` : "") + (P.lieu || []).map(l => `<span>${l}</span>`).join("");
   $("titre").innerHTML = `${P.nom}${P.nom_gras ? ` <em>${P.nom_gras}</em>` : ""}`; // nom_gras = partie en orange
   $("chapeau").textContent = propre(P.chapeau) || propre(P.description_courte);
@@ -219,8 +220,9 @@ function construire(P) {
   gal.innerHTML = (P.photos || []).map(ph => `<figure><img src="photos/${P.slug}/${ph.fichier}" alt="${ph.legende || ""}" loading="lazy"><figcaption>${ph.legende || ""}</figcaption></figure>`).join("");
   visionneuse(P);
 
-  // --- Fiche courte : lien de retour vers toutes les traces du Nord ---
-  if (courte) { $("retour").hidden = false; $("retour").innerHTML = `<a href="${SECTION_NORD.lien}">Retour aux ${SECTION_NORD.nom}</a>`; }
+  // --- Lien de retour vers la catégorie de la trace (page carte, sinon rubrique de l'accueil) ---
+  $("retour").hidden = false;
+  $("retour").innerHTML = `<a href="${P.categorie.carte || "index.html#" + P.categorie.id}">Retour aux ${P.categorie.nom}</a>`;
 
   // --- Crédits en bas de page ---
   $("credits").innerHTML = `<b>Parcours tracé et ${rando ? "marché" : "roulé"} par ${P.auteur || "Kévin"}${P.date_trace ? (/^\d/.test(P.date_trace) ? " le " : " en ") + P.date_trace : ""}.</b> ${P.date_maj ? "Mise à jour : " + P.date_maj + ". " : ""}Un chemin fermé, un point d'eau à sec ? Écris-moi pour que je corrige la trace. ${P.origine_trace || ""}`;

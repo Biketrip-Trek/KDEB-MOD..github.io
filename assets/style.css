@@ -71,6 +71,9 @@ h2.section::after { content: ""; flex: 1; height: 1px; background: var(--ligne);
 .panneau a { display: block; padding: 10px 18px; color: var(--encre); text-decoration: none; font-size: 15px; }
 .panneau a:hover { background: #f1ece1; }
 .panneau a.tout { border-top: 1px solid var(--ligne); margin-top: 4px; font-size: 13px; color: var(--doux); }
+.panneau a.tout.suite { border-top: 0; margin-top: 0; padding-top: 4px; }
+/* Titre de groupe dans le menu déroulant (Vélo, Randonnée) */
+.panneau .groupe { display: block; padding: 12px 18px 2px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--balise); font-weight: 600; }
 @media (hover: hover) { .deroulant:hover .panneau { display: block; } .deroulant:hover .onglet { border-bottom-color: var(--balise); } }
 
 
@@ -245,6 +248,14 @@ h2.section::after { content: ""; flex: 1; height: 1px; background: var(--ligne);
 .pied .contenu { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px 24px; padding-top: 26px; padding-bottom: 34px; font-size: 14px; }
 .pied a { color: #fff; margin-right: 18px; }
 @media (max-width: 700px) { .panneau { left: 0; right: auto; } .menu { margin-left: -12px; } }
+/* Téléphone : onglets du menu sur une ligne chacun, panneau calé sur la gauche du menu */
+.onglet { white-space: nowrap; }
+@media (max-width: 480px) {
+  .menu { position: relative; flex-wrap: wrap; }
+  .deroulant { position: static; }
+  .panneau { left: 12px; right: auto; max-width: calc(100vw - 32px); }
+  .onglet { font-size: 14px; padding: 8px 9px; }
+}
 
 
 
@@ -265,12 +276,28 @@ h2.section::after { content: ""; flex: 1; height: 1px; background: var(--ligne);
 .filtres-accueil .pastille { width: 10px; height: 10px; }
 .filtres-accueil .mono { color: inherit; opacity: .7; }
 #carte-globale { height: min(72vh, 640px); }  /* hauteur de la grande carte de l'accueil */
-.titre-rubrique { font-size: clamp(30px, 5vw, 44px); letter-spacing: -.02em; margin: 64px 0 6px; display: flex; align-items: center; gap: 14px; }
+.titre-rubrique { font-size: clamp(24px, 3.6vw, 32px); letter-spacing: -.02em; margin: 44px 0 4px; display: flex; align-items: center; gap: 12px; scroll-margin-top: 20px; }
+.titre-rubrique .mono { font-size: 15px; color: var(--doux); font-weight: 500; }
+.rubrique { scroll-margin-top: 20px; }
 .titre-rubrique .pastille, .rubrique .pastille { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
 .sous-rubrique { scroll-margin-top: 20px; padding: 10px 0 6px; }
-.sous-rubrique h3 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--doux); font-weight: 600; margin: 24px 0 14px; display: flex; align-items: center; gap: 10px; }
-.sous-rubrique h3::after { content: ""; flex: 1; height: 1px; background: var(--ligne); }
-.sous-rubrique h3 .mono { color: var(--balise); }
+.sous-rubrique > h3, .sous-rubrique > h4 { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--doux); font-weight: 600; margin: 24px 0 14px; display: flex; align-items: center; gap: 10px; }
+.sous-rubrique > h3::after, .sous-rubrique > h4::after { content: ""; flex: 1; height: 1px; background: var(--ligne); }
+.sous-rubrique > h3 .mono, .sous-rubrique > h4 .mono { color: var(--balise); }
+
+/* ---------------------------------------------------------------------
+   GRANDES CATÉGORIES DE L'ACCUEIL (Traces du Nord / ailleurs en France) :
+   un bandeau sombre en tête de chaque catégorie, puis ses rubriques.
+   --------------------------------------------------------------------- */
+.categorie { scroll-margin-top: 20px; padding-bottom: 20px; }
+.categorie + .categorie { border-top: 1px solid var(--ligne); margin-top: 40px; }
+.entete-categorie { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 28px; align-items: end; background: var(--encre); color: #fff; padding: 28px 30px; margin-top: 56px; }
+.entete-categorie .cat { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--balise); }
+.entete-categorie h2 { margin: 4px 0 6px; font-size: clamp(30px, 5vw, 46px); letter-spacing: -.02em; line-height: 1.05; text-wrap: balance; }
+.entete-categorie p { margin: 0; color: rgba(255,255,255,.75); max-width: 60ch; }
+.entete-categorie .aller { color: #fff; font-weight: 600; white-space: nowrap; text-decoration: none; border-bottom: 2px solid var(--balise); padding-bottom: 2px; }
+.entete-categorie .aller:hover { color: var(--balise); }
+@media (max-width: 640px) { .entete-categorie { grid-template-columns: 1fr; padding: 22px 20px; } }
 /* Grille des vignettes : chaque vignette fait au moins 290 px de large, 18 px d'écart */
 .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; }
 .bientot { margin: 0; padding: 22px; border: 1px dashed var(--ligne); color: var(--doux); font-style: italic; grid-column: 1 / -1; }

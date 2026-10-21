@@ -1,13 +1,15 @@
 // =====================================================================
 // FICHIER : assets/accueil.js
 // RÔLE    : construit la PAGE D'ACCUEIL (index.html) :
-//             1. charge la liste des parcours (data/liste.js)
+//             1. charge les deux listes (data/liste-nord.js et data/liste.js)
 //             2. charge chaque parcours : textes (data/<nom>.js)
 //                et trace (data/traces/<nom>.js)
-//             3. remplit les compteurs, la grande carte et les vignettes
+//             3. remplit les compteurs, la grande carte et les rubriques :
+//                Traces du Nord / Traces ailleurs en France,
+//                puis Vélo / Randonnée, puis à la journée / plusieurs jours
 //
 // Ce fichier n'a normalement PAS besoin d'être modifié pour ajouter un
-// parcours : il suffit d'ajouter son nom dans data/liste.js.
+// parcours : il suffit d'ajouter son nom dans la bonne liste.
 // =====================================================================
 
 
@@ -40,32 +42,13 @@ document.getElementById("fond").innerHTML = courbesDeNiveau();
 // (chargerParcours et afficherErreurs sont définies dans entete.js)
 // ---------------------------------------------------------------------
 (async function () {
-  const listeTrouvee = await chargerScript("data/liste.js");
-  if (!listeTrouvee) ERREURS.push("Fichier introuvable : <b>data/liste.js</b>.");
-  const noms = window.LISTE_PARCOURS || [];
+  const listes = await chargerListes();                       // { nord: [...], france: [...] }
+  const noms = [...new Set(CATEGORIES.flatMap(c => listes[c.id]))];
   const parcours = (await Promise.all(noms.map(chargerParcours))).filter(Boolean);
+  parcours.forEach(p => p.categorie = categorieDe(p.slug, listes).id);
   construireAccueil(parcours);
-  await appelNord();
   afficherErreurs();
 })();
-
-
-// ---------------------------------------------------------------------
-// ENCART « TRACES DU NORD » en haut des rubriques : mène vers nord.html.
-// Il n'apparaît que si data/liste-nord.js contient au moins une trace.
-// ---------------------------------------------------------------------
-async function appelNord() {
-  await chargerScript("data/liste-nord.js");
-  const n = (window.LISTE_NORD || []).length;
-  if (!n) return;
-  document.getElementById("rubriques").insertAdjacentHTML("afterbegin", `
-    <a class="appel-nord" href="${SECTION_NORD.lien}">
-      <div><span class="cat">Près de chez moi</span>
-        <h2>${SECTION_NORD.nom}</h2>
-        <p>${n} trace${n > 1 ? "s" : ""} sur les petites routes et les sentiers que j'ai testés moi-même : des sorties à la journée et des idées de trek ou de bike trip sur 2-3 jours, avec les incontournables de la région.</p></div>
-      <span class="aller">Voir les traces</span>
-    </a>`);
-}
 
 
 // ---------------------------------------------------------------------
@@ -95,7 +78,8 @@ function construireAccueil(parcours) {
     const ligne = L.polyline(segments(p.trace), { color: c, weight: 4 });   // trace colorée
     const depart = L.circleMarker(ll[0], { radius: 6, color: "#fff", weight: 2, fillColor: c, fillOpacity: 1 });
     // Bulle qui s'ouvre au clic sur une trace
-    const bulle = `<b>${p.nom} ${p.nom_gras || ""}</b><span class="km">${libelleCategorie(p.activite, p.format)}</span><br>
+    const cat = CATEGORIES.find(c => c.id === p.categorie) || {};
+    const bulle = `<b>${p.nom} ${p.nom_gras || ""}</b><span class="km">${cat.nom} · ${etiquetteFiche(p)}</span><br>
       ${fmtN(p.distance_km)} km · ${fmtN(p.denivele_m)} m D+<br><a href="parcours.html?p=${p.slug}">Voir le parcours</a>`;
     const g = L.featureGroup([halo, ligne, depart]).bindPopup(bulle);
     // La trace s'épaissit au survol de la souris
@@ -133,21 +117,36 @@ function construireAccueil(parcours) {
     filtres.appendChild(b);
   }
 
-  // --- 4. Rubriques sous la carte : Vélo / Randonnée, puis À la journée / Plusieurs jours ---
-  // Chaque rubrique a un "id" (ex. velo-journee) : c'est lui que visent
-  // les liens du menu (index.html#velo-journee).
+  // --- 4. Rubriques sous la carte : les deux catégories (Traces du Nord,
+  //        Traces ailleurs en France), puis Vélo / Randonnée, puis
+  //        À la journée / Plusieurs jours.
+  // Chaque rubrique a un "id" (ex. nord-velo-journee) : c'est lui que visent
+  // les liens du menu (index.html#nord-velo-journee).
   const rub = document.getElementById("rubriques");
-  rub.innerHTML = MENU.map(m => `
-    <section class="rubrique" id="${m.id}">
-      <h2 class="titre-rubrique"><span class="pastille" style="background:${COULEUR_ACTIVITE[m.id]}"></span>${m.nom}</h2>
-      ${m.sous.map(s => {
-        const liste = parcours.filter(p => p.activite === m.id && p.format === s.id);
-        return `<div class="sous-rubrique" id="${m.id}-${s.id}">
-          <h3>${s.nom} <span class="mono">${liste.length}</span></h3>
-          <div class="grille">${liste.length ? liste.map(fiche).join("") : `<p class="bientot">De nouveaux parcours arrivent bientôt.</p>`}</div>
+  rub.innerHTML = CATEGORIES.map(c => {
+    const dansCat = parcours.filter(p => p.categorie === c.id);
+    return `<section class="categorie" id="${c.id}">
+      <header class="entete-categorie">
+        <div><span class="cat">${dansCat.length} trace${dansCat.length > 1 ? "s" : ""} · ${fmtN(dansCat.reduce((t, p) => t + (p.distance_km || 0), 0))} km</span>
+          <h2>${c.nom}</h2>
+          <p>${c.accroche || ""}</p></div>
+        ${c.carte ? `<a class="aller" href="${c.carte}">Carte et filtres</a>` : ""}
+      </header>
+      ${MENU.map(m => {
+        const dansAct = dansCat.filter(p => p.activite === m.id);
+        return `<div class="rubrique" id="${c.id}-${m.id}">
+          <h3 class="titre-rubrique"><span class="pastille" style="background:${COULEUR_ACTIVITE[m.id]}"></span>${m.nom} <span class="mono">${dansAct.length}</span></h3>
+          ${m.sous.map(s => {
+            const liste = dansAct.filter(p => dureeDe(p) === s.id);
+            return `<div class="sous-rubrique" id="${c.id}-${m.id}-${s.id}">
+              <h4>${s.nom} <span class="mono">${liste.length}</span></h4>
+              <div class="grille">${liste.length ? liste.map(fiche).join("") : `<p class="bientot">De nouvelles traces arrivent bientôt.</p>`}</div>
+            </div>`;
+          }).join("")}
         </div>`;
       }).join("")}
-    </section>`).join("");
+    </section>`;
+  }).join("");
 
   // --- 5. Arrivée depuis le menu (ex. index.html#velo-journee) ---
   // On fait défiler la page jusqu'à la bonne rubrique et on la fait "clignoter".
@@ -171,11 +170,11 @@ function fiche(p) {
     : silhouette(p.trace);
   return `<a class="fiche" href="parcours.html?p=${p.slug}">
     <div class="visuel ${p.photo_principale ? "" : "sans-photo"}">${visuel}
-      <span class="etiquette">${libelleCategorie(p.activite, p.format)}</span></div>
+      <span class="etiquette">${etiquetteFiche(p)}</span></div>
     <div class="corps">
       <h4>${p.nom} ${p.nom_gras ? `<em>${p.nom_gras}</em>` : ""}</h4>
-      <p class="lieu">${(p.lieu || []).join(" · ")}</p>
-      <div class="chiffres mono"><span>${fmtN(p.distance_km)} km</span><span>${fmtN(p.denivele_m)} m D+</span><span>${p.jours || "-"} j</span></div>
+      <p class="lieu">${(p.lieu || []).length ? p.lieu.join(" · ") : p.depart ? "Départ : " + p.depart : ""}</p>
+      <div class="chiffres mono"><span>${fmtN(p.distance_km)} km</span><span>${fmtN(p.denivele_m)} m D+</span><span>${joursDe(p)} j</span></div>
     </div>
   </a>`;
 }

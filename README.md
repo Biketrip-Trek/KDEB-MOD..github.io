@@ -44,6 +44,12 @@ Un parcours est toujours désigné par **un nom court, sans accent ni espace**, 
 
 La page d'un parcours a pour adresse `parcours.html?p=dolce-via`.
 
+**Organisation du site** : deux grandes catégories, puis Vélo / Randonnée, puis À la journée / Plusieurs jours.
+- **Traces du Nord** : les noms écrits dans `data/liste-nord.js` (fiches courtes ou complètes ; page carte et filtres `nord.html`).
+- **Traces ailleurs en France** : les noms écrits dans `data/liste.js`.
+
+Pour changer une trace de catégorie, déplace son nom d'une liste à l'autre. Vélo ou randonnée vient du champ `"activite"`, la durée du champ `"jours"` (1 = à la journée). Les noms des catégories et leur phrase d'accroche se changent dans `CATEGORIES`, en haut de `assets/entete.js`.
+
 ---
 
 ## 2. Modifier un fichier sur GitHub (méthode de base)
@@ -64,7 +70,8 @@ Ouvre `data/<nom>.js`. Chaque information est sur sa propre ligne, sous la forme
 | Champ | Ce que c'est | Où ça s'affiche |
 |---|---|---|
 | `nom` / `nom_gras` | Titre (la partie `nom_gras` est en orange) | Bandeau, vignette |
-| `activite` | `velo` ou `rando` | Rubrique de l'accueil |
+| `activite` | `velo` ou `rando` | Rubrique de l'accueil (Vélo / Randonnée) |
+| `pratique` | `route`, `gravel`, `vtt` ou `marche` (facultatif) | Étiquette, filtres de la page Nord |
 | `format` | `journee` ou `plusieurs-jours` | Rubrique de l'accueil |
 | `jours` | Nombre de jours | Barre de chiffres |
 | `lieu` | Liste des étiquettes de lieu | Bandeau, vignette |
@@ -187,7 +194,8 @@ Pour **masquer** un parcours sans le supprimer, retire simplement sa ligne de `d
 | Le nom du site (logo) | `assets/entete.js` | `const NOM_DU_SITE = "..."` |
 | Le titre de l'onglet de l'accueil | `index.html` | Ligne `<title>` |
 | Le grand titre et l'accroche de l'accueil | `index.html` | Lignes `<h1>` et `<p class="chapeau">` |
-| Les catégories du menu | `assets/entete.js` | Bloc `const MENU = [...]` |
+| Les deux grandes catégories (nom, accroche) | `assets/entete.js` | Bloc `const CATEGORIES = [...]` |
+| Les activités (Vélo, Randonnée) et durées | `assets/entete.js` | Bloc `const MENU = [...]` |
 | Les liens du pied de page (Instagram, contact) | `assets/entete.js` | `PIED_DE_PAGE` : remplace les `#` (un lien resté à `#` n'est pas affiché) |
 | Les couleurs du site | `assets/style.css` | Bloc `:root` tout en haut |
 | *(après toute modification de `style.css` ou d'un `.js` de `assets`)* | `index.html`, `parcours.html` **et** `nord.html` | Change le numéro `?v=...` des liens (ex. la date du jour) pour que les visiteurs voient tout de suite la nouvelle version |

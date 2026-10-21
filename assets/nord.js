@@ -36,7 +36,8 @@ const TRANCHES_KM = [
 // ---------------------------------------------------------------------
 const fmtN = n => Number(n).toLocaleString("fr-FR");
 const couleurPratique = p => (PRATIQUES[p.pratique] || {}).coul || "#e4572e";
-const nomPratique = p => (PRATIQUES[p.pratique] || {}).nom || "";
+// Fiche complète sans « pratique » (ex. un voyage rangé dans le Nord) : on affiche l'activité
+const nomPratique = p => (PRATIQUES[p.pratique] || {}).nom || (MENU.find(m => m.id === p.activite) || {}).nom || "";
 
 document.getElementById("fond").innerHTML = courbesDeNiveau();
 document.getElementById("etiquette-section").textContent = SECTION_NORD.nom;

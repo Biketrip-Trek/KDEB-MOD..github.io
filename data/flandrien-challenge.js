@@ -13,6 +13,7 @@ window.PARCOURS["flandrien-challenge"] = {
   "nom": "Flandrien Challenge",
   "nom_gras": "in one day",
   "activite": "velo",
+  "pratique": "route",
   "format": "journee",
   "jours": "1",
   "lieu": [

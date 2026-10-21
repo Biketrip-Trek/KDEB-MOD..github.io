@@ -22,11 +22,24 @@
 // et dans le titre de l'onglet du navigateur.
 const NOM_DU_SITE = "Carnet de traces";
 
-// Le menu en haut à droite.
+// LES DEUX GRANDES CATÉGORIES DU SITE (menu, accueil, étiquettes).
+// Une trace appartient à la catégorie de la liste où son nom est écrit :
+//   data/liste-nord.js > Traces du Nord ; data/liste.js > Traces ailleurs en France.
+// - "id"    : code interne (ancres de l'accueil : index.html#nord, #france...)
+// - "nom"   : texte affiché sur le site, libre
+// - "carte" : page avec la carte et les filtres de la catégorie (facultatif)
+const CATEGORIES = [
+  { id: "nord",   nom: "Traces du Nord",            liste: "data/liste-nord.js", variable: "LISTE_NORD",     carte: "nord.html",
+    accroche: "Près de chez moi : les petites routes, les chemins et les sentiers que j'ai testés moi-même, de la Flandre aux Ardennes." },
+  { id: "france", nom: "Traces ailleurs en France", liste: "data/liste.js",      variable: "LISTE_PARCOURS",
+    accroche: "Voyages à vélo et randonnées de plusieurs jours, des Vosges aux Alpes du Sud." }
+];
+
+// Dans chaque catégorie : les activités, puis la durée.
 // - "id"  : code interne, SANS accent ni espace. C'est ce code qu'on écrit
 //           dans les fiches (champs "activite" et "format").
 // - "nom" : texte affiché sur le site, libre.
-// Pour ajouter une catégorie (ex. "Ski de rando"), copie un bloc { ... }
+// Pour ajouter une activité (ex. "Ski de rando"), copie un bloc { ... }
 // complet, colle-le après le dernier, et sépare les blocs par une virgule.
 const MENU = [
   {
@@ -46,10 +59,8 @@ const MENU = [
 ];
 
 
-// Section « Traces du Nord » : boucles locales à la journée, fiches courtes,
-// sur leur propre page (nord.html). Leur liste est dans data/liste-nord.js.
-// "nom" : texte du menu et des étiquettes (tu peux le changer ici seulement).
-const SECTION_NORD = { nom: "Traces du Nord", lien: "nord.html" };
+// Raccourci vers la catégorie « Traces du Nord » (page nord.html)
+const SECTION_NORD = { nom: CATEGORIES[0].nom, lien: CATEGORIES[0].carte };
 
 // Pratiques des traces du Nord (champ "pratique" des fiches courtes) :
 // texte affiché et couleur sur la carte et les étiquettes.
@@ -85,15 +96,17 @@ const MENTION_CARTES = "Fonds de carte © Esri, contributeurs OpenStreetMap, Ope
   // Petite flèche "v" à côté de chaque menu (dessin SVG = dessin en code)
   const fleche = '<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4l4 4 4-4"/></svg>';
 
-  // Pour chaque catégorie du MENU, on fabrique un bouton + un panneau déroulant.
-  // Les liens pointent vers la page d'accueil, à la bonne rubrique
-  // (ex. index.html#velo-journee).
-  const menus = MENU.map(m => `
+  // Pour chaque grande catégorie, un bouton + un panneau déroulant, avec les
+  // activités (Vélo, Randonnée) et leurs durées. Les liens mènent à la bonne
+  // rubrique de l'accueil (ex. index.html#nord-velo-journee).
+  const menus = CATEGORIES.map(c => `
     <div class="deroulant">
-      <button class="onglet" aria-expanded="false">${m.nom} ${fleche}</button>
+      <button class="onglet" aria-expanded="false">${c.nom} ${fleche}</button>
       <div class="panneau">
-        ${m.sous.map(s => `<a href="index.html#${m.id}-${s.id}">${s.nom}</a>`).join("")}
-        <a class="tout" href="index.html#${m.id}">Tous les parcours ${m.nom.toLowerCase()}</a>
+        ${MENU.map(m => `<span class="groupe">${m.nom}</span>` +
+          m.sous.map(s => `<a href="index.html#${c.id}-${m.id}-${s.id}">${s.nom}</a>`).join("")).join("")}
+        ${c.carte ? `<a class="tout" href="${c.carte}">Carte et filtres des ${c.nom}</a>` : ""}
+        <a class="tout${c.carte ? " suite" : ""}" href="index.html#${c.id}">Toutes les ${c.nom}</a>
       </div>
     </div>`).join("");
 
@@ -106,7 +119,7 @@ const MENTION_CARTES = "Fonds de carte © Esri, contributeurs OpenStreetMap, Ope
         <svg viewBox="0 0 32 32" fill="none" stroke="#e4572e" stroke-width="2"><path d="M2 26 L11 12 L16 19 L21 9 L30 26 Z"/><path d="M8 26c3-4 6-2 8-5s5-4 8 0" stroke="#fff" stroke-width="1.4"/></svg>
         ${NOM_DU_SITE}
       </a>
-      <nav class="menu">${menus}<a class="onglet" href="${SECTION_NORD.lien}">${SECTION_NORD.nom}</a></nav>
+      <nav class="menu">${menus}</nav>
     </div>`;
   document.body.prepend(entete); // "prepend" = placer tout en haut de la page
 
@@ -246,6 +259,32 @@ function propre(v) {
 
 // joursDe(P) : nombre de jours d'une fiche (1 si le champ "jours" est absent)
 function joursDe(P) { return Math.max(1, parseInt(P.jours, 10) || 1); }
+
+// dureeDe(P) : "journee" ou "plusieurs-jours" (codes de MENU), pour toutes les fiches
+function dureeDe(P) { return joursDe(P) > 1 ? "plusieurs-jours" : "journee"; }
+
+// etiquetteFiche(P) : « Vélo · 3 jours », « VTT · À la journée »... (sans la catégorie)
+function etiquetteFiche(P) {
+  const act = (PRATIQUES[P.pratique] || {}).nom || (MENU.find(m => m.id === P.activite) || {}).nom || "";
+  return [act, joursDe(P) > 1 ? joursDe(P) + " jours" : "À la journée"].filter(Boolean).join(" · ");
+}
+
+// chargerListes() : charge les deux listes et renvoie, pour chaque catégorie,
+// la liste des noms de traces ({ nord: [...], france: [...] }).
+async function chargerListes() {
+  const out = {};
+  for (const c of CATEGORIES) {
+    const ok = await chargerScript(c.liste);
+    if (!ok) ERREURS.push(`Fichier introuvable : <b>${c.liste}</b>.`);
+    out[c.id] = window[c.variable] || [];
+  }
+  return out;
+}
+
+// categorieDe(nom, listes) : la catégorie (objet de CATEGORIES) d'une trace
+function categorieDe(nom, listes) {
+  return CATEGORIES.find(c => (listes[c.id] || []).includes(nom)) || CATEGORIES[CATEGORIES.length - 1];
+}
 
 // courbesDeNiveau() dessine un fond sombre avec des courbes de niveau.
 // Il s'affiche quand un parcours n'a pas encore de photo principale,
