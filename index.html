@@ -32,7 +32,7 @@
 <!-- VERSION DES FICHIERS : le "?v=..." force les navigateurs à recharger le style et les
      scripts après une mise à jour. Change ce numéro (ex. la date du jour) quand tu modifies
      style.css ou un fichier .js du dossier assets, ici ET dans l'autre page HTML. -->
-<link rel="stylesheet" href="assets/style.css?v=20261021c">
+<link rel="stylesheet" href="assets/style.css?v=20261021d">
 </head>
 <!-- "editorial" = style magazine de l'accueil (règles en fin de style.css) -->
 <body class="accueil editorial">
@@ -43,6 +43,13 @@
      La trace choisie se règle dans assets/accueil.js (A_LA_UNE). -->
 <section class="une" id="une"></section>
 
+<!-- ===== GRANDE CARTE DE TOUS LES PARCOURS ===== -->
+<section class="bloc-carte-accueil" id="toutes-les-traces">
+  <div class="contenu"><h2 class="titre-bloc">Toutes les traces sur la carte</h2></div>
+  <div class="contenu filtres-accueil" id="filtres"></div>  <!-- boutons Tous / Vélo / Randonnée + vues -->
+  <div class="contenu"><div id="carte-globale"></div></div>  <!-- la carte -->
+</section>
+
 <!-- ===== LES DEUX CATÉGORIES (Traces du Nord, Ailleurs en France) ===== -->
 <section class="contenu portes" id="portes"></section>
 
@@ -52,13 +59,6 @@
 <!-- ===== DERNIÈRES TRACES (les dernières ajoutées aux listes, avec photo) ===== -->
 <section class="contenu dernieres" id="dernieres"></section>
 
-<!-- ===== GRANDE CARTE DE TOUS LES PARCOURS ===== -->
-<section class="bloc-carte-accueil" id="toutes-les-traces">
-  <div class="contenu"><h2 class="titre-bloc">Toutes les traces sur la carte</h2></div>
-  <div class="contenu filtres-accueil" id="filtres"></div>  <!-- boutons Tous / Vélo / Randonnée + vues -->
-  <div class="contenu"><div id="carte-globale"></div></div>  <!-- la carte -->
-</section>
-
 <!-- ===== RUBRIQUES ET VIGNETTES (remplies par accueil.js) ===== -->
 <main class="contenu" id="rubriques"></main>
 
@@ -67,7 +67,7 @@
 
 <!-- Programmes de la page, dans cet ordre : carte (Leaflet), en-tête commun, accueil -->
 <script src="assets/leaflet/leaflet.js"></script>
-<script src="assets/entete.js?v=20261021c"></script>
-<script src="assets/accueil.js?v=20261021c"></script>
+<script src="assets/entete.js?v=20261021d"></script>
+<script src="assets/accueil.js?v=20261021d"></script>
 </body>
 </html>

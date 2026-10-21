@@ -471,7 +471,7 @@ body.courte .hero { min-height: 58vh; }                     /* fiche courte : ba
 .chiffres-recente { font-size: 13px; color: var(--e-gris); }
 
 /* --- Grande carte : sur fond blanc, encadrée d'un filet noir --- */
-.editorial .bloc-carte-accueil { background: #fff; padding-top: 72px; scroll-margin-top: 10px; }
+.editorial .bloc-carte-accueil { background: #fff; padding-top: 56px; scroll-margin-top: 10px; }
 .editorial .bloc-carte-accueil .titre-bloc { margin-bottom: 14px; }
 .editorial #carte-globale { border: 1px solid var(--e-encre); }
 .editorial .filtres-accueil .filtre { color: var(--e-encre); border-color: var(--e-encre); border-radius: 0; }
