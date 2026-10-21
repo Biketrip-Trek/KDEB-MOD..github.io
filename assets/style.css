@@ -387,10 +387,12 @@ body.courte .hero { min-height: 58vh; }                     /* fiche courte : ba
 
 /* =====================================================================
    18. STYLE « ÉDITORIAL » DE L'ACCUEIL (esprit Bikepacking.com et 200)
+   Même organisation que l'ancien accueil (bandeau, grande carte, rubriques),
+   avec une présentation de magazine : fond blanc, filets noirs, titres à
+   empattements (Newsreader), étiquettes en capitales étroites (Barlow
+   Condensed), chiffres en IBM Plex Mono, orange balise en accent.
    Ne s'applique qu'aux pages dont la balise <body> porte la classe
-   "editorial" (pour l'instant : index.html). Fond blanc, filets noirs,
-   titres à empattements (Newsreader), étiquettes en capitales étroites
-   (Barlow Condensed), chiffres en IBM Plex Mono, orange balise en accent.
+   "editorial" (pour l'instant : index.html).
    ===================================================================== */
 .editorial {
   --e-encre: #141414;   /* texte et filets noirs */
@@ -401,12 +403,8 @@ body.courte .hero { min-height: 58vh; }                     /* fiche courte : ba
   background: #fff; color: var(--e-encre);
 }
 .editorial a { color: var(--e-encre); text-decoration-color: var(--e-accent); }
-.editorial .serif, .editorial h1, .editorial .porte h2, .editorial .recente h3 { font-family: "Newsreader", Georgia, serif; }
-.editorial .surtitre, .editorial .titre-bloc, .editorial .barre-chiffres span {
-  font-family: "Barlow Condensed", "IBM Plex Sans", sans-serif; text-transform: uppercase; letter-spacing: .13em;
-}
 
-/* --- En-tête : menus à gauche, nom du site au centre, compteur à droite --- */
+/* --- En-tête : menus à gauche, nom du site au centre --- */
 .editorial .entete { position: static; background: #fff; border-bottom: 1px solid var(--e-encre); }
 .editorial .entete .contenu { display: grid; grid-template-columns: 1fr auto 1fr; padding-top: 14px; padding-bottom: 14px; flex-wrap: nowrap; }
 .editorial .logo { grid-column: 2; grid-row: 1; color: var(--e-encre); font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 30px; }
@@ -414,66 +412,31 @@ body.courte .hero { min-height: 58vh; }                     /* fiche courte : ba
 .editorial .menu { grid-column: 1; grid-row: 1; margin-left: -12px; }
 .editorial .onglet { color: var(--e-encre); font: 600 16px "Barlow Condensed", "IBM Plex Sans", sans-serif; text-transform: uppercase; letter-spacing: .08em; }
 .editorial .panneau { left: 0; right: auto; }
-.editorial .compteur-entete { grid-column: 3; grid-row: 1; justify-self: end; font-size: 12px; color: var(--e-gris); }
 
-/* --- À la une --- */
-.une .photo-une { display: block; height: min(62vh, 600px); overflow: hidden; }
-.une .photo-une img { width: 100%; height: 100%; object-fit: cover; }
-.titre-une { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px 56px; align-items: end; padding-top: 34px; }
-.surtitre { display: block; font-weight: 700; font-size: 15px; color: var(--e-accent); }
-.titre-une h1 { margin: 12px 0 14px; font-weight: 500; font-size: clamp(40px, 6.4vw, 76px); line-height: 1; letter-spacing: -.02em; text-wrap: balance; }
-.titre-une h1 a { text-decoration: none; }
-.titre-une h1 em { color: var(--e-accent); }
-.chapo { margin: 0; font-family: "Newsreader", Georgia, serif; font-size: clamp(19px, 2vw, 22px); line-height: 1.45; color: var(--e-gris2); max-width: 60ch; }
-.editorial .bouton-noir { background: var(--e-encre); color: #fff; text-decoration: none; padding: 14px 22px; font-weight: 600; font-size: 15px; white-space: nowrap; }
-.editorial .bouton-noir:hover { background: var(--e-accent); color: #fff; }
-.barre-chiffres { margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border-top: 1px solid var(--e-encre); border-bottom: 1px solid var(--e-encre); }
-.barre-chiffres > div { padding: 16px 0 16px 20px; border-left: 1px solid var(--e-filet); min-width: 0; }
-.barre-chiffres > div:first-child { padding-left: 0; border-left: 0; }
-.barre-chiffres span { display: block; font-size: 13px; color: var(--e-gris); }
-.barre-chiffres b { display: block; font-size: 24px; font-weight: 600; overflow-wrap: anywhere; }
+/* --- Bandeau d'ouverture : fond blanc, courbes de niveau très claires --- */
+.editorial .hero { background: #fff; color: var(--e-encre); min-height: 0; }
+.editorial .hero::after { display: none; }
+.editorial .hero .fond rect { fill: #fff; }
+.editorial .hero .fond path[stroke="#3b4a42"] { stroke: #ebe6dc; }
+.editorial .hero .fond path[stroke="#e4572e"] { stroke-opacity: .22; }
+.editorial .hero .contenu { padding-top: 72px; padding-bottom: 0; }
+.editorial .etiquettes-lieu span, .editorial .etiquettes-lieu span.cat {
+  background: none; border: 0; padding: 0; color: var(--e-accent);
+  font: 700 15px "Barlow Condensed", "IBM Plex Sans", sans-serif; letter-spacing: .14em;
+}
+.editorial .hero h1 { font-family: "Newsreader", Georgia, serif; font-weight: 500; letter-spacing: -.02em; max-width: 18ch; }
+.editorial .hero h1 em { font-style: italic; color: var(--e-accent); }
+.editorial .hero .chapeau { font-family: "Newsreader", Georgia, serif; font-size: clamp(19px, 2vw, 22px); line-height: 1.45; color: var(--e-gris2); }
+/* Compteurs en barre de chiffres, entre deux filets noirs */
+.editorial .compteurs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 36px; border-top: 1px solid var(--e-encre); border-bottom: 1px solid var(--e-encre); background: #fff; }
+.editorial .compteurs > div { padding: 16px 0 16px 20px; border-left: 1px solid var(--e-filet); }
+.editorial .compteurs > div:first-child { padding-left: 0; border-left: 0; }
+.editorial .compteurs b { font-size: clamp(22px, 3vw, 30px); }
+.editorial .compteurs span { color: var(--e-gris); font-family: "Barlow Condensed", "IBM Plex Sans", sans-serif; font-size: 13px; letter-spacing: .13em; }
 
-/* --- Les deux catégories --- */
-.portes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; padding-top: 64px; }
-.porte { text-decoration: none; display: flex; flex-direction: column; gap: 14px; }
-.photo-porte { aspect-ratio: 2 / 1; overflow: hidden; background: #efe9dd; }
-.photo-porte img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
-.porte:hover .photo-porte img, .recente:hover .photo-recente img { transform: scale(1.03); }
-.nom-porte { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; border-bottom: 1px solid var(--e-encre); padding-bottom: 12px; }
-.porte h2 { margin: 0; font-weight: 500; font-size: clamp(32px, 4vw, 42px); letter-spacing: -.015em; line-height: 1.05; }
-.porte:hover h2 { color: var(--e-accent); }
-.nom-porte .mono { font-size: 13px; color: var(--e-gris); }
-.porte p { margin: 0; color: var(--e-gris2); max-width: 60ch; }
-
-/* --- Citation du carnet --- */
-.citation:empty { display: none; }
-.citation { margin-top: 72px; display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 20px; }
-.citation > .guillemet, .citation blockquote { border-top: 1px solid var(--e-encre); border-bottom: 1px solid var(--e-encre); padding: 44px 0; }
-.guillemet { font-family: "Newsreader", Georgia, serif; font-size: 130px; line-height: .7; color: var(--e-accent); }
-.citation blockquote { margin: 0; }
-.citation blockquote p { margin: 0 0 14px; font-family: "Newsreader", Georgia, serif; font-style: italic; font-size: clamp(26px, 3.4vw, 38px); line-height: 1.25; letter-spacing: -.01em; max-width: 34ch; }
-.citation .source { font-family: "Barlow Condensed", sans-serif; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--e-gris); text-decoration: none; }
-.citation .source:hover { color: var(--e-accent); }
-
-/* --- Dernières traces --- */
-.dernieres { padding-top: 56px; }
-.tete-bloc { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
-.titre-bloc { margin: 0; font-weight: 700; font-size: 20px; }
-.tete-bloc a { font-size: 14px; font-weight: 600; }
-.grille-dernieres { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 28px; }
-.recente { text-decoration: none; display: flex; flex-direction: column; gap: 10px; }
-.photo-recente { aspect-ratio: 3 / 2; overflow: hidden; }
-.photo-recente img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
-.recente .surtitre { font-size: 13px; font-weight: 600; }
-.recente h3 { margin: 0; font-weight: 500; font-size: 26px; line-height: 1.15; }
-.recente h3 em { font-style: normal; }
-.recente:hover h3 { color: var(--e-accent); }
-.chiffres-recente { font-size: 13px; color: var(--e-gris); }
-
-/* --- Grande carte : sur fond blanc, encadrée d'un filet noir --- */
-.editorial .bloc-carte-accueil { background: #fff; padding-top: 56px; scroll-margin-top: 10px; }
-.editorial .bloc-carte-accueil .titre-bloc { margin-bottom: 14px; }
-.editorial #carte-globale { border: 1px solid var(--e-encre); }
+/* --- Grande carte : fond blanc, filtres noirs, carte entre deux filets --- */
+.editorial .bloc-carte-accueil { background: #fff; padding-top: 40px; }
+.editorial #carte-globale { border-top: 1px solid var(--e-encre); border-bottom: 1px solid var(--e-encre); }
 .editorial .filtres-accueil .filtre { color: var(--e-encre); border-color: var(--e-encre); border-radius: 0; }
 .editorial .filtres-accueil .filtre[aria-pressed="true"] { background: var(--e-encre); color: #fff; }
 .editorial .filtres-accueil .filtre[aria-pressed="false"] { opacity: .6; }
@@ -484,7 +447,7 @@ body.courte .hero { min-height: 58vh; }                     /* fiche courte : ba
 
 /* --- Rubriques : en-têtes de catégorie et vignettes en version magazine --- */
 .editorial .categorie + .categorie { border-top: 0; }
-.editorial .entete-categorie { background: #fff; color: var(--e-encre); padding: 0 0 14px; border-bottom: 3px solid var(--e-encre); margin-top: 80px; }
+.editorial .entete-categorie { background: #fff; color: var(--e-encre); padding: 0 0 14px; border-bottom: 3px solid var(--e-encre); margin-top: 72px; }
 .editorial .entete-categorie .cat { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 14px; letter-spacing: .14em; color: var(--e-accent); }
 .editorial .entete-categorie h2 { font-family: "Newsreader", Georgia, serif; font-weight: 500; }
 .editorial .entete-categorie p { color: var(--e-gris2); }
@@ -493,8 +456,14 @@ body.courte .hero { min-height: 58vh; }                     /* fiche courte : ba
 .editorial .sous-rubrique > h4 { font-family: "Barlow Condensed", sans-serif; font-size: 15px; color: var(--e-gris); }
 .editorial .sous-rubrique > h4::after { background: var(--e-filet); }
 .editorial .sous-rubrique > h4 .mono { color: var(--e-accent); }
+.editorial .bientot { color: var(--e-gris); }
 .editorial .fiche { background: #fff; border: 0; }
+/* Vignette sans photo : la silhouette de la trace sur fond papier clair */
+.editorial .fiche .visuel.sans-photo { background: #f2efe6; }
+.editorial .fiche .visuel.sans-photo .silhouette path { stroke: var(--e-accent); }
 .editorial .fiche:hover { transform: none; box-shadow: none; }
+.editorial .fiche .visuel img { transition: transform .4s; }
+.editorial .fiche:hover .visuel img { transform: scale(1.03); }
 .editorial .fiche:hover h4 { color: var(--e-accent); }
 .editorial .fiche .corps { padding: 12px 0 0; }
 .editorial .fiche h4 { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: 23px; }
@@ -511,17 +480,6 @@ body.courte .hero { min-height: 58vh; }                     /* fiche courte : ba
   .editorial .entete .contenu { grid-template-columns: 1fr; justify-items: start; gap: 4px; }
   .editorial .logo { grid-column: 1; font-size: 26px; }
   .editorial .menu { grid-column: 1; grid-row: 2; }
-  .editorial .compteur-entete { display: none; }
-  .une .photo-une { height: 46vh; }
-  .titre-une { grid-template-columns: 1fr; padding-top: 24px; }
-  .titre-une .bouton-noir { justify-self: start; }
-  .barre-chiffres { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .barre-chiffres > div { padding-left: 14px; border-top: 1px solid var(--e-filet); }
-  .barre-chiffres > div:nth-child(odd) { padding-left: 0; border-left: 0; }
-  .barre-chiffres > div:nth-child(-n+2) { border-top: 0; }
-  .barre-chiffres b { font-size: 20px; }
-  .portes { grid-template-columns: 1fr; padding-top: 44px; }
-  .citation { grid-template-columns: 1fr; gap: 0; margin-top: 52px; }
-  .citation > .guillemet { border-bottom: 0; padding: 30px 0 0; font-size: 90px; }
-  .citation blockquote { border-top: 0; padding-top: 4px; }
+  .editorial .hero .contenu { padding-top: 40px; }
+  .editorial .compteurs > div { padding-left: 12px; }
 }

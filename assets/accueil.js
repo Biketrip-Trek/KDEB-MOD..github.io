@@ -4,8 +4,7 @@
 //             1. charge les deux listes (data/liste-nord.js et data/liste.js)
 //             2. charge chaque parcours : textes (data/<nom>.js)
 //                et trace (data/traces/<nom>.js)
-//             3. remplit la partie magazine (À la une, catégories, citation,
-//                dernières traces), la grande carte et les rubriques :
+//             3. remplit les compteurs, la grande carte et les rubriques :
 //                Traces du Nord / Traces ailleurs en France,
 //                puis Vélo / Randonnée, puis à la journée / plusieurs jours
 //
@@ -27,31 +26,6 @@ const COULEUR_ACTIVITE = {
 };
 
 
-// Trace mise « À la une » en haut de l'accueil (grande photo, titre, chiffres).
-// Écris le nom du fichier sans ".js". Laisse "" pour prendre automatiquement
-// la dernière trace ajoutée qui a une photo.
-const A_LA_UNE = "cretes-du-jura-en-3-jours";
-
-// Photo de chaque grande catégorie (nom du parcours dont on prend la photo
-// principale). Laisse "" pour prendre la première trace de la catégorie qui a une photo.
-const PHOTO_CATEGORIE = {
-  nord:   "des-lacs-et-des-copains-en-2-jours",
-  france: "tmv-vosges-2026"
-};
-
-// Citation tirée d'un carnet du jour, au milieu de l'accueil.
-// texte = phrase recopiée telle quelle ; source = parcours et jour ; slug = lien.
-// Laisse texte vide ("") pour ne pas afficher de citation.
-const CITATION = {
-  texte:  "Pas une goutte d'eau sur la crête à cette saison : détour par Menthières pour remplir les gourdes, c'est le prix à payer pour rester tout là-haut.",
-  source: "Le carnet du jour · Crêtes du Jura, jour 2",
-  slug:   "cretes-du-jura-en-3-jours"
-};
-
-// Nombre de vignettes dans « Dernières traces »
-const NB_DERNIERES = 3;
-
-
 // ---------------------------------------------------------------------
 // OUTILS
 // ---------------------------------------------------------------------
@@ -68,6 +42,8 @@ const VUES_CARTE = [
 // Écrit un nombre à la française : 12345 devient "12 345"
 const fmtN = n => Number(n).toLocaleString("fr-FR");
 
+// Fond de courbes de niveau derrière le grand titre
+document.getElementById("fond").innerHTML = courbesDeNiveau();
 
 // ---------------------------------------------------------------------
 // CHARGEMENT DES DONNÉES
@@ -79,8 +55,6 @@ const fmtN = n => Number(n).toLocaleString("fr-FR");
   const noms = [...new Set(CATEGORIES.flatMap(c => listes[c.id]))];
   const parcours = (await Promise.all(noms.map(chargerParcours))).filter(Boolean);
   parcours.forEach(p => p.categorie = categorieDe(p.slug, listes).id);
-  // Rang d'ajout : 0 = dernier nom de sa liste (le plus récent), 1 = l'avant-dernier...
-  parcours.forEach(p => { const l = listes[p.categorie] || []; p.rang = l.length - 1 - l.indexOf(p.slug); });
   construireAccueil(parcours);
   afficherErreurs();
 })();
@@ -91,25 +65,13 @@ const fmtN = n => Number(n).toLocaleString("fr-FR");
 // ---------------------------------------------------------------------
 function construireAccueil(parcours) {
 
-  // --- 1. Partie magazine : compteur de l'en-tête, À la une, catégories,
-  //        citation, dernières traces (fonctions plus bas dans ce fichier)
+  // --- 1. Compteurs sous le grand titre (nombre de parcours, km, D+) ---
   const km = parcours.reduce((total, p) => total + (p.distance_km || 0), 0);
-  const compteur = document.createElement("span");
-  compteur.className = "compteur-entete mono";
-  compteur.textContent = `${parcours.length} traces · ${fmtN(km)} km`;
-  document.querySelector(".entete .contenu").appendChild(compteur);
-  const avecPhoto = parcours.filter(p => p.photo_principale).sort((a, b) => a.rang - b.rang);
-  const une = parcours.find(p => p.slug === A_LA_UNE) || avecPhoto[0];
-  if (une) document.getElementById("une").innerHTML = blocUne(une);
-  document.getElementById("portes").innerHTML = CATEGORIES.map(c => porte(c, parcours)).join("");
-  document.getElementById("citation").innerHTML = CITATION.texte ? `
-    <span class="guillemet" aria-hidden="true">«</span>
-    <blockquote><p>${CITATION.texte}</p>
-      <a class="source" href="parcours.html?p=${CITATION.slug}">${CITATION.source}</a></blockquote>` : "";
-  const dernieres = avecPhoto.filter(p => p !== une).slice(0, NB_DERNIERES);
-  document.getElementById("dernieres").innerHTML = dernieres.length ? `
-    <div class="tete-bloc"><h2 class="titre-bloc">Dernières traces</h2><a href="#toutes-les-traces">Toutes les traces</a></div>
-    <div class="grille-dernieres">${dernieres.map(carteRecente).join("")}</div>` : "";
+  const dp = parcours.reduce((total, p) => total + (p.denivele_m || 0), 0);
+  document.getElementById("compteurs").innerHTML = `
+    <div><b class="mono">${parcours.length}</b><span>parcours</span></div>
+    <div><b class="mono">${fmtN(km)}</b><span>km tracés</span></div>
+    <div><b class="mono">${fmtN(dp)}</b><span>m de dénivelé</span></div>`;
 
   // --- 2. Grande carte avec toutes les traces ---
   // scrollWheelZoom: false = la molette de la souris fait défiler la page
@@ -238,72 +200,5 @@ function fiche(p) {
       <p class="lieu">${(p.lieu || []).length ? p.lieu.join(" · ") : p.depart ? "Départ : " + p.depart : ""}</p>
       <div class="chiffres mono"><span>${fmtN(p.distance_km)} km</span><span>${fmtN(p.denivele_m)} m D+</span><span>${joursDe(p)} j</span></div>
     </div>
-  </a>`;
-}
-
-
-
-// ---------------------------------------------------------------------
-// PARTIE MAGAZINE DE L'ACCUEIL
-// ---------------------------------------------------------------------
-
-// Nom de la catégorie d'un parcours (« Traces du Nord »...)
-const nomCategorie = p => (CATEGORIES.find(c => c.id === p.categorie) || {}).nom || "";
-
-// Début du chapô : les premières phrases, jusqu'à environ 280 caractères
-function debutChapeau(texte) {
-  const phrases = (propre(texte) || "").match(/[^.!?]+[.!?]+/g) || [];
-  let sortie = "";
-  for (const ph of phrases) { if (sortie && (sortie + ph).length > 280) break; sortie += ph; }
-  return sortie.trim();
-}
-
-// Bloc « À la une » : grande photo, étiquette, titre, chapô, barre de chiffres
-function blocUne(p) {
-  const altMax = Math.max(...p.trace.map(x => x[2] || 0));
-  const depart = p.depart || ((p.etapes || [])[0] || {}).de || "";
-  const n = joursDe(p);
-  const chiffres = [
-    ["Distance", `${fmtN(p.distance_km)} km`],
-    ["Dénivelé +", `${fmtN(p.denivele_m)} m`],
-    ["Durée", n > 1 ? `${n} jours` : "1 jour"],
-    altMax > 0 ? ["Point culminant", `${fmtN(Math.round(altMax))} m`] : null,
-    depart ? ["Départ", depart] : null
-  ].filter(Boolean);
-  return `
-    <a class="photo-une" href="parcours.html?p=${p.slug}"><img src="photos/${p.slug}/${p.photo_principale}" alt="${p.nom} ${p.nom_gras || ""}"></a>
-    <div class="contenu">
-      <div class="titre-une">
-        <div>
-          <span class="surtitre">À la une · ${nomCategorie(p)} · ${etiquetteFiche(p)}</span>
-          <h1><a href="parcours.html?p=${p.slug}">${p.nom}${p.nom_gras ? ` <em>${p.nom_gras}</em>` : ""}</a></h1>
-          ${debutChapeau(p.chapeau) ? `<p class="chapo">${debutChapeau(p.chapeau)}</p>` : ""}
-        </div>
-        <a class="bouton-noir" href="parcours.html?p=${p.slug}">Lire la trace</a>
-      </div>
-      <div class="barre-chiffres">${chiffres.map(([t, v]) => `<div><span>${t}</span><b class="mono">${v}</b></div>`).join("")}</div>
-    </div>`;
-}
-
-// Porte d'entrée d'une catégorie : photo, nom, compteur, accroche
-function porte(c, parcours) {
-  const dans = parcours.filter(p => p.categorie === c.id);
-  const km = dans.reduce((t, p) => t + (p.distance_km || 0), 0);
-  const choisi = dans.find(p => p.slug === PHOTO_CATEGORIE[c.id] && p.photo_principale) || dans.find(p => p.photo_principale);
-  const photo = choisi ? `<img src="photos/${choisi.slug}/${choisi.photo_principale}" alt="" loading="lazy">` : "";
-  return `<a class="porte" href="#${c.id}">
-    <div class="photo-porte">${photo}</div>
-    <div class="nom-porte"><h2>${c.nom}</h2><span class="mono">${dans.length} trace${dans.length > 1 ? "s" : ""} · ${fmtN(km)} km</span></div>
-    <p>${c.accroche || ""}</p>
-  </a>`;
-}
-
-// Vignette « Dernières traces »
-function carteRecente(p) {
-  return `<a class="recente" href="parcours.html?p=${p.slug}">
-    <div class="photo-recente"><img src="photos/${p.slug}/${p.photo_principale}" alt="" loading="lazy"></div>
-    <span class="surtitre">${nomCategorie(p)} · ${etiquetteFiche(p)}</span>
-    <h3>${p.nom}${p.nom_gras ? ` <em>${p.nom_gras}</em>` : ""}</h3>
-    <span class="mono chiffres-recente">${fmtN(p.distance_km)} km · ${fmtN(p.denivele_m)} m D+</span>
   </a>`;
 }
