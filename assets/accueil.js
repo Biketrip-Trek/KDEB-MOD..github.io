@@ -30,6 +30,15 @@ const COULEUR_ACTIVITE = {
 // OUTILS
 // ---------------------------------------------------------------------
 
+// Les deux vues de la grande carte (boutons « France entière » et « Le Nord ») :
+// - France : rectangle fixe autour de la France métropolitaine ;
+// - Nord   : cadrée sur toutes les Traces du Nord (catégorie "nord").
+// La carte s'ouvre sur la première vue de la liste.
+const VUES_CARTE = [
+  { id: "france", nom: "France entière", rectangle: [[42.2, -4.9], [51.2, 8.3]] },
+  { id: "nord",   nom: "Le Nord",        categorie: "nord" }
+];
+
 // Écrit un nombre à la française : 12345 devient "12 345"
 const fmtN = n => Number(n).toLocaleString("fr-FR");
 
@@ -70,7 +79,6 @@ function construireAccueil(parcours) {
   const carte = L.map("carte-globale", { scrollWheelZoom: false });
   fondsDeCarte(carte);
   const groupes = {};   // un groupe de traces par activité (pour les filtres)
-  const tousLesPoints = [];
   for (const p of parcours) {
     const ll = p.trace.map(x => [x[0], x[1]]);          // [latitude, longitude]
     const c = COULEUR_ACTIVITE[p.activite] || "#e4572e";
@@ -86,18 +94,21 @@ function construireAccueil(parcours) {
     g.on("mouseover", () => ligne.setStyle({ weight: 7 }));
     g.on("mouseout", () => ligne.setStyle({ weight: 4 }));
     (groupes[p.activite] = groupes[p.activite] || L.featureGroup().addTo(carte)).addLayer(g);
-    tousLesPoints.push(...ll);
-  }
-  // Cadrage de la carte sur toutes les traces (ou sur la France s'il n'y en a pas)
-  if (tousLesPoints.length) carte.fitBounds(L.latLngBounds(tousLesPoints), { padding: [30, 30] });
-  else carte.setView([46.6, 2.5], 6);
+      }
+  // Cadrage d'une vue : rectangle fixe, ou toutes les traces d'une catégorie
+  const cadrer = v => {
+    const pts = v.categorie ? parcours.filter(p => p.categorie === v.categorie).flatMap(p => p.trace.map(x => [x[0], x[1]])) : [];
+    carte.fitBounds(pts.length ? L.latLngBounds(pts) : L.latLngBounds(v.rectangle), { padding: [24, 24] });
+  };
+  cadrer(VUES_CARTE[0]);
 
   // --- 3. Boutons de filtre au-dessus de la carte (Tous / Vélo / Randonnée) ---
   const filtres = document.getElementById("filtres");
+  // (un clic ne fait que montrer ou cacher des traces ; le cadrage reste celui de la vue choisie)
   const choix = [{ id: "tout", nom: "Tous les parcours" }, ...MENU.map(m => ({ id: m.id, nom: m.nom }))];
   for (const f of choix) {
     const b = document.createElement("button");
-    b.className = "filtre";
+    b.className = "filtre"; b.type = "button";
     b.setAttribute("aria-pressed", String(f.id === "tout"));  // "Tous" est actif au départ
     const n = f.id === "tout" ? parcours.length : parcours.filter(p => p.activite === f.id).length;
     const pastille = f.id === "tout" ? "" : `<span class="pastille" style="background:${COULEUR_ACTIVITE[f.id]}"></span>`;
@@ -105,17 +116,30 @@ function construireAccueil(parcours) {
     b.onclick = () => {
       filtres.querySelectorAll(".filtre").forEach(x => x.setAttribute("aria-pressed", "false"));
       b.setAttribute("aria-pressed", "true");
-      const visibles = [];
       for (const [activite, g] of Object.entries(groupes)) {
         const afficher = f.id === "tout" || f.id === activite;
         afficher ? carte.addLayer(g) : carte.removeLayer(g);
-        if (afficher) visibles.push(g.getBounds());
       }
-      // Recadre la carte sur les traces affichées
-      if (visibles.length) carte.fitBounds(visibles.reduce((a, b2) => a.extend(b2)), { padding: [30, 30] });
+      // (la vue choisie, France ou Nord, est gardée)
     };
     filtres.appendChild(b);
   }
+
+  // --- 3 bis. Boutons de vue, à droite des filtres : France entière / Le Nord ---
+  const vues = document.createElement("div");
+  vues.className = "vues"; vues.setAttribute("role", "group"); vues.setAttribute("aria-label", "Vue de la carte");
+  VUES_CARTE.forEach((v, i) => {
+    const b = document.createElement("button");
+    b.className = "vue"; b.type = "button"; b.textContent = v.nom;
+    b.setAttribute("aria-pressed", String(i === 0));
+    b.onclick = () => {
+      vues.querySelectorAll(".vue").forEach(x => x.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+      cadrer(v);
+    };
+    vues.appendChild(b);
+  });
+  filtres.appendChild(vues);
 
   // --- 4. Rubriques sous la carte : les deux catégories (Traces du Nord,
   //        Traces ailleurs en France), puis Vélo / Randonnée, puis

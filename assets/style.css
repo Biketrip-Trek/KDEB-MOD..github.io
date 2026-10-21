@@ -274,6 +274,13 @@ h2.section::after { content: ""; flex: 1; height: 1px; background: var(--ligne);
 .filtres-accueil .filtre[aria-pressed="true"] { background: #fff; color: var(--encre); opacity: 1; }
 .filtres-accueil .filtre[aria-pressed="false"] { opacity: .8; }
 .filtres-accueil .pastille { width: 10px; height: 10px; }
+/* Boutons de vue de la grande carte (France entière / Le Nord), à droite des filtres */
+.filtres-accueil .vues { margin-left: auto; display: inline-flex; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; overflow: hidden; }
+.filtres-accueil .vue { background: transparent; color: #fff; border: 0; padding: 6px 14px; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; }
+.filtres-accueil .vue + .vue { border-left: 1px solid rgba(255,255,255,.35); }
+.filtres-accueil .vue[aria-pressed="true"] { background: var(--balise); color: #fff; }
+.filtres-accueil .vue:focus-visible, .filtres-accueil .filtre:focus-visible { outline: 2px solid var(--balise); outline-offset: 2px; }
+@media (max-width: 560px) { .filtres-accueil .vues { margin-left: 0; } }
 .filtres-accueil .mono { color: inherit; opacity: .7; }
 #carte-globale { height: min(72vh, 640px); }  /* hauteur de la grande carte de l'accueil */
 .titre-rubrique { font-size: clamp(24px, 3.6vw, 32px); letter-spacing: -.02em; margin: 44px 0 4px; display: flex; align-items: center; gap: 12px; scroll-margin-top: 20px; }
