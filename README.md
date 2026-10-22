@@ -19,7 +19,7 @@ assets/               "Moteur" et apparence du site
   style.css           Couleurs, polices, tailles, mise en page
   entete.js           Nom du site, menu, outils communs (fond de carte...)
   accueil.js          Construit la page d'accueil
-  nord.js             Construit la page Traces du Nord
+  categorie.js        Construit la page d'une catégorie (carte, filtres, vignettes)
   parcours.js         Construit la page d'un parcours
   leaflet/            Bibliothèque de cartes (ne pas modifier)
 
