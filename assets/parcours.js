@@ -222,7 +222,7 @@ function construire(P) {
 
   // --- Lien de retour vers la catégorie de la trace (page carte, sinon rubrique de l'accueil) ---
   $("retour").hidden = false;
-  $("retour").innerHTML = `<a href="${P.categorie.carte || "index.html#" + P.categorie.id}">Retour aux ${P.categorie.nom}</a>`;
+  $("retour").innerHTML = `<a href="${lienCategorie(P.categorie.id)}">Retour aux ${P.categorie.nom}</a>`;
 
   // --- Crédits en bas de page ---
   $("credits").innerHTML = `<b>Parcours tracé et ${rando ? "marché" : "roulé"} par ${P.auteur || "Kévin"}${P.date_trace ? (/^\d/.test(P.date_trace) ? " le " : " en ") + P.date_trace : ""}.</b> ${P.date_maj ? "Mise à jour : " + P.date_maj + ". " : ""}Un chemin fermé, un point d'eau à sec ? Écris-moi pour que je corrige la trace. ${P.origine_trace || ""}`;

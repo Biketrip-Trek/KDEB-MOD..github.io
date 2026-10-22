@@ -1,0 +1,61 @@
+<!doctype html>
+<!--
+=======================================================================
+ FICHIER : categorie.html  =  PAGE D'UNE CATÉGORIE
+ Une seule page pour les deux catégories :
+   categorie.html?c=nord    > Traces du Nord
+   categorie.html?c=france  > Traces ailleurs en France
+ On peut ajouter des filtres déjà choisis : &a=velo (ou rando), &d=journee
+ (ou plusieurs-jours). C'est ce que font les liens du menu.
+ Le contenu (titre, compteurs, carte, filtres, vignettes) est ajouté par
+ assets/categorie.js. Le grand titre et le texte de chaque catégorie se
+ modifient dans CATEGORIES, en haut de assets/entete.js.
+=======================================================================
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carnet de traces</title>  <!-- remplacé par le nom de la catégorie -->
+<meta name="description" content="Parcours à vélo et randonnées testés sur le terrain : carte, filtres et traces GPX à télécharger.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/leaflet/leaflet.css">
+<!-- VERSION DES FICHIERS : même numéro que dans les autres pages HTML -->
+<link rel="stylesheet" href="assets/style.css?v=20261022a">
+</head>
+<!-- "editorial" = style magazine (règles en fin de style.css) -->
+<body class="accueil editorial page-categorie">
+
+<!-- ===== BANDEAU : nom de la catégorie, grand titre, texte, compteurs ===== -->
+<section class="hero hero-accueil">
+  <div class="fond" id="fond"></div>
+  <div class="contenu">
+    <div class="etiquettes-lieu"><span class="cat" id="etiquette"></span></div>
+    <h1 id="titre"></h1>
+    <p class="chapeau" id="chapo"></p>
+    <div class="compteurs" id="compteurs"></div>
+  </div>
+</section>
+
+<!-- ===== FILTRES + CARTE des traces de la catégorie ===== -->
+<section class="bloc-carte-accueil">
+  <div class="contenu filtres-accueil" id="filtres-activite"></div>                    <!-- Vélo / Randonnée -->
+  <div class="contenu filtres-accueil filtres-distance" id="filtres-pratique"></div>   <!-- Route / Gravel / VTT -->
+  <div class="contenu filtres-accueil filtres-distance" id="filtres-duree"></div>      <!-- À la journée / Plusieurs jours -->
+  <div class="contenu filtres-accueil filtres-distance" id="filtres-distance"></div>   <!-- distances -->
+  <div id="carte-globale"></div>
+</section>
+
+<!-- ===== VIGNETTES DES TRACES (celles qui correspondent aux filtres) ===== -->
+<main class="contenu">
+  <div class="sous-rubrique"><h3>Les traces <span class="mono" id="nb-visibles"></span></h3></div>
+  <div class="grille grille-courte" id="fiches"></div>
+  <p class="bientot" id="aucune" hidden>Pas encore de trace pour ces filtres : de nouvelles arrivent bientôt.</p>
+</main>
+
+<script src="assets/leaflet/leaflet.js"></script>
+<script src="assets/entete.js?v=20261022a"></script>
+<script src="assets/categorie.js?v=20261022a"></script>
+</body>
+</html>

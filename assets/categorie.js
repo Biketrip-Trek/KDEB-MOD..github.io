@@ -1,26 +1,20 @@
 // =====================================================================
-// FICHIER : assets/nord.js
-// RÔLE    : construit la page « Traces du Nord » (nord.html) :
-//             1. charge la liste data/liste-nord.js
-//             2. charge chaque trace (textes + trace, comme les voyages)
-//             3. remplit les compteurs, la carte, les filtres et les fiches
+// FICHIER : assets/categorie.js
+// RÔLE    : construit la page d'une catégorie (categorie.html?c=nord ou ?c=france) :
+//             1. lit la catégorie demandée dans l'adresse (c=...) et les filtres
+//                déjà choisis (a=velo|rando, d=journee|plusieurs-jours)
+//             2. charge la liste de la catégorie, puis chaque trace
+//             3. remplit le titre, les compteurs, la carte, les filtres et les vignettes
 //
-// Pour ajouter une trace : ajoute son nom dans data/liste-nord.js
-// (traces_nord.py le fait tout seul).
-// Les couleurs et noms des pratiques sont dans assets/entete.js (PRATIQUES).
+// Pour ajouter une trace : ajoute son nom dans data/liste-nord.js ou data/liste.js.
+// Titres et textes des catégories : CATEGORIES dans assets/entete.js.
+// Couleurs et noms des pratiques (route, gravel, VTT) : PRATIQUES dans assets/entete.js.
 // =====================================================================
 
 
 // ---------------------------------------------------------------------
 // RÉGLAGES FACILES À MODIFIER
 // ---------------------------------------------------------------------
-
-// Filtres de durée : [texte du bouton, jours mini, jours maxi]
-const DUREES = [
-  ["Toutes durées", 1, Infinity],
-  ["À la journée", 1, 1],
-  ["2-3 jours", 2, Infinity]
-];
 
 // Filtres de distance : [texte du bouton, km mini, km maxi]
 const TRANCHES_KM = [
@@ -30,27 +24,34 @@ const TRANCHES_KM = [
   ["Plus de 100 km", 100, Infinity]
 ];
 
+// Couleur des traces sur la carte quand elles n'ont pas de « pratique »
+const COULEUR_ACTIVITE = { velo: "#e4572e", rando: "#2e5a45" };
+
 
 // ---------------------------------------------------------------------
 // OUTILS
 // ---------------------------------------------------------------------
 const fmtN = n => Number(n).toLocaleString("fr-FR");
-const couleurPratique = p => (PRATIQUES[p.pratique] || {}).coul || "#e4572e";
-// Fiche complète sans « pratique » (ex. un voyage rangé dans le Nord) : on affiche l'activité
+const couleurPratique = p => (PRATIQUES[p.pratique] || {}).coul || COULEUR_ACTIVITE[p.activite] || "#e4572e";
 const nomPratique = p => (PRATIQUES[p.pratique] || {}).nom || (MENU.find(m => m.id === p.activite) || {}).nom || "";
 
+// Catégorie demandée dans l'adresse (par défaut : la première, Traces du Nord)
+const PARAMS = new URLSearchParams(location.search);
+const CAT = CATEGORIES.find(c => c.id === PARAMS.get("c")) || CATEGORIES[0];
+
 document.getElementById("fond").innerHTML = courbesDeNiveau();
-document.getElementById("etiquette-section").textContent = SECTION_NORD.nom;
+document.title = CAT.nom + " - " + NOM_DU_SITE;
+document.getElementById("etiquette").textContent = CAT.nom;
+document.getElementById("titre").innerHTML = CAT.titre || CAT.nom;
+document.getElementById("chapo").textContent = CAT.chapo || CAT.accroche || "";
 
 
 // ---------------------------------------------------------------------
-// CHARGEMENT : data/liste-nord.js, puis chaque trace
+// CHARGEMENT : la liste de la catégorie, puis chaque trace
 // ---------------------------------------------------------------------
 (async function () {
-  const trouvee = await chargerScript("data/liste-nord.js");
-  if (!trouvee) ERREURS.push("Fichier introuvable : <b>data/liste-nord.js</b>.");
-  const noms = window.LISTE_NORD || [];
-  const traces = (await Promise.all(noms.map(chargerParcours))).filter(Boolean);
+  const listes = await chargerListes();
+  const traces = (await Promise.all((listes[CAT.id] || []).map(chargerParcours))).filter(Boolean);
   construire(traces);
   afficherErreurs();
 })();
@@ -93,19 +94,26 @@ function construire(traces) {
   if (tout.length) carte.fitBounds(L.latLngBounds(tout), { padding: [30, 30] });
   else carte.setView([50.7, 2.9], 10);
 
-  // --- 3. Fiches courtes ---
+  // --- 3. Vignettes ---
   document.getElementById("fiches").innerHTML = traces.length
     ? traces.map(ficheCourte).join("")
     : `<p class="bientot">Les premières traces arrivent bientôt.</p>`;
 
-  // --- 4. Filtres : pratique + durée + distance (ils se combinent) ---
-  let pratique = "tout", duree = 0, tranche = 0;
+  // --- 4. Filtres : activité + pratique + durée + distance (ils se combinent).
+  //        Une rangée de boutons n'apparaît que si elle permet vraiment de trier.
+  const choix = {
+    activite: MENU.some(m => m.id === PARAMS.get("a")) ? PARAMS.get("a") : "tout",
+    pratique: "tout",
+    duree:    ["journee", "plusieurs-jours"].includes(PARAMS.get("d")) ? PARAMS.get("d") : "tout",
+    tranche:  0
+  };
+  const passe = (p, sauf) =>
+    (sauf === "activite" || choix.activite === "tout" || p.activite === choix.activite) &&
+    (sauf === "pratique" || choix.pratique === "tout" || p.pratique === choix.pratique) &&
+    (sauf === "duree"    || choix.duree === "tout"    || dureeDe(p) === choix.duree) &&
+    p.distance_km >= TRANCHES_KM[choix.tranche][1] && p.distance_km < TRANCHES_KM[choix.tranche][2];
   const appliquer = () => {
-    const [, mini, maxi] = TRANCHES_KM[tranche];
-    const [, jmin, jmax] = DUREES[duree];
-    const visibles = traces.filter(p =>
-      (pratique === "tout" || p.pratique === pratique) && joursDe(p) >= jmin && joursDe(p) <= jmax
-      && p.distance_km >= mini && p.distance_km < maxi);
+    const visibles = traces.filter(p => passe(p));
     for (const p of traces) {
       const ok = visibles.includes(p);
       ok ? carte.addLayer(calques.get(p)) : carte.removeLayer(calques.get(p));
@@ -113,28 +121,29 @@ function construire(traces) {
       if (el) el.style.display = ok ? "" : "none";
     }
     document.getElementById("nb-visibles").textContent = visibles.length;
+    document.getElementById("aucune").hidden = visibles.length > 0 || !traces.length;
     if (visibles.length) carte.fitBounds(L.latLngBounds(visibles.flatMap(p => p.trace.map(x => [x[0], x[1]]))), { padding: [30, 30] });
   };
-  // Boutons de pratique : seulement celles qui ont au moins une trace
-  const zoneP = document.getElementById("filtres-pratique");
-  const choixP = [["tout", "Toutes les pratiques", null], ...Object.entries(PRATIQUES)
-    .filter(([id]) => traces.some(p => p.pratique === id)).map(([id, v]) => [id, v.nom, v.coul])];
-  for (const [id, nom, coul] of choixP) {
-    const n = id === "tout" ? traces.length : traces.filter(p => p.pratique === id).length;
-    zoneP.appendChild(bouton(`${coul ? `<span class="pastille" style="background:${coul}"></span>` : ""}${nom} <span class="mono">${n}</span>`,
-      id === "tout", b => { pratique = id; activer(zoneP, b); appliquer(); }));
-  }
-  // Boutons de durée (seulement s'il y a à la fois des sorties d'un jour et de plusieurs jours)
-  const zoneJ = document.getElementById("filtres-duree");
-  if (traces.some(p => joursDe(p) > 1) && traces.some(p => joursDe(p) === 1)) {
-    DUREES.forEach(([nom, jmin, jmax], i) => {
-      const n = traces.filter(p => joursDe(p) >= jmin && joursDe(p) <= jmax).length;
-      zoneJ.appendChild(bouton(`${nom} <span class="mono">${n}</span>`, i === 0, b => { duree = i; activer(zoneJ, b); appliquer(); }));
-    });
-  } else zoneJ.style.display = "none";
-  // Boutons de distance
+  // Fabrique une rangée de boutons : [code, texte, couleur éventuelle]
+  const rangee = (idZone, cle, options, champ) => {
+    const zone = document.getElementById(idZone);
+    // seulement les choix qui ont au moins une trace (+ celui demandé dans l'adresse)
+    const utiles = options.filter(([id]) => id === "tout" || id === choix[cle] || traces.some(p => champ(p) === id));
+    if (utiles.length < 3) { zone.style.display = "none"; return; }   // rien à trier
+    for (const [id, nom, coul] of utiles) {
+      const n = id === "tout" ? traces.length : traces.filter(p => champ(p) === id).length;
+      zone.appendChild(bouton(`${coul ? `<span class="pastille" style="background:${coul}"></span>` : ""}${nom} <span class="mono">${n}</span>`,
+        choix[cle] === id, b => { choix[cle] = id; activer(zone, b); appliquer(); }));
+    }
+  };
+  rangee("filtres-activite", "activite",
+    [["tout", "Toutes les activités"], ...MENU.map(m => [m.id, m.nom, COULEUR_ACTIVITE[m.id]])], p => p.activite);
+  rangee("filtres-pratique", "pratique",
+    [["tout", "Toutes les pratiques"], ...Object.entries(PRATIQUES).map(([id, v]) => [id, v.nom, v.coul])], p => p.pratique);
+  rangee("filtres-duree", "duree",
+    [["tout", "Toutes durées"], ...MENU[0].sous.map(s => [s.id, s.nom])], p => dureeDe(p));
   const zoneD = document.getElementById("filtres-distance");
-  TRANCHES_KM.forEach(([nom], i) => zoneD.appendChild(bouton(nom, i === 0, b => { tranche = i; activer(zoneD, b); appliquer(); })));
+  TRANCHES_KM.forEach(([nom], i) => zoneD.appendChild(bouton(nom, i === 0, b => { choix.tranche = i; activer(zoneD, b); appliquer(); })));
   appliquer();
 }
 
@@ -153,8 +162,8 @@ function activer(zone, b) {
 
 
 // ---------------------------------------------------------------------
-// FICHE COURTE (vignette) : photo ou silhouette, pratique, titre,
-// départ, 2 lignes de description, chiffres
+// VIGNETTE d'une trace : photo ou silhouette, étiquette, titre,
+// lieu ou départ, 2 lignes de description, chiffres
 // ---------------------------------------------------------------------
 function ficheCourte(p) {
   const visuel = p.photo_principale
@@ -163,10 +172,10 @@ function ficheCourte(p) {
   const nbInc = (p.incontournables || []).length;
   return `<a class="fiche fiche-courte" data-trace="${p.slug}" href="parcours.html?p=${p.slug}">
     <div class="visuel ${p.photo_principale ? "" : "sans-photo"}">${visuel}
-      <span class="etiquette" style="background:${couleurPratique(p)}">${nomPratique(p)}${joursDe(p) > 1 ? " · " + joursDe(p) + " jours" : ""}</span></div>
+      <span class="etiquette"><span class="pastille" style="background:${couleurPratique(p)}"></span>${etiquetteFiche(p)}</span></div>
     <div class="corps">
       <h4>${p.nom} ${p.nom_gras ? `<em>${p.nom_gras}</em>` : ""}</h4>
-      <p class="lieu">${p.depart ? "Départ : " + p.depart : ""}</p>
+      <p class="lieu">${(p.lieu || []).length ? p.lieu.join(" · ") : p.depart ? "Départ : " + p.depart : ""}</p>
       ${propre(p.chapeau) ? `<p class="resume">${propre(p.chapeau)}</p>` : ""}
       <div class="chiffres mono"><span>${fmtN(p.distance_km)} km</span><span>${fmtN(p.denivele_m)} m D+</span><span>${joursDe(p) > 1 ? joursDe(p) + " j" : "1 j"}</span>${nbInc ? `<span>${nbInc} incontournable${nbInc > 1 ? "s" : ""}</span>` : ""}</div>
     </div>

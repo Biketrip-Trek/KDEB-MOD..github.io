@@ -25,15 +25,32 @@ const NOM_DU_SITE = "Carnet de traces";
 // LES DEUX GRANDES CATÉGORIES DU SITE (menu, accueil, étiquettes).
 // Une trace appartient à la catégorie de la liste où son nom est écrit :
 //   data/liste-nord.js > Traces du Nord ; data/liste.js > Traces ailleurs en France.
-// - "id"    : code interne (ancres de l'accueil : index.html#nord, #france...)
-// - "nom"   : texte affiché sur le site, libre
-// - "carte" : page avec la carte et les filtres de la catégorie (facultatif)
+// Chaque catégorie a SA PAGE : categorie.html?c=<id> (carte, filtres, vignettes).
+// - "id"      : code interne (adresse de la page : categorie.html?c=nord)
+// - "nom"     : texte affiché sur le site, libre
+// - "accroche": phrase sous le nom, sur l'accueil
+// - "titre"   : grand titre de la page de la catégorie (la partie entre <em> et </em> s'affiche en orange)
+// - "chapo"   : texte sous le grand titre de la page de la catégorie
+// - "photo"   : trace dont la photo principale illustre la catégorie sur l'accueil
+//               ("" = la première trace de la catégorie qui a une photo)
 const CATEGORIES = [
-  { id: "nord",   nom: "Traces du Nord",            liste: "data/liste-nord.js", variable: "LISTE_NORD",     carte: "nord.html",
-    accroche: "Près de chez moi : les petites routes, les chemins et les sentiers que j'ai testés moi-même, de la Flandre aux Ardennes." },
+  { id: "nord",   nom: "Traces du Nord",            liste: "data/liste-nord.js", variable: "LISTE_NORD",
+    accroche: "Près de chez moi : les petites routes, les chemins et les sentiers que j'ai testés moi-même, de la Flandre aux Ardennes.",
+    titre: "Mes traces du Nord, <em>testées sur le terrain.</em>",
+    chapo: "Les meilleures petites routes et les sentiers que j'ai testés moi-même autour de chez moi, avec les incontournables de la région : des sorties à la journée et des idées de trek ou de bike trip sur 2-3 jours. Quelques lignes, une carte, une trace GPX : il n'y a plus qu'à partir.",
+    photo: "des-lacs-et-des-copains-en-2-jours" },
   { id: "france", nom: "Traces ailleurs en France", liste: "data/liste.js",      variable: "LISTE_PARCOURS",
-    accroche: "Voyages à vélo et randonnées de plusieurs jours, des Vosges aux Alpes du Sud." }
+    accroche: "Voyages à vélo et randonnées de plusieurs jours, des Vosges aux Alpes du Sud.",
+    titre: "Traces <em>ailleurs en France.</em>",
+    chapo: "Voyages à vélo et randonnées de plusieurs jours, des Vosges aux Alpes du Sud.",
+    photo: "tmv-vosges-2026" }
 ];
+
+// Adresse de la page d'une catégorie, avec éventuellement des filtres déjà choisis
+// (activite : "velo" ou "rando" ; duree : "journee" ou "plusieurs-jours")
+function lienCategorie(id, activite, duree) {
+  return "categorie.html?c=" + id + (activite ? "&a=" + activite : "") + (duree ? "&d=" + duree : "");
+}
 
 // Dans chaque catégorie : les activités, puis la durée.
 // - "id"  : code interne, SANS accent ni espace. C'est ce code qu'on écrit
@@ -59,8 +76,8 @@ const MENU = [
 ];
 
 
-// Raccourci vers la catégorie « Traces du Nord » (page nord.html)
-const SECTION_NORD = { nom: CATEGORIES[0].nom, lien: CATEGORIES[0].carte };
+// Raccourci vers la catégorie « Traces du Nord »
+const SECTION_NORD = { nom: CATEGORIES[0].nom, lien: lienCategorie("nord") };
 
 // Pratiques des traces du Nord (champ "pratique" des fiches courtes) :
 // texte affiché et couleur sur la carte et les étiquettes.
@@ -97,16 +114,15 @@ const MENTION_CARTES = "Fonds de carte © Esri, contributeurs OpenStreetMap, Ope
   const fleche = '<svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4l4 4 4-4"/></svg>';
 
   // Pour chaque grande catégorie, un bouton + un panneau déroulant, avec les
-  // activités (Vélo, Randonnée) et leurs durées. Les liens mènent à la bonne
-  // rubrique de l'accueil (ex. index.html#nord-velo-journee).
+  // activités (Vélo, Randonnée) et leurs durées. Les liens ouvrent la page de la
+  // catégorie avec les bons filtres (ex. categorie.html?c=nord&a=velo&d=journee).
   const menus = CATEGORIES.map(c => `
     <div class="deroulant">
       <button class="onglet" aria-expanded="false">${c.nom} ${fleche}</button>
       <div class="panneau">
         ${MENU.map(m => `<span class="groupe">${m.nom}</span>` +
-          m.sous.map(s => `<a href="index.html#${c.id}-${m.id}-${s.id}">${s.nom}</a>`).join("")).join("")}
-        ${c.carte ? `<a class="tout" href="${c.carte}">Carte et filtres des ${c.nom}</a>` : ""}
-        <a class="tout${c.carte ? " suite" : ""}" href="index.html#${c.id}">Toutes les ${c.nom}</a>
+          m.sous.map(s => `<a href="${lienCategorie(c.id, m.id, s.id)}">${s.nom}</a>`).join("")).join("")}
+        <a class="tout" href="${lienCategorie(c.id)}">Toutes les ${c.nom}</a>
       </div>
     </div>`).join("");
 

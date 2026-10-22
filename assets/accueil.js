@@ -4,9 +4,9 @@
 //             1. charge les deux listes (data/liste-nord.js et data/liste.js)
 //             2. charge chaque parcours : textes (data/<nom>.js)
 //                et trace (data/traces/<nom>.js)
-//             3. remplit les compteurs, la grande carte et les rubriques :
-//                Traces du Nord / Traces ailleurs en France,
-//                puis Vélo / Randonnée, puis à la journée / plusieurs jours
+//             3. remplit les compteurs, la grande carte et les deux grandes
+//                vignettes des catégories (chacune ouvre sa page :
+//                categorie.html?c=nord ou ?c=france)
 //
 // Ce fichier n'a normalement PAS besoin d'être modifié pour ajouter un
 // parcours : il suffit d'ajouter son nom dans la bonne liste.
@@ -141,64 +141,31 @@ function construireAccueil(parcours) {
   });
   filtres.appendChild(vues);
 
-  // --- 4. Rubriques sous la carte : les deux catégories (Traces du Nord,
-  //        Traces ailleurs en France), puis Vélo / Randonnée, puis
-  //        À la journée / Plusieurs jours.
-  // Chaque rubrique a un "id" (ex. nord-velo-journee) : c'est lui que visent
-  // les liens du menu (index.html#nord-velo-journee).
-  const rub = document.getElementById("rubriques");
-  rub.innerHTML = CATEGORIES.map(c => {
-    const dansCat = parcours.filter(p => p.categorie === c.id);
-    return `<section class="categorie" id="${c.id}">
-      <header class="entete-categorie">
-        <div><span class="cat">${dansCat.length} trace${dansCat.length > 1 ? "s" : ""} · ${fmtN(dansCat.reduce((t, p) => t + (p.distance_km || 0), 0))} km</span>
-          <h2>${c.nom}</h2>
-          <p>${c.accroche || ""}</p></div>
-        ${c.carte ? `<a class="aller" href="${c.carte}">Carte et filtres</a>` : ""}
-      </header>
-      ${MENU.map(m => {
-        const dansAct = dansCat.filter(p => p.activite === m.id);
-        return `<div class="rubrique" id="${c.id}-${m.id}">
-          <h3 class="titre-rubrique"><span class="pastille" style="background:${COULEUR_ACTIVITE[m.id]}"></span>${m.nom} <span class="mono">${dansAct.length}</span></h3>
-          ${m.sous.map(s => {
-            const liste = dansAct.filter(p => dureeDe(p) === s.id);
-            return `<div class="sous-rubrique" id="${c.id}-${m.id}-${s.id}">
-              <h4>${s.nom} <span class="mono">${liste.length}</span></h4>
-              <div class="grille">${liste.length ? liste.map(fiche).join("") : `<p class="bientot">De nouvelles traces arrivent bientôt.</p>`}</div>
-            </div>`;
-          }).join("")}
-        </div>`;
-      }).join("")}
-    </section>`;
-  }).join("");
+  // --- 4. Les deux catégories sous la carte : une grande vignette chacune,
+  //        qui ouvre la page de la catégorie (categorie.html?c=...).
+  //        Photo : champ "photo" de la catégorie dans assets/entete.js.
+  document.getElementById("rubriques").innerHTML = `<div class="portes">${CATEGORIES.map(c => {
+    const dans = parcours.filter(p => p.categorie === c.id);
+    const km = dans.reduce((t, p) => t + (p.distance_km || 0), 0);
+    const choisi = dans.find(p => p.slug === c.photo && p.photo_principale) || dans.find(p => p.photo_principale);
+    const photo = choisi ? `<img src="photos/${choisi.slug}/${choisi.photo_principale}" alt="" loading="lazy">` : "";
+    const activites = MENU.map(m => [m.nom, dans.filter(p => p.activite === m.id).length]).filter(([, n]) => n);
+    return `<a class="porte" href="${lienCategorie(c.id)}">
+      <div class="photo-porte">${photo}</div>
+      <div class="nom-porte"><h2>${c.nom}</h2><span class="mono">${dans.length} trace${dans.length > 1 ? "s" : ""} · ${fmtN(km)} km</span></div>
+      <p>${c.accroche || ""}</p>
+      <span class="voir">${activites.map(([nom, n]) => `${nom} ${n}`).join(" · ")}<b>Voir les traces</b></span>
+    </a>`;
+  }).join("")}</div>`;
 
-  // --- 5. Arrivée depuis le menu (ex. index.html#velo-journee) ---
-  // On fait défiler la page jusqu'à la bonne rubrique et on la fait "clignoter".
-  const allerA = () => {
-    const cible = location.hash && document.getElementById(location.hash.slice(1));
-    if (!cible) return;
-    cible.scrollIntoView({ behavior: "smooth", block: "start" });
-    cible.classList.remove("eclair"); void cible.offsetWidth; cible.classList.add("eclair");
-  };
-  allerA();
-  window.addEventListener("hashchange", allerA);
-}
-
-
-// ---------------------------------------------------------------------
-// VIGNETTE d'un parcours (photo ou silhouette de la trace + chiffres)
-// ---------------------------------------------------------------------
-function fiche(p) {
-  const visuel = p.photo_principale
-    ? `<img src="photos/${p.slug}/${p.photo_principale}" alt="" loading="lazy">`
-    : silhouette(p.trace);
-  return `<a class="fiche" href="parcours.html?p=${p.slug}">
-    <div class="visuel ${p.photo_principale ? "" : "sans-photo"}">${visuel}
-      <span class="etiquette">${etiquetteFiche(p)}</span></div>
-    <div class="corps">
-      <h4>${p.nom} ${p.nom_gras ? `<em>${p.nom_gras}</em>` : ""}</h4>
-      <p class="lieu">${(p.lieu || []).length ? p.lieu.join(" · ") : p.depart ? "Départ : " + p.depart : ""}</p>
-      <div class="chiffres mono"><span>${fmtN(p.distance_km)} km</span><span>${fmtN(p.denivele_m)} m D+</span><span>${joursDe(p)} j</span></div>
-    </div>
-  </a>`;
+  // --- 5. Anciens liens vers les rubriques (ex. index.html#nord-velo-journee) :
+  //        on ouvre la page de la catégorie avec les bons filtres.
+  const h = decodeURIComponent(location.hash.slice(1));
+  const cat = CATEGORIES.find(c => h === c.id || h.startsWith(c.id + "-"));
+  if (cat) {
+    const reste = h.slice(cat.id.length + 1);
+    const m = MENU.find(x => reste === x.id || reste.startsWith(x.id + "-"));
+    const d = m && reste.slice(m.id.length + 1);
+    location.replace(lienCategorie(cat.id, m && m.id, d || ""));
+  }
 }

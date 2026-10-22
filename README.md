@@ -11,7 +11,8 @@ Ce fichier README s'affiche sous la liste des fichiers du dépôt, sur GitHub. I
 ```
 index.html            Page d'accueil (structure : bandeau, carte, rubriques)
 parcours.html         Modèle de page commun à TOUS les parcours
-nord.html             Page « Traces du Nord » (boucles près de chez moi)
+categorie.html        Page d'une catégorie : categorie.html?c=nord (Traces du Nord) ou ?c=france
+nord.html             Ancienne adresse des Traces du Nord : renvoie vers categorie.html?c=nord
 README.md             Ce mode d'emploi
 
 assets/               "Moteur" et apparence du site
@@ -45,7 +46,7 @@ Un parcours est toujours désigné par **un nom court, sans accent ni espace**, 
 La page d'un parcours a pour adresse `parcours.html?p=dolce-via`.
 
 **Organisation du site** : deux grandes catégories, puis Vélo / Randonnée, puis À la journée / Plusieurs jours.
-- **Traces du Nord** : les noms écrits dans `data/liste-nord.js` (fiches courtes ou complètes ; page carte et filtres `nord.html`).
+- **Traces du Nord** : les noms écrits dans `data/liste-nord.js` (fiches courtes ou complètes ; page `categorie.html?c=nord`). Chaque catégorie a sa page avec carte, filtres (activité, pratique, durée, distance) et vignettes ; l'accueil n'affiche que la grande carte et une vignette par catégorie.
 - **Traces ailleurs en France** : les noms écrits dans `data/liste.js`.
 
 Pour changer une trace de catégorie, déplace son nom d'une liste à l'autre. Vélo ou randonnée vient du champ `"activite"`, la durée du champ `"jours"` (1 = à la journée). Les noms des catégories et leur phrase d'accroche se changent dans `CATEGORIES`, en haut de `assets/entete.js`.
@@ -198,7 +199,7 @@ Pour **masquer** un parcours sans le supprimer, retire simplement sa ligne de `d
 | Les activités (Vélo, Randonnée) et durées | `assets/entete.js` | Bloc `const MENU = [...]` |
 | Les liens du pied de page (Instagram, contact) | `assets/entete.js` | `PIED_DE_PAGE` : remplace les `#` (un lien resté à `#` n'est pas affiché) |
 | Les couleurs du site | `assets/style.css` | Bloc `:root` tout en haut |
-| *(après toute modification de `style.css` ou d'un `.js` de `assets`)* | `index.html`, `parcours.html` **et** `nord.html` | Change le numéro `?v=...` des liens (ex. la date du jour) pour que les visiteurs voient tout de suite la nouvelle version |
+| *(après toute modification de `style.css` ou d'un `.js` de `assets`)* | `index.html`, `parcours.html` **et** `categorie.html` | Change le numéro `?v=...` des liens (ex. la date du jour) pour que les visiteurs voient tout de suite la nouvelle version |
 | La couleur des traces vélo / rando sur l'accueil | `assets/accueil.js` | `COULEUR_ACTIVITE` |
 | Le fond de carte par défaut | `assets/entete.js` | Fonction `fondsDeCarte` |
 | L'ordre des sections d'une page parcours | `parcours.html` | Déplace les blocs entre deux `<h2 class="section">` |
@@ -220,12 +221,12 @@ Pour **masquer** un parcours sans le supprimer, retire simplement sa ligne de `d
 
 ## Traces du Nord (fiches courtes)
 
-Page `nord.html` : les traces autour de chez moi, à la journée ou sur 2-3 jours (trek, bike trip), avec une carte commune, des filtres (pratique, durée, distance) et des fiches courtes.
+Page `categorie.html?c=nord` : les traces autour de chez moi, à la journée ou sur 2-3 jours (trek, bike trip), avec une carte commune, des filtres (pratique, durée, distance) et des fiches courtes.
 
 - Liste des traces : `data/liste-nord.js` (un nom par ligne).
 - Fiche courte `data/<nom>.js` avec `"format": "locale"` : `nom`, `nom_gras`, `pratique` (`route`, `gravel`, `vtt` ou `marche`), `jours` (`"1"` = à la journée, `"2"` ou `"3"` = plusieurs jours, avec alors un tableau `etapes`), `depart`, `chapeau` (2 ou 3 lignes), 1 ou 2 `photos`, `incontournables` (nom, km, lat, lon, info).
 - Les incontournables s'affichent sur la carte, sur le profil et dans la liste « Les incontournables ».
-- Nom de la section, couleurs des pratiques : `SECTION_NORD` et `PRATIQUES` dans `assets/entete.js`.
+- Nom, grand titre, texte et photo de chaque catégorie : `CATEGORIES` dans `assets/entete.js` ; couleurs des pratiques : `PRATIQUES`. Programme de la page : `assets/categorie.js`.
 
 Ajouter des traces :
 - **plusieurs d'un coup** : GPX dans le dossier `nord\` des outils (une sortie de 2-3 jours = un sous-dossier avec un GPX par jour), puis `python traces_nord.py --depart "Nieppe"` ; tout le contenu de `a_deposer\` va sur GitHub ;
